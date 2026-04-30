@@ -1,5 +1,12 @@
 // src/lib/fonts.ts
-import { Manrope, Inter, Playfair_Display, Space_Mono } from 'next/font/google'
+import { Manrope, Inter, Playfair_Display, Space_Mono, Cormorant_Garamond } from 'next/font/google'
+
+export const cormorant = Cormorant_Garamond({
+  weight: ['400', '500', '600', '700'],
+  subsets: ['latin'],
+  variable: '--font-cormorant',
+  display: 'swap',
+})
 
 export const manrope = Manrope({
   weight: ['400', '500', '600', '700'],
