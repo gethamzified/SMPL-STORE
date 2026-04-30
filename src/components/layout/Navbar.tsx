@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { usePathname } from "next/navigation";
+import Image from "next/image";
 import { ShoppingCart, Menu, X, User } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 import { useAuth } from "@/context/UserAuthContext";
@@ -64,10 +65,15 @@ const Navbar = ({ brandName = "SMPL", navItems }: { brandName?: string; navItems
 
         {/* Center: Logo */}
         <div className="flex-1 flex justify-center">
-          <Link href="/" className="bg-[#ff0000] h-7 px-2 flex items-center justify-center cursor-pointer transition-transform active:scale-95 ">
-            <span className="font-black  text-white text-lg sm:text-xl uppercase tracking-tighter leading-none font-inter">
-              SMPL.
-            </span>
+          <Link href="/" className="h-10 flex items-center justify-center cursor-pointer transition-transform active:scale-95">
+            <Image
+              src="/SMPL.svg"
+              alt="SMPL Logo"
+              width={120}
+              height={40}
+              priority
+              className="w-auto h-12 sm:h-12"
+            />
           </Link>
         </div>
 

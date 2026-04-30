@@ -44,48 +44,17 @@ export function HeroCarousel({ products }: HeroCarouselProps) {
     return (
         <div className="relative h-screen w-full overflow-hidden bg-transparent">
             {/* 1. Static/Fading Background Elements (BEHIND IMAGES) */}
-            <div className="absolute inset-0 z-0 pointer-events-none">
-                {/* Background Typography */}
-                <div 
-                    key={`bg-text-${selectedIndex}`}
-                    className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex justify-between px-4 md:px-12 select-none opacity-40 animate-in fade-in duration-1000 slide-in-from-bottom-4"
-                >
-                    <h2 className="text-[15vw] font-black uppercase text-black/[0.05] leading-none tracking-tighter transform-gpu">
-                        {activeProduct.title.split(' ')[0]}
-                    </h2>
-                    <h2 className="text-[15vw] font-black uppercase text-black/[0.05] leading-none tracking-tighter hidden lg:block transform-gpu">
-                        {activeProduct.title.split(' ').slice(1).join(' ')}
-                    </h2>
-                </div>
+            <div className="absolute inset-0 z-0 pointer-events-none" />
 
-                {/* Main Product Title (BEHIND) */}
-                <div 
-                    key={`title-${selectedIndex}`}
-                    className="absolute top-24 left-6 md:left-12 flex flex-col gap-1 animate-in fade-in slide-in-from-left-8 duration-700"
-                >
-                    <div className="flex items-center gap-2">
-                        <div className="w-8 h-[2px] bg-[#ff0000]" />
-                        <span className="text-[10px] font-black uppercase tracking-[0.4em] text-black">
-                            SMPL-STUDIOS-01
-                        </span>
-                    </div>
-                    <h2 className="text-4xl md:text-7xl font-black uppercase tracking-tighter text-white mix-blend-mode-difference leading-[0.85] mt-4">
-                        {activeProduct.title.split(' ').map((word: string, i: number) => (
-                            <span key={i} className="block">{word}</span>
-                        ))}
-                    </h2>
-                </div>
-            </div>
-
-            {/* 2. Sliding Images (Carousel) - (IN FRONT OF TEXT) */}
+            {/* 2. Sliding Images (Carousel) */}
             <div className="relative h-full w-full z-10 pointer-events-none" ref={emblaRef}>
                 <div className="flex h-full pointer-events-auto">
                     {featuredProducts.map((product, index) => (
-                        <div 
-                            key={product.id || index} 
+                        <div
+                            key={product.id || index}
                             className="relative flex-[0_0_100%] min-w-0 h-full flex items-center justify-center will-change-transform"
                         >
-                            <Link 
+                            <Link
                                 href={`/product/${product.slug}`}
                                 className="relative w-full h-[70vh] max-w-5xl cursor-pointer group/img transform-gpu"
                             >
@@ -94,7 +63,7 @@ export function HeroCarousel({ products }: HeroCarouselProps) {
                                     alt={product.title}
                                     fill
                                     priority={index < 2}
-                                    className="object-contain drop-shadow-[0_30px_30px_rgba(0,0,0,0.15)] transition-transform duration-700 group-hover/img:scale-105 will-change-transform"
+                                    className="object-contain drop-shadow-[0_50px_60px_rgba(0,0,0,0.)] transition-transform duration-700 group-hover/img:scale-105 will-change-transform"
                                     sizes="(max-width: 1024px) 100vw, 80vw"
                                 />
                             </Link>
@@ -104,9 +73,9 @@ export function HeroCarousel({ products }: HeroCarouselProps) {
             </div>
 
             {/* 3. Interactive/Metadata Overlays (IN FRONT OF EVERYTHING) */}
-            
+
             {/* Bottom Right: Price */}
-            <div 
+            <div
                 key={`cta-${selectedIndex}`}
                 className="absolute bottom-24 right-6 md:right-12 text-right z-20 animate-in fade-in slide-in-from-right-8 duration-700"
             >
@@ -121,19 +90,19 @@ export function HeroCarousel({ products }: HeroCarouselProps) {
             </div>
 
             {/* Bottom Left: Specs */}
-            <div 
+            <div
                 key={`specs-${selectedIndex}`}
                 className="absolute bottom-24 left-6 md:left-12 hidden md:flex flex-col gap-4 z-20 animate-in fade-in duration-1000"
             >
-                <div className="text-[9px] font-black text-black/30 flex flex-col uppercase tracking-widest leading-relaxed">
-                    <span>Type: {activeProduct.product_type || 'GARMENT'}</span>
-                    <span>Loc: 31.5204° N, 74.3587° E</span>
-                    <span>Status: HIGH_PRECISION</span>
+                <div className="text-[9px] font-black text-black/30 flex flex-col uppercase tracking-widest leading-relaxed max-w-[300px]">
+                    <span>Item: {activeProduct.title}</span>
+                    <span className="line-clamp-1 opacity-60 font-medium">{activeProduct.description || 'Premium SMPL© Studio Article'}</span>
+                    <span>Status: {activeProduct.stock > 0 ? 'AVAILABLE' : 'SOLD_OUT'}</span>
                 </div>
             </div>
 
             {/* Minimal Nav Controls */}
-            <button 
+            <button
                 onClick={scrollPrev}
                 className="absolute left-4 top-1/2 -translate-y-1/2 text-black/20 hover:text-black transition-all z-30 p-4 transform-gpu"
                 aria-label="Previous slide"
@@ -141,7 +110,7 @@ export function HeroCarousel({ products }: HeroCarouselProps) {
                 <ChevronLeft className="w-8 h-8 md:w-12 md:h-12" />
             </button>
 
-            <button 
+            <button
                 onClick={scrollNext}
                 className="absolute right-4 top-1/2 -translate-y-1/2 text-black/20 hover:text-black transition-all z-30 p-4 transform-gpu"
                 aria-label="Next slide"
@@ -154,8 +123,8 @@ export function HeroCarousel({ products }: HeroCarouselProps) {
                 <div className="flex items-center gap-4">
                     <span className="text-[10px] font-black text-black">0{selectedIndex + 1}</span>
                     <div className="w-20 h-[1px] bg-black/10 relative">
-                        <div 
-                            className="absolute inset-y-0 left-0 bg-[#ff0000] transition-all duration-500 will-change-[width]" 
+                        <div
+                            className="absolute inset-y-0 left-0 bg-[#ff0000] transition-all duration-500 will-change-[width]"
                             style={{ width: `${((selectedIndex + 1) / featuredProducts.length) * 100}%` }}
                         />
                     </div>

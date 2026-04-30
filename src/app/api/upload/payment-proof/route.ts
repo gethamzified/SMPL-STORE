@@ -72,7 +72,7 @@ export async function POST(request: NextRequest) {
 
         return NextResponse.json({
             success: true,
-            url: result.secure_url,
+            url: result.secure_url.replace('/upload/', '/upload/f_auto,q_auto/'),
             path: result.public_id,
         });
     } catch (error) {

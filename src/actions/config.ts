@@ -50,9 +50,10 @@ export async function uploadSiteAsset(formData: FormData) {
         });
 
         const publicUrl = result.secure_url;
+        const optimizedUrl = publicUrl.replace('/upload/', '/upload/f_auto,q_auto,g_auto/');
         const blurDataURL = publicUrl.replace('/upload/', '/upload/w_10,e_blur:1000,f_auto,q_auto/');
 
-        return { success: true, url: publicUrl, blurDataURL };
+        return { success: true, url: optimizedUrl, blurDataURL };
     } catch (error: any) {
         console.error('Upload Asset Error:', error);
         return { error: error.message || 'Failed to upload asset' };

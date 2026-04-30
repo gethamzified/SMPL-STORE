@@ -63,11 +63,12 @@ export async function uploadImage(formData: FormData): Promise<UploadResponse> {
         });
 
         const publicUrl = result.secure_url;
+        const optimizedUrl = publicUrl.replace('/upload/', '/upload/f_auto,q_auto,g_auto/');
         const blurDataUrl = publicUrl.replace('/upload/', '/upload/w_10,e_blur:1000,f_auto,q_auto/');
 
         return {
             data: {
-                url: publicUrl,
+                url: optimizedUrl,
                 blurDataUrl,
                 width: result.width,
                 height: result.height,
