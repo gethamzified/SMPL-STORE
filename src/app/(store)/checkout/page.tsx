@@ -9,20 +9,7 @@ export default async function CheckoutPage() {
   const supabase = await createAdminClient();
   const storeConfig = await StoreConfigService.getStoreConfig();
 
-  let customerProfile = null;
-
-  if (user) {
-    // Fetch Customer Profile using user_id from custom auth
-    const { data: customerData } = await supabase
-      .from('customers')
-      .select('*')
-      .eq('user_id', user.id)
-      .single();
-
-    if (customerData) {
-      customerProfile = customerData;
-    }
-  }
+  let customerProfile = user?.customer_data || null;
 
   return (
     <main className="min-h-screen bg-background">
@@ -34,7 +21,7 @@ export default async function CheckoutPage() {
           last_name: customerProfile.last_name,
           address1: customerProfile.address1,
           city: customerProfile.city,
-          postal_code: customerProfile.zip,
+          zip: customerProfile.zip,
           country: customerProfile.country,
           phone: customerProfile.phone
         } : null}

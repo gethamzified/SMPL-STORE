@@ -70,7 +70,7 @@ export default async function ShopPage({ searchParams }: {
 
 
     return (
-        <main className="min-h-screen bg-background text-foreground">
+        <main className="relative z-10 min-h-screen bg-white text-foreground">
             {/* Breadcrumb Schema */}
             <script
                 type="application/ld+json"
@@ -98,7 +98,7 @@ export default async function ShopPage({ searchParams }: {
             {/* Visually Hidden Semantic H1 */}
             <h1 className="sr-only">Shop All SMPL Products</h1>
 
-            <div className="pt-24 md:pt-32 pb-24 px-6 md:px-12">
+            <div className="pt-24 md:pt-28 pb-20 md:pb-24 px-6 md:px-12">
                 {/* Breadcrumbs */}
                 <div className="flex justify-start mb-8">
                     <Breadcrumb>

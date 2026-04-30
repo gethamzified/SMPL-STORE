@@ -123,6 +123,7 @@ export type ProductOption = {
 
 export type Customer = {
   id: string
+  user_id?: string | null
   email: string
   first_name?: string | null
   last_name?: string | null
@@ -135,6 +136,7 @@ export type Customer = {
   province?: string | null
   zip?: string | null
   country?: string | null
+  country_code?: string | null
 
   total_spent: number
   total_orders: number
@@ -271,6 +273,7 @@ export type Review = {
   product_id: string
   customer_id?: string | null
   order_id?: string | null
+  verified_order_item_id?: string | null
 
   rating: number
   title?: string | null

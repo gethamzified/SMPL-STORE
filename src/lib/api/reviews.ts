@@ -29,13 +29,27 @@ export async function createReview(input: CreateReviewInput): Promise<ApiRespons
     // Get current user
     const { data: { user } } = await supabase.auth.getUser()
     
-    // Check if user has already reviewed this product
+    // Resolve customer ID
+    let customerId: string | null = null
     if (user) {
+      const { data: customer } = await supabase
+        .from('customers')
+        .select('id')
+        .eq('user_id', user.id)
+        .single()
+      
+      if (customer) {
+        customerId = customer.id
+      }
+    }
+
+    // Check if user has already reviewed this product
+    if (customerId) {
       const { data: existingReview } = await supabase
         .from('reviews')
         .select('id')
         .eq('product_id', input.product_id)
-        .eq('customer_id', user.id)
+        .eq('customer_id', customerId)
         .single()
       
       if (existingReview) {
@@ -45,11 +59,13 @@ export async function createReview(input: CreateReviewInput): Promise<ApiRespons
     
     // Check for verified purchase
     let isVerifiedPurchase = false
-    if (user) {
+    if (customerId) {
       const { data: order } = await supabase
         .from('order_items')
         .select('id, order:orders!inner(customer_id, payment_status)')
         .eq('product_id', input.product_id)
+        .eq('orders.customer_id', customerId)
+        .eq('orders.payment_status', 'paid')
         .single()
       
       if (order) {
@@ -63,7 +79,7 @@ export async function createReview(input: CreateReviewInput): Promise<ApiRespons
       .from('reviews')
       .insert({
         product_id: input.product_id,
-        customer_id: user?.id || null,
+        customer_id: customerId,
         rating: input.rating,
         title: input.title?.trim() || null,
         content: input.content?.trim() || null,

@@ -9,12 +9,7 @@ export default async function ProfilePage() {
     const user = await requireAuth();
     const supabase = await createAdminClient();
 
-    // Fetch Full Profile
-    const { data: profile } = await supabase
-        .from('customers')
-        .select('*')
-        .eq('user_id', user.id)
-        .single();
+    const profile = user.customer_data || null;
 
     return (
         <FadeInView>

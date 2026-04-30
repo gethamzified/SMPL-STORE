@@ -16,10 +16,10 @@ export function ScrollToTopButton() {
     return (
         <button
             onClick={scrollToTop}
-            className="flex items-center gap-2 text-xs uppercase tracking-widest text-white/40 hover:text-white transition-colors group"
+            className="flex items-center gap-2 text-xs uppercase tracking-widest text-black/40 hover:text-black transition-colors group"
         >
             Back to Top
-            <ArrowUp className="w-3 h-3 group-hover:-translate-y-1 transition-transform" />
+            <ArrowUp className="w-4 h-4 group-hover:-translate-y-1 transition-transform" />
         </button>
     );
 }

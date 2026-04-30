@@ -48,7 +48,7 @@ export function HeroCarousel({ products, hero }: HeroCarouselProps) {
     const activeProduct = featuredProducts[selectedIndex];
 
     return (
-        <div className="relative h-screen w-full overflow-hidden bg-transparent pt-10md:pt-8">
+        <div className="relative h-screen w-full overflow-hidden bg-transparent pt-24 md:pt-28">
             {/* 1. Static Background Layer */}
             <div className="absolute inset-0 z-0 pointer-events-none" />
 

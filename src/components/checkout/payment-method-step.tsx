@@ -67,30 +67,30 @@ export function PaymentMethodStep({
 
         return (
             <div className="mt-6 border-t border-black/5 pt-6 animate-in slide-in-from-top-2 fade-in duration-300">
-                <div className="bg-neutral-100 p-5 rounded-md mb-6 space-y-3 border border-neutral-200">
-                    <h4 className="text-xs font-bold uppercase tracking-widest text-neutral-500 mb-2">{details.title}</h4>
+                <div className="bg-white p-5 rounded-none mb-6 space-y-3 border-2 border-black">
+                    <h4 className="text-sm font-black uppercase tracking-tighter text-black mb-2">{details.title}</h4>
                     {details.fields.map((field, i) => (
                         <div key={i} className="flex flex-col sm:flex-row sm:justify-between text-sm gap-1">
-                            <span className="text-neutral-500">{field.label}:</span>
-                            <span className="font-mono font-medium select-all">{field.value}</span>
+                            <span className="text-black font-bold uppercase tracking-widest text-[10px]">{field.label}:</span>
+                            <span className="font-mono font-black select-all text-red-600 text-xs">{field.value}</span>
                         </div>
                     ))}
                 </div>
 
                 <div className="space-y-6">
                     <div className="space-y-2">
-                        <Label className="text-[10px] tracking-[0.1em] uppercase text-neutral-500">Transaction ID / Reference No.</Label>
+                        <Label className="text-[10px] font-bold uppercase tracking-widest text-black">Transaction ID / Reference No.</Label>
                         <Input
                             value={transactionId}
                             onChange={(e) => setTransactionId(e.target.value)}
                             placeholder="e.g. 8234XXXXXXX"
-                            className="rounded-none border-black/20 focus:border-black h-12 uppercase text-xs tracking-widest font-mono"
+                            className="rounded-none border-2 border-black focus:border-red-600 focus:ring-0 h-12 uppercase text-xs tracking-widest font-mono bg-white"
                         />
                     </div>
 
                     <div className="space-y-2">
-                        <Label className="text-[10px] tracking-[0.1em] uppercase text-neutral-500">
-                            Upload Payment Screenshot <span className="text-red-500">*</span>
+                        <Label className="text-[10px] font-bold uppercase tracking-widest text-black">
+                            Upload Payment Screenshot <span className="text-red-600">*</span>
                         </Label>
                         <PaymentProofDropzone
                             selectedFile={proofFile}
@@ -106,27 +106,27 @@ export function PaymentMethodStep({
 
     return (
         <div className="space-y-6">
-            <h2 className="text-sm font-semibold tracking-[0.2em] uppercase mb-8 border-b border-black/5 pb-4">
-                Payment Method
+            <h2 className="text-xl font-display font-black tracking-tighter uppercase mb-8 border-b-2 border-black pb-4 text-red-600">
+                PAYMENT METHOD
             </h2>
 
             <RadioGroup value={selectedMethod} onValueChange={onSelect} className="space-y-4">
 
                 {/* COD */}
                 <div className={cn(
-                    "relative border p-6 transition-all hover:bg-neutral-50",
+                    "relative border-2 p-6 transition-all",
                     selectedMethod === "COD"
-                        ? "border-black bg-white ring-1 ring-black/5 shadow-sm"
-                        : "border-neutral-200"
+                        ? "border-red-600 bg-white shadow-[4px_4px_0px_0px_rgba(220,38,38,1)]"
+                        : "border-black bg-white hover:bg-neutral-100"
                 )}>
                     <div className="flex items-start">
                         <RadioGroupItem value="COD" id="pay-cod" className="mt-1 border-neutral-400 text-black" />
                         <Label htmlFor="pay-cod" className="flex-1 ml-4 cursor-pointer">
                             <div className="flex items-center gap-3 mb-1">
-                                <Banknote className="w-4 h-4" />
-                                <span className="font-semibold text-sm uppercase tracking-wide">Cash on Delivery</span>
+                                <Banknote className={cn("w-4 h-4", selectedMethod === "COD" ? "text-red-600" : "text-black")} />
+                                <span className="font-black text-sm uppercase tracking-widest text-black">CASH ON DELIVERY</span>
                             </div>
-                            <p className="text-[10px] text-neutral-400 leading-relaxed uppercase tracking-wide pl-7">
+                            <p className="text-[10px] font-bold text-neutral-500 leading-relaxed uppercase tracking-widest pl-7">
                                 Pay in cash when your order arrives.
                             </p>
                         </Label>
@@ -135,19 +135,19 @@ export function PaymentMethodStep({
 
                 {/* BANK TRANSFER */}
                 <div className={cn(
-                    "relative border p-6 transition-all",
+                    "relative border-2 p-6 transition-all",
                     selectedMethod === "bank_transfer"
-                        ? "border-black bg-white ring-1 ring-black/5 shadow-sm"
-                        : "border-neutral-200 hover:bg-neutral-50"
+                        ? "border-red-600 bg-white shadow-[4px_4px_0px_0px_rgba(220,38,38,1)]"
+                        : "border-black bg-white hover:bg-neutral-100"
                 )}>
                     <div className="flex items-start">
                         <RadioGroupItem value="bank_transfer" id="pay-bank" className="mt-1 border-neutral-400 text-black" />
                         <Label htmlFor="pay-bank" className="flex-1 ml-4 cursor-pointer w-full">
                             <div className="flex items-center gap-3 mb-1">
-                                <Building2 className="w-4 h-4" />
-                                <span className="font-semibold text-sm uppercase tracking-wide">Bank Transfer</span>
+                                <Building2 className={cn("w-4 h-4", selectedMethod === "bank_transfer" ? "text-red-600" : "text-black")} />
+                                <span className="font-black text-sm uppercase tracking-widest text-black">BANK TRANSFER</span>
                             </div>
-                            <p className="text-[10px] text-neutral-400 leading-relaxed uppercase tracking-wide pl-7">
+                            <p className="text-[10px] font-bold text-neutral-500 leading-relaxed uppercase tracking-widest pl-7">
                                 Direct transfer to our bank account.
                             </p>
                         </Label>
@@ -157,17 +157,17 @@ export function PaymentMethodStep({
 
                 {/* EASYPAISA */}
                 <div className={cn(
-                    "relative border p-6 transition-all",
+                    "relative border-2 p-6 transition-all",
                     selectedMethod === "easypaisa"
-                        ? "border-black bg-white ring-1 ring-black/5 shadow-sm"
-                        : "border-neutral-200 hover:bg-neutral-50"
+                        ? "border-red-600 bg-white shadow-[4px_4px_0px_0px_rgba(220,38,38,1)]"
+                        : "border-black bg-white hover:bg-neutral-100"
                 )}>
                     <div className="flex items-start">
                         <RadioGroupItem value="easypaisa" id="pay-easy" className="mt-1 border-neutral-400 text-black" />
                         <Label htmlFor="pay-easy" className="flex-1 ml-4 cursor-pointer w-full">
                             <div className="flex items-center gap-3 mb-1">
                                 <Smartphone className="w-4 h-4 text-green-600" />
-                                <span className="font-semibold text-sm uppercase tracking-wide">Easypaisa</span>
+                                <span className="font-black text-sm uppercase tracking-widest text-black">EASYPAISA</span>
                             </div>
                         </Label>
                     </div>
@@ -176,17 +176,17 @@ export function PaymentMethodStep({
 
                 {/* JAZZCASH */}
                 <div className={cn(
-                    "relative border p-6 transition-all",
+                    "relative border-2 p-6 transition-all",
                     selectedMethod === "jazzcash"
-                        ? "border-black bg-white ring-1 ring-black/5 shadow-sm"
-                        : "border-neutral-200 hover:bg-neutral-50"
+                        ? "border-red-600 bg-white shadow-[4px_4px_0px_0px_rgba(220,38,38,1)]"
+                        : "border-black bg-white hover:bg-neutral-100"
                 )}>
                     <div className="flex items-start">
                         <RadioGroupItem value="jazzcash" id="pay-jazz" className="mt-1 border-neutral-400 text-black" />
                         <Label htmlFor="pay-jazz" className="flex-1 ml-4 cursor-pointer w-full">
                             <div className="flex items-center gap-3 mb-1">
                                 <Smartphone className="w-4 h-4 text-red-600" />
-                                <span className="font-semibold text-sm uppercase tracking-wide">JazzCash</span>
+                                <span className="font-black text-sm uppercase tracking-widest text-black">JAZZCASH</span>
                             </div>
                         </Label>
                     </div>

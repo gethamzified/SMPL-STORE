@@ -13,6 +13,10 @@ export interface AuthUser {
     phone?: string;
     address?: any;
     created_at?: string;
+    customer_id?: string;
+    first_name?: string;
+    last_name?: string;
+    customer_data?: any;
 }
 
 /**
@@ -42,7 +46,23 @@ export async function getAuthUser(): Promise<AuthUser | null> {
             return null;
         }
 
-        return user as AuthUser;
+        // Fetch customer profile
+        const { data: customer } = await supabase
+            .from('customers')
+            .select('*')
+            .eq('user_id', userId)
+            .single();
+
+        const enrichedUser = {
+            ...user,
+            customer_id: customer?.id,
+            first_name: customer?.first_name || null,
+            last_name: customer?.last_name || null,
+            phone: customer?.phone || user.phone || null,
+            customer_data: customer || null
+        };
+
+        return enrichedUser as AuthUser;
     } catch (error) {
         console.error('getAuthUser error:', error);
         return null;

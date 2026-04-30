@@ -17,6 +17,10 @@ export interface UserProfile {
         zip?: string;
         country?: string;
     };
+    customer_id?: string;
+    first_name?: string;
+    last_name?: string;
+    customer_data?: any;
 }
 
 interface UserAuthContextType {

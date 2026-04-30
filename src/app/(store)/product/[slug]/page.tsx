@@ -90,7 +90,7 @@ export default async function ProductPage({ params }: Props) {
   const safeRelated = (relatedProducts || []) as Product[];
 
   return (
-    <main className="min-h-screen bg-background text-foreground">
+    <main className="relative z-10 min-h-screen bg-white text-foreground">
       {/* Product Schema */}
       <script
         type="application/ld+json"
@@ -147,12 +147,12 @@ export default async function ProductPage({ params }: Props) {
           })
         }}
       />
-      <div className="pt-24 md:pt-32 pb-20 px-0 md:px-12">
+      <div className="pt-24 md:pt-28 pb-16 md:pb-20 px-6 md:px-12">
         <ProductDetail product={typedProduct} />
       </div>
 
 
-      <div className="max-w-[1400px] mx-auto px-6 md:px-12 mb-32">
+      <div className="max-w-[1400px] mx-auto px-6 md:px-12 mb-40 md:mb-56">
         <div className="flex flex-col items-center justify-center mb-12 gap-4">
           <h2 className="font-great-vibes text-red-900 text-4xl md:text-5xl leading-normal select-none">
             You May Also Like

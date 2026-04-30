@@ -299,15 +299,30 @@ export default function ProductInfo({ product }: ProductInfoProps) {
 
     return (
         <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-700">
-            {/* Header - Desktop */}
-            <div className="space-y-2 hidden lg:block">
-                <h1 className="text-xl md:text-2xl font-bold tracking-[0.05em] text-neutral-900 leading-tight uppercase">
-                    {product.title}
-                </h1>
-                <div className="flex items-center gap-3">
-                    <span className="text-sm font-medium">
-                        RS.{formatCurrency(currentSalePrice || currentPrice).replace(/[^0-9.,]/g, '')}
-                    </span>
+            {/* Unified Header - Responsive */}
+            <div className="space-y-4">
+                <div className="space-y-1">
+                    <p className="text-[10px] font-black uppercase tracking-[0.3em] text-neutral-400">SMPL Store</p>
+                    <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-neutral-900 leading-none uppercase">
+                        {product.title}
+                    </h1>
+                </div>
+                
+                <div className="flex items-center gap-4">
+                    {hasSale ? (
+                        <>
+                            <span className="text-2xl font-bold text-red-600">
+                                RS. {formatCurrency(currentSalePrice).replace(/[^0-9.,]/g, '')}
+                            </span>
+                            <span className="text-lg text-neutral-400 line-through font-light">
+                                RS. {formatCurrency(currentPrice).replace(/[^0-9.,]/g, '')}
+                            </span>
+                        </>
+                    ) : (
+                        <span className="text-2xl font-bold text-neutral-900">
+                            RS. {formatCurrency(currentPrice).replace(/[^0-9.,]/g, '')}
+                        </span>
+                    )}
                 </div>
             </div>
 
@@ -538,21 +553,8 @@ export default function ProductInfo({ product }: ProductInfoProps) {
                 </div>
             </div>
 
-            {/* Collapsible Tabs */}
-            <div className="pt-4">
-                <button
-                    onClick={() => setIsDescOpen(!isDescOpen)}
-                    className="w-full flex justify-between items-center py-4 border-t border-neutral-100 text-[11px] font-bold uppercase tracking-widest text-neutral-900"
-                >
-                    <span>Description</span>
-                    <span>{isDescOpen ? "-" : "+"}</span>
-                </button>
-                {isDescOpen && (
-                    <div className="pb-6 text-sm text-neutral-600 leading-relaxed animate-in fade-in slide-in-from-top-2">
-                        {product.description || "No detailed description available."}
-                    </div>
-                )}
-            </div>
+            {/* Spacer */}
+            <div className="h-4" />
 
             {/* Mobile Sticky Add to Cart */}
             <StickyAddToCart

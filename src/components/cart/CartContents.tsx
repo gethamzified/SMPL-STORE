@@ -54,17 +54,17 @@ function DebouncedCartItem({ item }: { item: CartItem }) {
             <div className="flex-1 flex flex-col justify-between">
                 <div className="flex justify-between items-start">
                     <div>
-                        <h3 className="font-body font-black text-[11px] uppercase tracking-widest leading-tight">{item.name}</h3>
+                        <h3 className="font-display font-black text-sm uppercase tracking-tighter leading-none">{item.name}</h3>
                         {item.size && (
-                            <p className="text-[10px] uppercase tracking-widest text-muted-foreground mt-1">Size: {item.size}</p>
+                            <p className="text-[10px] font-bold uppercase tracking-widest text-red-600 mt-1">SIZE: {item.size}</p>
                         )}
                     </div>
-                    <p className="font-body font-black text-sm">{formatCurrency(item.price)}</p>
+                    <p className="font-display font-black text-lg tracking-tighter">{formatCurrency(item.price)}</p>
                 </div>
             </div>
 
             <div className="flex justify-between items-center">
-                <div className="flex items-center border border-input">
+                <div className="flex items-center border-2 border-black">
                     <button
                         onClick={handleDecrement}
                         className="p-1 hover:bg-secondary transition-colors"
@@ -82,7 +82,7 @@ function DebouncedCartItem({ item }: { item: CartItem }) {
                 </div>
                 <button
                     onClick={() => removeItem(item.id, item.size)}
-                    className="text-muted-foreground hover:text-destructive transition-colors"
+                    className="text-black hover:text-red-600 transition-colors p-2"
                 >
                     <Trash2 className="w-4 h-4" />
                 </button>
@@ -119,23 +119,23 @@ export function CartContents({ onClose }: { onClose: () => void }) {
 
             <div className="space-y-4 pt-4 mt-auto">
                 <Separator />
-                <div className="flex justify-between items-center">
-                    <span className="font-body font-black uppercase tracking-widest text-xs">Subtotal</span>
-                    <span className="font-body font-black text-lg">{formatCurrency(cartTotal)}</span>
+                <div className="flex justify-between items-center border-b-2 border-black pb-4 mb-4">
+                    <span className="font-display font-black uppercase tracking-tighter text-sm">SUBTOTAL</span>
+                    <span className="font-display font-black text-2xl tracking-tighter text-red-600">{formatCurrency(cartTotal)}</span>
                 </div>
-                <p className="text-[10px] uppercase tracking-widest text-muted-foreground text-center">
-                    Shipping and taxes calculated at checkout.
+                <p className="text-[10px] font-bold uppercase tracking-widest text-black text-center mb-4">
+                    SHIPPING AND TAXES CALCULATED AT CHECKOUT.
                 </p>
-                <Button variant="cta" size="xl" className="w-full" asChild>
+                <Button variant="cta" size="xl" className="w-full bg-red-600 text-white hover:bg-black hover:text-white border-2 border-black rounded-none text-sm font-black tracking-widest transition-all" asChild>
                     <Link href="/checkout" onClick={onClose}>
-                        Continue to Checkout
+                        CHECKOUT NOW
                     </Link>
                 </Button>
 
                 <Button
                     variant="cta"
                     size="xl"
-                    className="w-full bg-[#25D366] hover:bg-[#20BA5A] text-white flex items-center justify-center gap-2 border-none"
+                    className="w-full bg-black hover:bg-neutral-800 text-white flex items-center justify-center gap-2 border-2 border-black rounded-none font-bold tracking-widest text-xs transition-all mt-2"
                     asChild
                 >
                     <a

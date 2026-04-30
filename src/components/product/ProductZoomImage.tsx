@@ -27,7 +27,7 @@
 
 'use client';
 
-import React, { useState, useRef, useCallback, useEffect } from 'react';
+import React, { useRef } from 'react';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
 
@@ -42,27 +42,10 @@ interface ProductZoomImageProps {
   priority?: boolean;
   /** Image loading behavior */
   loading?: "eager" | "lazy";
-  /** Zoom magnification level (default: 2.5) */
-  zoomScale?: number;
   /** CSS class for the container */
   className?: string;
   /** Callback when user clicks (e.g. to open lightbox) */
   onClick?: () => void;
-}
-
-/**
- * Build the full-resolution URL for zoom.
- * 
- * If using Next.js image optimization, the default `<Image>` tag
- * serves a resized version. For zoom, we want the original master.
- * 
- * Supabase URLs are already direct — no transformation needed.
- * But if Next.js rewrites through /_next/image, we bypass it
- * by using the raw URL directly in an <img> tag.
- */
-function getHiResUrl(src: string): string {
-  // Already a direct Supabase/CDN URL — use as-is
-  return src;
 }
 
 export function ProductZoomImage({
@@ -71,66 +54,18 @@ export function ProductZoomImage({
   blurDataUrl,
   priority = false,
   loading,
-  zoomScale = 2.5,
   className,
   onClick,
 }: ProductZoomImageProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [isHovering, setIsHovering] = useState(false);
-  const [isHiResLoaded, setIsHiResLoaded] = useState(false);
-  const [mousePos, setMousePos] = useState({ x: 50, y: 50 });
-  const hiResRef = useRef<HTMLImageElement | null>(null);
-
-  // ─── Preload hi-res image on hover intent ─────────────────────────────
-  const hiResUrl = getHiResUrl(src);
-
-  // Preload when user shows intent (pointerenter)
-  const preloadHiRes = useCallback(() => {
-    if (hiResRef.current) return; // Already loaded/loading
-
-    const img = new window.Image();
-    img.src = hiResUrl;
-    img.onload = () => setIsHiResLoaded(true);
-    hiResRef.current = img;
-  }, [hiResUrl]);
-
-  // Reset hi-res state when src changes (user switches images)
-  useEffect(() => {
-    setIsHiResLoaded(false);
-    hiResRef.current = null;
-  }, [src]);
-
-  // ─── Mouse tracking ───────────────────────────────────────────────────
-  const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-    if (!containerRef.current) return;
-    const { left, top, width, height } = containerRef.current.getBoundingClientRect();
-    const x = ((e.clientX - left) / width) * 100;
-    const y = ((e.clientY - top) / height) * 100;
-    setMousePos({ x, y });
-  }, []);
-
-  const handleMouseEnter = useCallback(() => {
-    preloadHiRes();
-    setIsHovering(true);
-  }, [preloadHiRes]);
-
-  const handleMouseLeave = useCallback(() => {
-    setIsHovering(false);
-  }, []);
-
-  const showZoom = isHovering && isHiResLoaded;
 
   return (
     <div
       ref={containerRef}
       className={cn(
-        'relative overflow-hidden cursor-zoom-in',
-        showZoom && 'cursor-crosshair',
+        'relative overflow-hidden',
         className,
       )}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-      onMouseMove={handleMouseMove}
       onClick={onClick}
     >
       {/* Base image — optimized by Next.js for fast loading */}
@@ -146,42 +81,6 @@ export function ProductZoomImage({
         placeholder={blurDataUrl ? 'blur' : 'empty'}
         blurDataURL={blurDataUrl || undefined}
       />
-
-      {/* Hi-res zoom layer — the full 2500px master image */}
-      {showZoom && (
-        <div
-          className="absolute inset-0 z-10 pointer-events-none"
-          aria-hidden="true"
-        >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={hiResUrl}
-            alt=""
-            className="absolute top-0 left-0 w-full h-full object-cover will-change-transform"
-            style={{
-              transform: `scale(${zoomScale})`,
-              transformOrigin: `${mousePos.x}% ${mousePos.y}%`,
-              // Smooth sub-pixel rendering for crisp zoom
-              imageRendering: 'auto',
-            }}
-            draggable={false}
-          />
-        </div>
-      )}
-
-      {/* Loading indicator while hi-res is being fetched */}
-      {isHovering && !isHiResLoaded && (
-        <div className="absolute top-3 right-3 z-20 pointer-events-none">
-          <div className="w-5 h-5 border-2 border-white/60 border-t-white rounded-full animate-spin" />
-        </div>
-      )}
-
-      {/* Zoom hint badge */}
-      {!isHovering && (
-        <div className="absolute top-4 right-4 bg-white/90 backdrop-blur px-3 py-1.5 text-[10px] uppercase font-bold tracking-widest opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none text-black z-20">
-          Hover to Zoom
-        </div>
-      )}
     </div>
   );
 }

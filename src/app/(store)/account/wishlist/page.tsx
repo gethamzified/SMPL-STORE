@@ -103,6 +103,8 @@ export default function WishlistPage() {
                                                 fill
                                                 className="object-cover transition-transform duration-500 group-hover:scale-105"
                                                 sizes="(max-width: 768px) 50vw, 33vw"
+                                                quality={75}
+                                                loading="lazy"
                                                 placeholder={(() => { const b = (product.metadata as Record<string, unknown>)?.blurDataUrls as Record<string, string> | undefined; return b?.[product.cover_image] ? "blur" as const : "empty" as const; })()}
                                                 blurDataURL={((product.metadata as Record<string, unknown>)?.blurDataUrls as Record<string, string> | undefined)?.[product.cover_image]}
                                             />

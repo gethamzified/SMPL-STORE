@@ -11,6 +11,7 @@ import { useAuth } from "@/context/UserAuthContext";
 const CartSheet = dynamic(() => import("@/components/layout/CartSheet").then(mod => mod.CartSheet), { ssr: false });
 const SearchModal = dynamic(() => import("@/components/layout/SearchModal").then(mod => mod.SearchModal), { ssr: false });
 import { MenuItem } from "@/lib/types";
+import { cn } from "@/lib/utils";
 
 // Lazy-load the mobile menu to reduce initial bundle size
 const MobileMenuOverlay = dynamic(() => import("./MobileMenuOverlay"), {
@@ -51,7 +52,10 @@ const Navbar = ({ brandName = "SMPL", navItems }: { brandName?: string; navItems
     <>
       {/* Only mount CartSheet after user interacts with cart */}
       {isCartSheetLoaded && <CartSheet />}
-      <header className="relative z-40 w-full px-4 py-4 flex items-center justify-between">
+      <header className={cn(
+        "relative z-40 w-full px-4 py-4 flex items-center justify-between transition-colors duration-300",
+        !isHome ? "bg-white border-b-2 border-black" : "bg-transparent"
+      )}>
         {/* Left: Hamburger */}
         <div className="flex-1 flex justify-start">
           <button

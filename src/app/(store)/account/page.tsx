@@ -11,20 +11,29 @@ export default async function AccountPage() {
     const user = await requireAuth();
     const supabase = await createAdminClient();
 
-    // Fetch Profile
-    const { data: profile } = await supabase
-        .from('customers')
-        .select('*')
-        .eq('user_id', user.id)
-        .single();
+    const profile = user.customer_data || null;
 
-    // Fetch Recent Orders (Limit 3)
-    const { data: recentOrders } = await supabase
-        .from('orders')
-        .select('*, items:order_items(*)')
-        .eq('email', user.email)
-        .order('created_at', { ascending: false })
-        .limit(3);
+    // Fetch Recent Orders (Limit 3) - use customer_id (the real FK) when available
+    const customerId = user.customer_id || profile?.id;
+    let recentOrders = null;
+    if (customerId) {
+        const { data } = await supabase
+            .from('orders')
+            .select('*, items:order_items(*)')
+            .eq('customer_id', customerId)
+            .order('created_at', { ascending: false })
+            .limit(3);
+        recentOrders = data;
+    } else {
+        // Fallback: query by email for accounts without a customer record yet
+        const { data } = await supabase
+            .from('orders')
+            .select('*, items:order_items(*)')
+            .eq('email', user.email)
+            .order('created_at', { ascending: false })
+            .limit(3);
+        recentOrders = data;
+    }
 
     const firstName = profile?.first_name || user.email?.split('@')[0] || 'Customer';
 

@@ -58,7 +58,7 @@ export default async function NewsPage() {
   return (
     <main className="min-h-screen bg-background">
       {/* Hero */}
-      <section className="pt-10 md:pt-14 pb-16 px-6 md:px-12">
+      <section className="pt-24 md:pt-28 pb-14 md:pb-16 px-6 md:px-12">
         <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
           <h1 className="section-title text-foreground mb-4">Inside SMPL</h1>
           <p className="text-muted-foreground font-body text-base md:text-lg max-w-xl">
@@ -68,7 +68,7 @@ export default async function NewsPage() {
       </section>
 
       {/* Articles */}
-      <section className="px-6 md:px-12 pb-20">
+      <section className="px-6 md:px-12 pb-16 md:pb-20">
         <div className="space-y-16">
           {articles.map((article, index) => (
             <article
@@ -84,6 +84,8 @@ export default async function NewsPage() {
                     fill
                     className="object-cover transition-transform duration-700 group-hover:scale-105"
                     sizes="(max-width: 768px) 100vw, 50vw"
+                    quality={75}
+                    loading="lazy"
                   />
                 ) : (
                   <div className="absolute inset-0 bg-gradient-to-br from-neutral-200 to-neutral-300" />

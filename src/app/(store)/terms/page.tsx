@@ -13,7 +13,7 @@ export default async function TermsPage() {
 
     return (
         <main className="min-h-screen bg-background text-foreground selection:bg-black selection:text-white">
-            <div className="pt-10 md:pt-14 pb-24 px-6 md:px-12">
+            <div className="pt-24 md:pt-28 pb-20 md:pb-24 px-6 md:px-12">
                 <div className="max-w-3xl mx-auto space-y-12">
 
                     <header className="space-y-6 border-b border-border pb-12">

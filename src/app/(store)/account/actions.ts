@@ -50,6 +50,25 @@ export async function updateProfile(formData: FormData) {
     if (error) return { error: error.message }
   }
 
+  // Sync to public.users as well to prevent data skew
+  await supabase
+    .from('users')
+    .update({
+      name: `${profileData.first_name || ''} ${profileData.last_name || ''}`.trim(),
+      phone: profileData.phone,
+      address: {
+        first_name: profileData.first_name,
+        last_name: profileData.last_name,
+        address1: profileData.address1,
+        address2: profileData.address2,
+        city: profileData.city,
+        province: profileData.province,
+        zip: profileData.zip,
+        country: profileData.country,
+      }
+    })
+    .eq('id', user.id)
+
   revalidatePath('/account')
   return { success: true }
 }

@@ -68,6 +68,8 @@ export default async function AboutPage() {
               fill
               className="object-cover transition-transform duration-700 group-hover:scale-105"
               sizes="(max-width: 768px) 100vw, 50vw"
+              quality={75}
+              loading="lazy"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent flex flex-col justify-end p-8 md:p-12">
               <h3 className="text-white font-display text-3xl mb-2">Heritage</h3>

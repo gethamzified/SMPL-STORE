@@ -109,14 +109,13 @@ export const OrderService = {
 
         // 3. ATOMIC ORDER CREATION (Via RPC)
         const orderPayload = {
-            customer_id: user?.id || null, // Pass user ID if authenticated
+            customer_id: null, // Let RPC lookup/create customer via user_id or email
             user_id: user?.id || null,     // Pass for customer creation/lookup
             email: input.email,
             phone: input.phone || null,
             status: 'pending',
             fulfillment_status: 'unfulfilled',
-            payment_status: input.payment_method === 'COD' ? 'cod_pending' :
-                (['bank_transfer', 'easypaisa', 'jazzcash'].includes(input.payment_method || '') ? 'pending_verification' : 'pending'),
+            payment_status: 'pending',
             subtotal,
             shipping_total: shippingTotal,
             tax_total: taxTotal,
@@ -207,10 +206,21 @@ export const OrderService = {
 
     async getCustomerOrders(customerId: string): Promise<Order[]> {
         const supabase = await createAdminClient();
+        
+        // Check if the provided ID is a customer.id or user_id
+        // Try to find customer by user_id first
+        const { data: customer } = await supabase
+            .from('customers')
+            .select('id')
+            .eq('user_id', customerId)
+            .single();
+        
+        const actualCustomerId = customer?.id || customerId;
+
         const { data, error } = await supabase
             .from('orders')
             .select('*, items:order_items(*)')
-            .eq('customer_id', customerId)
+            .eq('customer_id', actualCustomerId)
             .order('created_at', { ascending: false });
 
         if (error) throw new AppError(error.message, 'DB_ERROR');

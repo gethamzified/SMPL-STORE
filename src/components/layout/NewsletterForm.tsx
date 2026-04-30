@@ -43,7 +43,7 @@ export function NewsletterForm({ className, placeholder = "Email Address" }: New
     return (
         <div className={cn("w-full", className)}>
             {status === "success" ? (
-                <div className="flex items-center gap-2 text-emerald-400 text-sm font-medium py-2">
+                <div className="flex items-center gap-2 text-emerald-600 text-sm font-medium py-2">
                     <Check className="w-5 h-5" />
                     <span>{message}</span>
                 </div>
@@ -76,7 +76,7 @@ export function NewsletterForm({ className, placeholder = "Email Address" }: New
                     </div>
 
                     {status === "error" && message && (
-                        <p className="absolute -bottom-6 left-0 text-red-500 text-xs font-medium">{message}</p>
+                        <p className="absolute -bottom-6 left-0 text-red-600 text-xs font-medium">{message}</p>
                     )}
                 </form>
             )}

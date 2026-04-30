@@ -8,13 +8,26 @@ export const dynamic = 'force-dynamic';
 export default async function OrdersPage() {
     const user = await requireAuth();
 
-    // Fetch orders by email (since we don't set customer_id in new auth flow)
+    // Fetch orders by customer_id (since we enriched the user object) or email as fallback
     const supabase = await createAdminClient();
-    const { data: orders } = await supabase
-        .from('orders')
-        .select('*, items:order_items(*)')
-        .eq('email', user.email)
-        .order('created_at', { ascending: false });
+    const customerId = user.customer_id || user.customer_data?.id;
+    let orders = null;
+
+    if (customerId) {
+        const { data } = await supabase
+            .from('orders')
+            .select('*, items:order_items(*)')
+            .eq('customer_id', customerId)
+            .order('created_at', { ascending: false });
+        orders = data;
+    } else {
+        const { data } = await supabase
+            .from('orders')
+            .select('*, items:order_items(*)')
+            .eq('email', user.email)
+            .order('created_at', { ascending: false });
+        orders = data;
+    }
 
     return (
         <div className="max-w-5xl mx-auto">

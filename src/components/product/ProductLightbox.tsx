@@ -9,6 +9,7 @@
 'use client';
 
 import React, { useState, useCallback, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { cn } from '@/lib/utils';
 import { X, ChevronLeft, ChevronRight, ZoomIn, ZoomOut } from 'lucide-react';
 
@@ -35,6 +36,11 @@ export function ProductLightbox({
   const panStart = useRef({ x: 0, y: 0 });
   const lastTouchDistance = useRef<number | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   // Reset zoom when changing images
   useEffect(() => {
@@ -193,15 +199,15 @@ export function ProductLightbox({
     setCurrentIndex(prev => (prev - 1 + images.length) % images.length);
   }, [images.length]);
 
-  return (
-    <>
-      {isOpen && (
-        <div
-          className="fixed inset-0 z-[100] bg-black flex flex-col animate-in fade-in duration-200"
-        >
-          {/* Top bar */}
-          <div className="absolute top-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-4 bg-gradient-to-b from-black/90 via-black/50 to-transparent">
-            <span className="text-white text-sm font-semibold tracking-wider uppercase">
+  if (!isMounted || !isOpen) return null;
+
+  return createPortal(
+    <div
+      className="fixed inset-0 z-[100] bg-black flex flex-col animate-in fade-in duration-200"
+    >
+      {/* Top bar */}
+      <div className="absolute top-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-4 bg-gradient-to-b from-black/90 via-black/50 to-transparent">
+        <span className="text-white text-sm font-semibold tracking-wider uppercase">
               {currentIndex + 1} / {images.length}
             </span>
             <div className="flex items-center gap-4">
@@ -319,8 +325,7 @@ export function ProductLightbox({
               Pinch or Scroll to zoom · Arrows to navigate
             </div>
           )}
-        </div>
-      )}
-    </>
+        </div>,
+    document.body
   );
 }

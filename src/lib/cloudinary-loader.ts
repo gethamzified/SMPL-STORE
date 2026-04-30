@@ -20,16 +20,16 @@ const CLOUD_NAME = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || 'ddk9lonhp';
  * Build a clean Cloudinary transformation string
  */
 function buildTransforms(width: number, quality?: number, gravity?: string): string {
+  // Place gravity next to the crop mode so Cloudinary applies it when
+  // performing a crop (e.g. c_fill,g_auto,w_800,...). Order can affect
+  // how transforms are interpreted by the service.
   const transforms = [
-    `w_${width}`,
     gravity ? 'c_fill' : 'c_limit', // Use fill if gravity is specified, otherwise limit
+    gravity ? `g_${gravity}` : undefined,
+    `w_${width}`,
     `q_${quality || 'auto'}`,
-    'f_auto',         // AVIF/WebP auto-negotiation
-  ];
-
-  if (gravity) {
-    transforms.push(`g_${gravity}`);
-  }
+    'f_auto', // AVIF/WebP auto-negotiation
+  ].filter(Boolean) as string[];
 
   return transforms.join(',');
 }

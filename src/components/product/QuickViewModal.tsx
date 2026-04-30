@@ -77,6 +77,7 @@ export function QuickViewModal({ product, isOpen, onClose }: QuickViewModalProps
                             fill
                             className="object-cover object-center"
                             sizes="(max-width: 768px) 100vw, 50vw"
+                            quality={75}
                             priority
                         />
                     ) : (

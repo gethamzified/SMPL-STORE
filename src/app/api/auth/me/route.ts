@@ -32,7 +32,23 @@ export async function GET(request: NextRequest) {
             return response;
         }
 
-        return NextResponse.json({ user });
+        // Fetch customer profile
+        const { data: customer } = await supabase
+            .from('customers')
+            .select('*')
+            .eq('user_id', userId)
+            .single();
+
+        const enrichedUser = {
+            ...user,
+            customer_id: customer?.id,
+            first_name: customer?.first_name || null,
+            last_name: customer?.last_name || null,
+            phone: customer?.phone || user.phone || null,
+            customer_data: customer || null
+        };
+
+        return NextResponse.json({ user: enrichedUser });
     } catch (error) {
         // Invalid or expired token
         const response = NextResponse.json({ user: null }, { status: 200 });

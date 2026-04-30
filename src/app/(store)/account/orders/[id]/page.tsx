@@ -116,6 +116,7 @@ export default async function OrderDetailPage({ params }: Props) {
                                             fill
                                             className="object-cover"
                                             sizes="80px"
+                                            quality={75}
                                         />
                                     ) : (
                                         <div className="w-full h-full flex items-center justify-center text-neutral-300">

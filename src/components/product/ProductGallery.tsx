@@ -15,9 +15,27 @@ interface ProductGalleryProps {
     blurDataUrls?: Record<string, string>;
 }
 
-// Helper to construct Next.js optimized URL
+// Helper to construct a Cloudinary-optimized preload URL
+// (Bypasses /_next/image which doesn't work with custom loaders)
+const CLOUD_NAME = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || 'ddk9lonhp';
 const getOptimizedUrl = (src: string, width: number, quality: number) => {
-    return `/_next/image?url=${encodeURIComponent(src)}&w=${width}&q=${quality}`;
+    const transforms = `w_${width},c_limit,q_${quality},f_auto`;
+    // Cloudinary upload URLs — strip existing transforms & re-apply
+    if (src.includes('res.cloudinary.com') && src.includes('/upload/')) {
+        const [base, rest] = src.split('/upload/');
+        const segments = rest.split('/');
+        let firstNonTransformIndex = 0;
+        for (let i = 0; i < segments.length; i++) {
+            const seg = segments[i];
+            const isVersionString = /^v\d+$/.test(seg);
+            const isTransform = !isVersionString && (seg.includes(',') || /^[a-z]{1,2}_/.test(seg));
+            if (!isTransform) { firstNonTransformIndex = i; break; }
+        }
+        const path = segments.slice(firstNonTransformIndex).join('/');
+        return `${base}/upload/${transforms}/${path}`;
+    }
+    // External URLs — route through Cloudinary Fetch API
+    return `https://res.cloudinary.com/${CLOUD_NAME}/image/fetch/${transforms}/${encodeURI(src)}`;
 };
 
 export default function ProductGallery({ images, title, blurDataUrl, blurDataUrls }: ProductGalleryProps) {
@@ -78,7 +96,7 @@ export default function ProductGallery({ images, title, blurDataUrl, blurDataUrl
 
     return (
         <>
-            <div className="flex flex-col-reverse md:flex-row gap-4 h-fit sticky top-24">
+            <div className="flex flex-col-reverse md:flex-row gap-4 h-fit sticky top-28 md:top-32">
                 {/* Desktop Thumbnails (Left Side) */}
                 <div className="hidden md:flex flex-col gap-4 w-20 lg:w-24 shrink-0 max-h-[70vh] overflow-y-auto no-scrollbar">
                     {images.map((img, idx) => (
@@ -107,7 +125,7 @@ export default function ProductGallery({ images, title, blurDataUrl, blurDataUrl
                 </div>
 
                 {/* Main Image Area */}
-                <div className="relative w-full aspect-[3/4] md:aspect-[3/4] lg:aspect-[4/5] bg-[#F1F1F1] overflow-hidden group">
+                <div className="relative w-full aspect-[3/4] md:aspect-[3/4] lg:aspect-[4/5] bg-white overflow-hidden group">
 
                     {/* Mobile Carousel View */}
                     <div className="md:hidden h-full" ref={emblaRef}>
@@ -158,7 +176,6 @@ export default function ProductGallery({ images, title, blurDataUrl, blurDataUrl
                                     // 3. All other images "lazy" to save bandwidth for initial load.
                                     priority={idx === 0}
                                     loading={idx === 0 ? undefined : (idx === selectedIndex ? "eager" : "lazy")}
-                                    zoomScale={2.5}
                                     className="w-full h-full"
                                     onClick={() => setLightboxOpen(true)}
                                 />

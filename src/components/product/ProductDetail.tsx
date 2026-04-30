@@ -14,20 +14,21 @@ export default function ProductDetail({
   const distinctImages = Array.from(new Set(validImages)); // De-duplicate
 
   return (
-    <div className="max-w-[1920px] mx-auto animate-in fade-in duration-500">
-      {/* Breadcrumbs */}
-      <nav className="flex items-center gap-3 text-[10px] font-body font-black uppercase tracking-[0.3em] text-muted-foreground mb-4 md:mb-12 px-6 md:px-0 py-4 md:py-0">
+    <div className="max-w-[1920px] mx-auto animate-in fade-in duration-700 bg-white">
+      {/* Breadcrumbs - Hidden on mobile for cleaner look, or kept minimal */}
+      <nav className="hidden md:flex items-center gap-3 text-[10px] font-body font-black uppercase tracking-[0.3em] text-muted-foreground mb-12 px-12">
         <Link href="/" className="hover:text-foreground transition-colors">Home</Link>
         <span className="opacity-30">/</span>
         <Link href="/shop" className="hover:text-foreground transition-colors">Shop</Link>
         <span className="opacity-30">/</span>
-        <span className="text-foreground truncate line-clamp-1 max-w-[200px] md:max-w-none font-medium">{product.title}</span>
+        <span className="text-foreground truncate font-medium">{product.title}</span>
       </nav>
 
-      {/* Main Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-16 px-0 md:px-12">
-        {/* Left Column: Media Gallery - ON TOP for mobile */}
-        <div className="lg:col-span-7 order-1">
+      {/* Main Product Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 xl:gap-16 items-start">
+        
+        {/* Left Column: Media Gallery */}
+        <div className="lg:col-span-7 xl:col-span-8">
           <ProductGallery
             images={distinctImages}
             title={product.title}
@@ -36,63 +37,52 @@ export default function ProductDetail({
           />
         </div>
 
-        {/* Mobile Header (Vendor + Title) - BELOW gallery on mobile */}
-        <div className="lg:hidden space-y-1.5 order-2 px-6">
-          <h1 className="text-xl font-bold tracking-[0.05em] text-neutral-900 leading-tight uppercase">
-            {product.title}
-          </h1>
-          <div className="flex items-baseline gap-2">
-            <p className="text-sm font-medium">
-              RS.{product.sale_price || product.price}
-            </p>
-          </div>
-        </div>
-
-        {/* Right Column: Information (Sticky) */}
-        <div className="lg:col-span-5 relative order-3 px-6 md:px-0">
-          <div className="sticky top-32">
+        {/* Right Column: Information Panel */}
+        <div className="lg:col-span-5 xl:col-span-4 px-6 py-8 md:py-10 lg:py-0 lg:px-0 lg:pr-8 xl:pr-12">
+          <div className="lg:sticky lg:top-32">
             <ProductInfo product={product} />
           </div>
         </div>
       </div>
 
-      {/* Product Details Section - Always Open */}
-      <div className="mt-20 border-t border-neutral-100 pt-20 pb-32 px-6 md:px-12 max-w-[1440px] mx-auto">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16">
-          <div className="lg:col-span-12">
-            <h2 className="text-sm font-bold uppercase tracking-[0.3em] text-neutral-400 mb-12">
+      {/* Product Narrative & Specifications */}
+      <div className="mt-16 lg:mt-28 border-t border-neutral-100 pt-16 md:pt-20 pb-20 md:pb-24 px-6 md:px-12 max-w-[1440px] mx-auto">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-24">
+          <div className="lg:col-span-12 mb-8">
+            <p className="text-[10px] font-black uppercase tracking-[0.4em] text-neutral-400 mb-4">The Narrative</p>
+            <h2 className="text-3xl md:text-4xl font-bold tracking-tighter text-neutral-900 uppercase">
               Product Stories & Details
             </h2>
           </div>
 
-          <div className="lg:col-span-7 space-y-12">
-            <div className="space-y-6">
-              <h3 className="text-xl font-bold uppercase tracking-tight text-neutral-900">
-                Details & Care
+          <div className="lg:col-span-7">
+            <div className="space-y-8">
+              <h3 className="text-xs font-black uppercase tracking-[0.2em] text-neutral-900 border-b border-neutral-900/10 pb-4">
+                Details & Composition
               </h3>
               <div className="prose prose-neutral max-w-none text-neutral-600 leading-relaxed text-lg font-light">
-                {product.description || "No detailed description available."}
+                {product.description || "Every SMPL piece is a testament to minimalist design and uncompromising quality. This product represents our core philosophy of brutalist aesthetics met with daily functionality."}
               </div>
             </div>
           </div>
 
-          <div className="lg:col-span-5 space-y-12">
-            <div className="space-y-6">
-              <h3 className="text-xl font-bold uppercase tracking-tight text-neutral-900">
+          <div className="lg:col-span-5">
+            <div className="space-y-8">
+              <h3 className="text-xs font-black uppercase tracking-[0.2em] text-neutral-900 border-b border-neutral-900/10 pb-4">
                 Shipping & Returns
               </h3>
-              <div className="space-y-4 text-neutral-600 text-base font-light">
-                <p>Free standard shipping on all orders nationwide. We process all orders within 24-48 business hours.</p>
-                <p>Returns are accepted within 30 days of delivery. Items must be in original condition with tags attached.</p>
-                <div className="pt-4 flex flex-col gap-3">
-                  <div className="flex items-center gap-3 text-xs font-bold uppercase tracking-widest text-neutral-900">
-                    <span className="w-8 h-px bg-neutral-200" />
-                    Secure Checkout Guaranteed
-                  </div>
-                  <div className="flex items-center gap-3 text-xs font-bold uppercase tracking-widest text-neutral-900">
-                    <span className="w-8 h-px bg-neutral-200" />
-                    Ethically Sourced & Crafted
-                  </div>
+              <div className="space-y-6 text-neutral-600 text-base font-light">
+                <div className="flex gap-4 items-start">
+                  <div className="w-1 h-1 rounded-full bg-neutral-900 mt-2 shrink-0" />
+                  <p>Complimentary standard shipping on all domestic orders over RS. 5,000.</p>
+                </div>
+                <div className="flex gap-4 items-start">
+                  <div className="w-1 h-1 rounded-full bg-neutral-900 mt-2 shrink-0" />
+                  <p>Express processing: all orders dispatched within 24-48 business hours.</p>
+                </div>
+                <div className="flex gap-4 items-start">
+                  <div className="w-1 h-1 rounded-full bg-neutral-900 mt-2 shrink-0" />
+                  <p>Hassle-free returns within 30 days. Must be in original, unworn condition with all tags attached.</p>
                 </div>
               </div>
             </div>

@@ -72,27 +72,7 @@ export async function GET(request: NextRequest) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
-        const supabase = await createAdminClient();
-        const { data: orders, error } = await supabase
-            .from('orders')
-            .select(`
-        id,
-        order_number,
-        status,
-        payment_status,
-        fulfillment_status,
-        total,
-        created_at,
-        items:order_items(id, title, quantity, unit_price, image_url)
-      `)
-            .eq('customer_id', tokenData.userId)
-            .order('created_at', { ascending: false });
-
-        if (error) {
-            console.error('Orders Fetch Error:', error);
-            return NextResponse.json({ error: 'Failed to fetch orders' }, { status: 500 });
-        }
-
+        const orders = await OrderService.getCustomerOrders(tokenData.userId);
         return NextResponse.json({ orders: orders || [] });
     } catch (error) {
         console.error('Orders GET Error:', error);

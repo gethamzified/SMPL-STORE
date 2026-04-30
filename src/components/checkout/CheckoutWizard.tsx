@@ -75,7 +75,7 @@ export default function CheckoutWizard({ user: initialUser, customer, savedAddre
             last_name: savedAddress?.last_name || customer?.last_name || "",
             address1: savedAddress?.address1 || "",
             city: savedAddress?.city || "",
-            zip: savedAddress?.postal_code || "",
+            zip: savedAddress?.zip || customer?.zip || "",
             country: "Pakistan",
             country_code: "PK",
             phone: customer?.phone || savedAddress?.phone || "",
@@ -246,7 +246,7 @@ export default function CheckoutWizard({ user: initialUser, customer, savedAddre
 
     if (items.length === 0) {
         return (
-            <div className="pt-10 md:pt-14 pb-20 px-6 md:px-12 flex flex-col items-center justify-center min-h-[60vh]">
+            <div className="pt-24 md:pt-28 pb-16 md:pb-20 px-6 md:px-12 flex flex-col items-center justify-center min-h-[60vh]">
                 <h1 className="text-3xl font-display mb-4">Your cart is empty</h1>
                 <Button asChild variant="outline"><Link href="/shop">Continue Shopping</Link></Button>
             </div>
@@ -254,7 +254,7 @@ export default function CheckoutWizard({ user: initialUser, customer, savedAddre
     }
 
     return (
-        <div className="pt-10 md:pt-14 pb-20 px-6 md:px-12 max-w-7xl mx-auto">
+        <div className="pt-24 md:pt-28 pb-16 md:pb-20 px-6 md:px-12 max-w-7xl mx-auto">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24">
 
                 {/* LEFT: WIZARD */}
@@ -268,23 +268,23 @@ export default function CheckoutWizard({ user: initialUser, customer, savedAddre
                         <span className={step === 'payment' ? "text-black" : ""}>Payment</span>
                     </div>
 
-                    <h1 className="text-4xl font-display mb-8">Checkout</h1>
+                    <h1 className="text-5xl font-display font-black tracking-tighter uppercase mb-8 text-red-600">CHECKOUT</h1>
 
                     {/* 1. EMAIL */}
                     {step === 'email' && (
                         <div key="email" className="animate-in fade-in slide-in-from-right-8 duration-500">
-                            <div className="p-8 border border-black/10 bg-white shadow-sm">
-                                <h2 className="text-sm font-semibold tracking-[0.2em] uppercase mb-8 border-b border-black/5 pb-4">Contact</h2>
+                            <div className="p-8 border-2 border-black bg-white shadow-[8px_8px_0px_0px_rgba(220,38,38,1)]">
+                                <h2 className="text-xl font-display font-black tracking-tighter uppercase mb-8 border-b-2 border-black pb-4 text-red-600">CONTACT</h2>
                                 <form onSubmit={handleSendOTP} className="space-y-6">
                                     <div className="space-y-2">
                                         <Label htmlFor="email" className="text-[10px] tracking-[0.1em] uppercase text-neutral-500">Email</Label>
                                         <Input
                                             id="email" type="email" required
                                             value={email} onChange={(e) => setEmail(e.target.value)}
-                                            className="rounded-none border-black/20 focus:border-black h-12 uppercase text-xs tracking-widest"
+                                            className="rounded-none border-2 border-black focus:border-red-600 focus:ring-0 h-12 font-bold uppercase text-xs tracking-widest bg-white"
                                         />
                                     </div>
-                                    <Button type="submit" variant="cta" size="xl" className="w-full text-xs" disabled={isProcessing}>
+                                    <Button type="submit" variant="cta" size="xl" className="w-full bg-red-600 text-white hover:bg-black border-2 border-black rounded-none uppercase font-black tracking-widest text-sm transition-all" disabled={isProcessing}>
                                         {isProcessing ? <Loader2 className="animate-spin w-4 h-4" /> : "CONTINUE"}
                                     </Button>
                                 </form>
@@ -295,16 +295,16 @@ export default function CheckoutWizard({ user: initialUser, customer, savedAddre
                     {/* 2. OTP */}
                     {step === 'otp' && (
                         <div key="otp" className="animate-in fade-in slide-in-from-right-8 duration-500">
-                            <div className="p-8 border border-black/10 bg-white shadow-sm">
-                                <h2 className="text-sm font-semibold tracking-[0.2em] uppercase mb-8 border-b border-black/5 pb-4">Verify</h2>
-                                <p className="text-xs text-neutral-500 mb-8">Code sent to <b>{email}</b></p>
+                            <div className="p-8 border-2 border-black bg-white shadow-[8px_8px_0px_0px_rgba(220,38,38,1)]">
+                                <h2 className="text-xl font-display font-black tracking-tighter uppercase mb-8 border-b-2 border-black pb-4 text-red-600">VERIFY</h2>
+                                <p className="text-xs font-bold text-black uppercase tracking-widest mb-8">CODE SENT TO <span className="text-red-600">{email}</span></p>
                                 <form onSubmit={handleVerifyOTP} className="space-y-6">
                                     <Input
                                         value={otp} onChange={(e) => setOtp(e.target.value)}
-                                        className="text-center tracking-[0.8em] text-xl font-mono h-14 rounded-none border-black/20"
+                                        className="text-center tracking-[0.8em] text-2xl font-black h-16 rounded-none border-2 border-black focus:border-red-600 focus:ring-0 bg-white"
                                         placeholder="••••••" maxLength={6}
                                     />
-                                    <Button type="submit" variant="cta" size="xl" className="w-full text-xs" disabled={isProcessing}>
+                                    <Button type="submit" variant="cta" size="xl" className="w-full bg-red-600 text-white hover:bg-black border-2 border-black rounded-none uppercase font-black tracking-widest text-sm transition-all" disabled={isProcessing}>
                                         {isProcessing ? <Loader2 className="animate-spin w-4 h-4" /> : "VERIFY"}
                                     </Button>
                                 </form>
@@ -314,50 +314,51 @@ export default function CheckoutWizard({ user: initialUser, customer, savedAddre
 
                     {/* 3. ADDRESS */}
                     {step === 'address' && (
-                        <div key="address" className="animate-in fade-in slide-in-from-right-8 duration-500">
+                        <div key="address" className="animate-in fade-in slide-in-from-right-8 duration-500 p-8 border-2 border-black bg-white shadow-[8px_8px_0px_0px_rgba(220,38,38,1)]">
+                            <h2 className="text-xl font-display font-black tracking-tighter uppercase mb-8 border-b-2 border-black pb-4 text-red-600">ADDRESS</h2>
                             {activeUser && (
-                                <div className="flex items-center gap-3 text-[10px] tracking-[0.2em] uppercase text-neutral-600 bg-neutral-100 p-4 border border-black/5 mb-8">
-                                    <CheckCircle className="w-4 h-4" />
-                                    <span>Logged in as {activeUser.email}</span>
+                                <div className="flex items-center gap-3 text-[10px] font-bold tracking-widest uppercase text-black bg-white p-4 border-2 border-black mb-8">
+                                    <CheckCircle className="w-4 h-4 text-red-600" />
+                                    <span>LOGGED IN AS <span className="text-red-600">{activeUser.email}</span></span>
                                 </div>
                             )}
                             <form onSubmit={form.handleSubmit(onAddressSubmit)} className="space-y-6">
                                 <div className="grid grid-cols-2 gap-6">
                                     <div className="col-span-2 md:col-span-1 space-y-2">
                                         <Label className="text-[10px] uppercase text-neutral-500">First Name</Label>
-                                        <Input {...form.register("first_name")} className="rounded-none h-12 text-xs border-black/20" />
-                                        {form.formState.errors.first_name && <p className="text-xs text-red-500">{form.formState.errors.first_name.message}</p>}
+                                        <Input {...form.register("first_name")} className="rounded-none border-2 border-black focus:border-red-600 focus:ring-0 h-12 font-bold uppercase text-xs tracking-widest bg-white" />
+                                        {form.formState.errors.first_name && <p className="text-[10px] font-bold uppercase tracking-widest text-red-600">{form.formState.errors.first_name.message}</p>}
                                     </div>
                                     <div className="col-span-2 md:col-span-1 space-y-2">
-                                        <Label className="text-[10px] uppercase text-neutral-500">Last Name</Label>
-                                        <Input {...form.register("last_name")} className="rounded-none h-12 text-xs border-black/20" />
-                                        {form.formState.errors.last_name && <p className="text-xs text-red-500">{form.formState.errors.last_name.message}</p>}
+                                        <Label className="text-[10px] font-bold uppercase tracking-widest text-black">Last Name</Label>
+                                        <Input {...form.register("last_name")} className="rounded-none border-2 border-black focus:border-red-600 focus:ring-0 h-12 font-bold uppercase text-xs tracking-widest bg-white" />
+                                        {form.formState.errors.last_name && <p className="text-[10px] font-bold uppercase tracking-widest text-red-600">{form.formState.errors.last_name.message}</p>}
                                     </div>
                                 </div>
                                 <div className="space-y-2">
-                                    <Label className="text-[10px] uppercase text-neutral-500">Address</Label>
-                                    <Input {...form.register("address1")} className="rounded-none h-12 text-xs border-black/20" placeholder="Street address" />
-                                    {form.formState.errors.address1 && <p className="text-xs text-red-500">{form.formState.errors.address1.message}</p>}
+                                    <Label className="text-[10px] font-bold uppercase tracking-widest text-black">Address</Label>
+                                    <Input {...form.register("address1")} className="rounded-none border-2 border-black focus:border-red-600 focus:ring-0 h-12 font-bold uppercase text-xs tracking-widest bg-white" placeholder="STREET ADDRESS" />
+                                    {form.formState.errors.address1 && <p className="text-[10px] font-bold uppercase tracking-widest text-red-600">{form.formState.errors.address1.message}</p>}
                                 </div>
                                 <div className="grid grid-cols-2 gap-6">
                                     <div className="space-y-2">
-                                        <Label className="text-[10px] uppercase text-neutral-500">City</Label>
-                                        <Input {...form.register("city")} className="rounded-none h-12 text-xs border-black/20" />
-                                        {form.formState.errors.city && <p className="text-xs text-red-500">{form.formState.errors.city.message}</p>}
+                                        <Label className="text-[10px] font-bold uppercase tracking-widest text-black">City</Label>
+                                        <Input {...form.register("city")} className="rounded-none border-2 border-black focus:border-red-600 focus:ring-0 h-12 font-bold uppercase text-xs tracking-widest bg-white" />
+                                        {form.formState.errors.city && <p className="text-[10px] font-bold uppercase tracking-widest text-red-600">{form.formState.errors.city.message}</p>}
                                     </div>
                                     <div className="space-y-2">
-                                        <Label className="text-[10px] uppercase text-neutral-500">Postal Code</Label>
-                                        <Input {...form.register("zip")} className="rounded-none h-12 text-xs border-black/20" />
-                                        {form.formState.errors.zip && <p className="text-xs text-red-500">{form.formState.errors.zip.message}</p>}
+                                        <Label className="text-[10px] font-bold uppercase tracking-widest text-black">Postal Code</Label>
+                                        <Input {...form.register("zip")} className="rounded-none border-2 border-black focus:border-red-600 focus:ring-0 h-12 font-bold uppercase text-xs tracking-widest bg-white" />
+                                        {form.formState.errors.zip && <p className="text-[10px] font-bold uppercase tracking-widest text-red-600">{form.formState.errors.zip.message}</p>}
                                     </div>
                                 </div>
                                 <div className="space-y-2">
-                                    <Label className="text-[10px] uppercase text-neutral-500">Phone</Label>
-                                    <Input {...form.register("phone")} className="rounded-none h-12 text-xs border-black/20" placeholder="+92..." />
+                                    <Label className="text-[10px] font-bold uppercase tracking-widest text-black">Phone</Label>
+                                    <Input {...form.register("phone")} className="rounded-none border-2 border-black focus:border-red-600 focus:ring-0 h-12 font-bold uppercase text-xs tracking-widest bg-white" placeholder="+92..." />
                                     {form.formState.errors.phone && <p className="text-xs text-red-500">{form.formState.errors.phone.message}</p>}
                                 </div>
 
-                                <Button type="submit" variant="cta" size="xl" className="w-full text-xs">CONTINUE TO SHIPPING</Button>
+                                <Button type="submit" variant="cta" size="xl" className="w-full bg-red-600 text-white hover:bg-black border-2 border-black rounded-none uppercase font-black tracking-widest text-sm transition-all mt-6">CONTINUE TO SHIPPING</Button>
                             </form>
                         </div>
                     )}
@@ -366,10 +367,10 @@ export default function CheckoutWizard({ user: initialUser, customer, savedAddre
                     {step === 'shipping' && (
                         <div key="shipping" className="animate-in fade-in slide-in-from-right-8 duration-500">
                             <div className="space-y-8">
-                                <div className="border border-black/5 p-4 text-xs space-y-2 bg-neutral-50/50">
-                                    <div className="flex justify-between border-b border-black/5 pb-2">
-                                        <span className="text-neutral-500">Contact</span>
-                                        <span>{email || shippingAddress?.email}</span>
+                                <div className="border-2 border-black p-4 text-xs space-y-2 bg-white font-bold uppercase tracking-widest">
+                                    <div className="flex justify-between border-b-2 border-black pb-2">
+                                        <span className="text-black">CONTACT</span>
+                                        <span className="text-red-600">{email || shippingAddress?.email}</span>
                                     </div>
                                     <div className="flex justify-between border-b border-black/5 pb-2">
                                         <span className="text-neutral-500">Ship to</span>
@@ -388,10 +389,10 @@ export default function CheckoutWizard({ user: initialUser, customer, savedAddre
                                 />
 
                                 <div className="flex gap-4">
-                                    <Button variant="outline" className="flex-1" onClick={() => setStep('address')}>
-                                        <ArrowLeft className="w-4 h-4 mr-2" /> Back
+                                    <Button variant="outline" className="flex-1 rounded-none border-2 border-black font-bold uppercase tracking-widest hover:bg-black hover:text-white transition-all" onClick={() => setStep('address')}>
+                                        <ArrowLeft className="w-4 h-4 mr-2" /> BACK
                                     </Button>
-                                    <Button variant="cta" className="flex-[2]" onClick={() => setStep('payment')}>
+                                    <Button variant="cta" className="flex-[2] bg-red-600 text-white hover:bg-black border-2 border-black rounded-none uppercase font-black tracking-widest text-sm transition-all" onClick={() => setStep('payment')}>
                                         CONTINUE TO PAYMENT
                                     </Button>
                                 </div>
@@ -413,13 +414,13 @@ export default function CheckoutWizard({ user: initialUser, customer, savedAddre
                                 />
 
                                 <div className="flex gap-4">
-                                    <Button variant="outline" className="flex-1" onClick={() => setStep('shipping')} disabled={isProcessing}>
-                                        <ArrowLeft className="w-4 h-4 mr-2" /> Back
+                                    <Button variant="outline" className="flex-1 rounded-none border-2 border-black font-bold uppercase tracking-widest hover:bg-black hover:text-white transition-all" onClick={() => setStep('shipping')} disabled={isProcessing}>
+                                        <ArrowLeft className="w-4 h-4 mr-2" /> BACK
                                     </Button>
                                     <Button
                                         variant="cta"
                                         size="xl"
-                                        className="flex-[2] text-xs"
+                                        className="flex-[2] bg-red-600 text-white hover:bg-black border-2 border-black rounded-none uppercase font-black tracking-widest text-sm transition-all"
                                         onClick={handlePlaceOrder}
                                         disabled={isProcessing || (paymentMethod !== 'COD' && !proofFile)}
                                     >
@@ -432,44 +433,44 @@ export default function CheckoutWizard({ user: initialUser, customer, savedAddre
                 </div>
 
                 {/* RIGHT: SUMMARY */}
-                <div className="bg-neutral-50 p-8 h-fit sticky top-32 border border-neutral-100 hidden lg:block">
-                    <h2 className="text-xl font-body font-black uppercase tracking-widest mb-6 border-b border-black/5 pb-4">Order Summary</h2>
+                <div className="bg-white p-8 h-fit sticky top-32 border-2 border-black shadow-[8px_8px_0px_0px_rgba(220,38,38,1)] hidden lg:block">
+                    <h2 className="text-3xl font-display font-black uppercase tracking-tighter mb-6 border-b-2 border-black pb-4 text-red-600">ORDER SUMMARY</h2>
                     <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
                         {items.map((item) => (
-                            <div key={`${item.id}-${item.size}`} className="flex gap-4">
-                                <div className="relative w-14 h-16 bg-white border border-neutral-200">
-                                    {item.image && <Image src={item.image} alt={item.name} fill className="object-cover" quality={80} sizes="56px" />}
-                                    <span className="absolute -top-2 -right-2 bg-black text-white text-[10px] w-5 h-5 flex items-center justify-center rounded-full">
+                            <div key={`${item.id}-${item.size}`} className="flex gap-4 items-center">
+                                <div className="relative w-16 h-20 bg-white border-2 border-black shrink-0">
+                                    {item.image && <Image src={item.image} alt={item.name} fill className="object-cover" quality={80} sizes="64px" />}
+                                    <span className="absolute -top-3 -right-3 bg-red-600 text-white text-[11px] font-black w-6 h-6 flex items-center justify-center rounded-none border-2 border-black">
                                         {item.quantity}
                                     </span>
                                 </div>
                                 <div className="flex-1">
-                                    <h3 className="font-bold text-[11px] uppercase tracking-wide">{item.name}</h3>
-                                    <p className="text-[10px] text-neutral-500">{item.size}</p>
+                                    <h3 className="font-display font-black text-sm uppercase tracking-tighter leading-none">{item.name}</h3>
+                                    <p className="text-[10px] font-bold text-red-600 uppercase tracking-widest mt-1">SIZE: {item.size}</p>
                                 </div>
-                                <p className="text-xs font-bold">{formatCurrency(item.price * item.quantity)}</p>
+                                <p className="text-lg font-display font-black tracking-tighter">{formatCurrency(item.price * item.quantity)}</p>
                             </div>
                         ))}
                     </div>
-                    <Separator className="my-6 bg-black/5" />
-                    <div className="space-y-2 text-xs uppercase tracking-wide">
-                        <div className="flex justify-between text-neutral-500">
-                            <span>Subtotal</span>
-                            <span>{formatCurrency(cartTotal)}</span>
+                    <Separator className="my-6 bg-black border-black border-b-2" />
+                    <div className="space-y-2 text-[10px] font-bold uppercase tracking-widest">
+                        <div className="flex justify-between text-black">
+                            <span>SUBTOTAL</span>
+                            <span className="text-red-600">{formatCurrency(cartTotal)}</span>
                         </div>
-                        <div className="flex justify-between text-neutral-500">
-                            <span>Shipping</span>
-                            <span className={shippingCost === 0 ? "text-green-600 font-medium" : ""}>
+                        <div className="flex justify-between text-black">
+                            <span>SHIPPING</span>
+                            <span className={shippingCost === 0 ? "text-red-600 font-black" : "text-red-600"}>
                                 {step === 'shipping' || step === 'payment'
                                     ? (shippingCost === 0 ? "FREE" : formatCurrency(shippingCost))
-                                    : "Calculated next step"}
+                                    : "CALCULATED NEXT STEP"}
                             </span>
                         </div>
                     </div>
-                    <Separator className="my-6 bg-black/10" />
-                    <div className="flex justify-between items-center text-lg font-bold">
-                        <span>Total</span>
-                        <span>{formatCurrency(step === 'shipping' || step === 'payment' ? finalTotal : cartTotal)}</span>
+                    <Separator className="my-6 bg-black border-black border-b-2" />
+                    <div className="flex justify-between items-center font-display font-black text-3xl tracking-tighter">
+                        <span>TOTAL</span>
+                        <span className="text-red-600">{formatCurrency(step === 'shipping' || step === 'payment' ? finalTotal : cartTotal)}</span>
                     </div>
                 </div>
 

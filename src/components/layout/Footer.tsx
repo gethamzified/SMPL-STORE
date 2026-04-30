@@ -6,6 +6,8 @@ import { FooterConfig, SocialConfig } from "@/lib/types";
 import { ScrollToTopButton } from "./ScrollToTopButton";
 import { NewsletterForm } from "./NewsletterForm";
 import { useState } from "react";
+import { usePathname } from "next/navigation";
+import { cn } from "@/lib/utils";
 
 interface FooterProps {
   config?: FooterConfig;
@@ -65,6 +67,8 @@ const Footer = ({
   social = {}
 }: FooterProps) => {
   const currentYear = new Date().getFullYear();
+  const pathname = usePathname();
+  const isHome = pathname === "/" || pathname === "" || pathname === "/index";
 
   const fallbackColumns: FooterConfig['columns'] = [
     {
@@ -123,7 +127,12 @@ const Footer = ({
   const displaySocialLinks = socialLinks.length > 0 ? socialLinks : defaultSocialLinks;
 
   return (
-    <footer className="bg-black/10 backdrop-blur-sm text-black font-sans border-t border-black/5 relative z-10 w-full overflow-hidden">
+    <footer className={cn(
+      "relative z-10 w-full overflow-hidden font-sans border-t transition-colors duration-300",
+      isHome 
+        ? "bg-black/10 backdrop-blur-sm text-black border-black/5" 
+        : "bg-white text-black border-black"
+    )}>
       <div className="max-w-[1920px] mx-auto px-6 py-12 lg:py-20">
         <div className="flex flex-col lg:flex-row justify-between gap-12 lg:gap-8">
 
@@ -138,7 +147,7 @@ const Footer = ({
               </p>
             </div>
 
-            <div className="mt-2 text-white">
+            <div className="mt-2 text-black">
               <h3 className="text-xs font-semibold tracking-widest uppercase mb-4">
                 Join our newsletter
               </h3>
