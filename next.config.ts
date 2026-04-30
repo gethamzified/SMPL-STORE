@@ -30,6 +30,8 @@ const nextConfig: NextConfig = {
 
   // Image optimization config
   images: {
+    loader: 'custom',
+    loaderFile: './src/lib/cloudinary-loader.ts',
     remotePatterns: [
       {
         protocol: 'https',
@@ -60,8 +62,6 @@ const nextConfig: NextConfig = {
     imageSizes: [128, 256, 384, 512, 640],
     // Cache optimized images for 1 year
     minimumCacheTTL: 31536000,
-    // Explicitly allow qualities used in the app
-    qualities: [75, 80],
   },
 
 

@@ -67,7 +67,7 @@ const Navbar = ({ brandName = "SMPL", navItems }: { brandName?: string; navItems
         <div className="flex-1 flex justify-center">
           <Link href="/" className="h-10 flex items-center justify-center cursor-pointer transition-transform active:scale-95">
             <Image
-              src="/SMPL.svg"
+              src="/SMPL_LOGO.svg"
               alt="SMPL Logo"
               width={120}
               height={40}
