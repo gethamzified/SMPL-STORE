@@ -53,7 +53,7 @@ function normalizeProductPayload(data: ProductInput) {
         allow_backorder: data.allow_backorder ?? false,
         weight: data.weight ?? null,
         weight_unit: data.weight_unit ?? 'kg',
-        category_id: data.category_id ?? null,
+        weight_unit: data.weight_unit ?? 'kg',
         tags,
         vendor: data.vendor ?? null,
         product_type: data.product_type ?? null,
@@ -74,7 +74,6 @@ function normalizeProductPayload(data: ProductInput) {
 
 const fetchProducts = async (options?: {
     status?: 'active' | 'draft' | 'archived';
-    categoryId?: string;
     featured?: boolean;
     limit?: number;
     offset?: number;
@@ -95,7 +94,6 @@ const fetchProducts = async (options?: {
     let query = supabase.from('products').select('*', { count: 'exact' });
 
     if (options?.status) query = query.eq('status', options.status);
-    if (options?.categoryId) query = query.eq('category_id', options.categoryId);
     if (options?.featured !== undefined) query = query.eq('is_featured', options.featured);
     if (options?.search) {
         const sanitized = options.search.replace(/[%_\\]/g, '\\$&');
@@ -138,7 +136,6 @@ const fetchProductBySlug = async (slug: string) => {
         .from('products')
         .select(`
             *,
-            collection:collections(id, title, slug),
             variants:product_variants(*),
             options:product_options(*)
         `)

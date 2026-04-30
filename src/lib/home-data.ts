@@ -1,7 +1,5 @@
 import {
     getLatestPosts,
-    getFeaturedCollections,
-    getCollectionsWithProducts,
     getFeaturedProducts
 } from "@/lib/theme";
 
@@ -12,7 +10,6 @@ import {
     SocialConfig,
     BenefitsConfig,
     FooterConfig,
-    Collection,
     Product,
     HomepageSection
 } from "@/lib/types";
@@ -26,7 +23,6 @@ export async function getHomeData(): Promise<HomeData> {
     // 2. Deferred Data - Start fetching but DO NOT await
     // These promises will be passed to Suspense boundaries
     const postsPromise = getLatestPosts(3);
-    const collectionsPromise = getCollectionsWithProducts(4, 8);
     const productsPromise = getFeaturedProducts(6);
 
     const storeConfig = config as StoreConfig;
@@ -39,11 +35,9 @@ export async function getHomeData(): Promise<HomeData> {
         social: storeConfig.social,
         brand: storeConfig.brand,
         layout: storeConfig.homepageLayout,
-        categoryGrid: storeConfig.categoryGrid,
 
         // Deferred (Promises)
         postsPromise,
-        collectionsPromise,
         productsPromise,
     };
 }
@@ -56,10 +50,8 @@ export interface HomeData {
     social: SocialConfig;
     brand: BrandConfig;
     layout: HomepageSection[];
-    categoryGrid?: { aspectRatio: string };
 
     // Deferred Data
     postsPromise: Promise<any[]>;
-    collectionsPromise: Promise<Collection[]>;
     productsPromise: Promise<Product[]>;
 }

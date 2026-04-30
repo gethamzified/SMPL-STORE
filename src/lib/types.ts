@@ -34,8 +34,6 @@ export type Product = {
   weight_unit?: string
 
   // Organization
-  category_id?: string | null
-  category?: string | null // Virtual field for display
   tags?: string[]
   vendor?: string | null
   product_type?: string | null
@@ -69,7 +67,6 @@ export type Product = {
   // Relations (when joined)
   variants?: ProductVariant[]
   options?: ProductOption[]
-  collection?: Collection
   reviews?: Review[]
 }
 
@@ -118,24 +115,7 @@ export type ProductOption = {
   created_at?: string
 }
 
-export type Collection = {
-  id: string
-  title: string
-  slug: string
-  description?: string | null
-  image_url?: string | null
-  is_visible: boolean
-  sort_order?: number
-  seo_title?: string | null
-  seo_description?: string | null
-  metadata?: Record<string, unknown>
-  created_at?: string
-  updated_at?: string
 
-  // Virtual
-  product_count?: number
-  products?: Product[]
-}
 
 // ==========================================
 // CUSTOMERS & AUTH
@@ -316,7 +296,7 @@ export type Review = {
 // ==========================================
 
 export type DiscountType = 'percentage' | 'fixed_amount' | 'free_shipping' | 'buy_x_get_y'
-export type DiscountAppliesTo = 'all' | 'collections' | 'products'
+export type DiscountAppliesTo = 'all' | 'products'
 
 export type Discount = {
   id: string
@@ -564,7 +544,6 @@ export type FooterConfig = {
 // Homepage sections ordering
 export type HomepageSectionType =
   | 'hero'
-  | 'categories'
   | 'featured-products'
   | 'outlook'
   | 'benefits'

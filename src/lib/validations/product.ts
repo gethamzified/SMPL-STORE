@@ -26,7 +26,6 @@ export const productSchema = z.object({
     ),
     weight_unit: z.string().optional().default("kg"),
     status: z.enum(["draft", "active", "archived"]).default("draft"),
-    category_id: z.string().optional().nullable(),
     product_type: z.string().optional(),
     vendor: z.string().optional(),
     tags: z.string().optional(),

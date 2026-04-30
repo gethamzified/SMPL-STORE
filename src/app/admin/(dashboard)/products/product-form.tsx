@@ -9,7 +9,7 @@ import { useTransition, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Loader2, Save } from "lucide-react";
-import type { Product, Collection } from "@/lib/types";
+import type { Product } from "@/lib/types";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { productSchema, type ProductFormValues } from "@/lib/validations/product";
@@ -24,10 +24,9 @@ import { useState } from "react";
 
 type ProductFormProps = {
   initialData?: Partial<Product>
-  collections?: Collection[]
 }
 
-export function ProductForm({ initialData, collections = [] }: ProductFormProps) {
+export function ProductForm({ initialData }: ProductFormProps) {
   const router = useRouter();
   const { currency } = useStoreConfig();
   const [isPending, startTransition] = useTransition();
@@ -74,7 +73,6 @@ export function ProductForm({ initialData, collections = [] }: ProductFormProps)
       sale_price: initialData?.sale_price ?? undefined,
       sku: initialData?.sku || `SMPL-${Math.random().toString(36).substring(2, 8).toUpperCase()}`,
       status: (initialData?.status as any) || "draft",
-      category_id: initialData?.category_id || "",
       product_type: initialData?.product_type || "",
       tags: initialData?.tags?.join(", ") || "",
       is_featured: initialData?.is_featured || false,
@@ -419,27 +417,7 @@ export function ProductForm({ initialData, collections = [] }: ProductFormProps)
                 )}
               />
 
-              <FormField
-                control={form.control}
-                name="category_id"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-gray-500 text-xs font-medium uppercase tracking-widest">Collection</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value || undefined}>
-                      <FormControl>
-                        <SelectTrigger className="bg-white border-border text-gray-900 h-12">
-                          <SelectValue placeholder="Select collection" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="none">No collection</SelectItem>
-                        {collections.map(c => <SelectItem key={c.id} value={c.id}>{c.title}</SelectItem>)}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+
 
               <div className="pt-4 border-t border-gray-100 space-y-3">
                 {/* Upload status warning */}

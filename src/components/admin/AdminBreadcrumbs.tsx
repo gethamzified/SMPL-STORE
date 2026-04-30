@@ -8,7 +8,6 @@ import { cn } from "@/lib/utils"
 const routeLabels: Record<string, string> = {
     admin: "Dashboard",
     products: "Products",
-    collections: "Collections",
     orders: "Orders",
     theme: "Theme",
     navigation: "Navigation",

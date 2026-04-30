@@ -90,8 +90,6 @@ function buildProductPayload(formData: FormData): { data?: ProductPayload; error
   delete rawData.id;
 
   const status = rawData.status || 'draft';
-  const categoryRaw = rawData.category_id;
-  const category_id = !categoryRaw || categoryRaw === 'none' ? null : categoryRaw;
 
   // Ensure booleans are correctly parsed from FormData strings
   const isFeatured = parseBooleanField(formData.get('is_featured')) ?? false;
@@ -101,7 +99,6 @@ function buildProductPayload(formData: FormData): { data?: ProductPayload; error
   const schemaInput: Record<string, unknown> = {
     ...rawData,
     status,
-    category_id,
     is_featured: isFeatured,
   };
 
@@ -207,11 +204,9 @@ export async function createProduct(formData: FormData): Promise<ApiResponse<Pro
     }
 
     revalidatePath('/admin/products');
-    revalidatePath('/collection');
     revalidatePath('/shop');
     revalidatePath('/');
     (revalidateTag as any)('products');
-    (revalidateTag as any)('collections');
 
     return { data: product };
   } catch (error) {
@@ -259,11 +254,9 @@ export async function updateProduct(formData: FormData): Promise<ApiResponse<Pro
     revalidatePath('/admin/products');
     revalidatePath(`/admin/products/${id}`);
     revalidatePath(`/product/${productData.slug}`);
-    revalidatePath('/collection');
     revalidatePath('/shop');
     revalidatePath('/');
     (revalidateTag as any)('products');
-    (revalidateTag as any)('collections');
 
     return { data: product };
   } catch (error) {
@@ -275,9 +268,7 @@ export async function deleteProduct(id: string): Promise<ApiResponse<null>> {
   try {
     await ProductService.deleteProduct(id);
     revalidatePath('/admin/products');
-    revalidatePath('/collection');
     (revalidateTag as any)('products');
-    (revalidateTag as any)('collections');
     return { message: 'Product deleted successfully' };
   } catch (error) {
     return handleActionError(error);

@@ -1,12 +1,9 @@
 import { Suspense } from "react";
 // rebuild-force-1
-import * as collectionsApi from "@/lib/api/collections";
 import { ProductService } from "@/services/products";
 
 import AsyncProductGrid from "@/components/collection/AsyncProductGrid";
 import ProductFilters from "@/components/collection/ProductFilters";
-import MobileCollectionList from "@/components/shop/MobileCollectionList";
-import { Collection } from "@/lib/types";
 import {
     Breadcrumb,
     BreadcrumbItem,
@@ -61,10 +58,6 @@ export default async function ShopPage({ searchParams }: {
         orderBy = 'price';
         order = 'desc';
     }
-    // Fetch collections list (Cached)
-    const collectionsListResult = await collectionsApi.getCollections({ visible: true });
-
-    const allCollections = (collectionsListResult.data || []) as Collection[];
 
     // Fetch All Products (Cached)
     const productsPromise = ProductService.getProducts({
@@ -121,10 +114,6 @@ export default async function ShopPage({ searchParams }: {
                     </Breadcrumb>
                 </div>
 
-                {/* Collections Menu (Visible on all screens now) */}
-                <div className="mb-8 text-center">
-                    <MobileCollectionList collections={allCollections} />
-                </div>
 
                 {/* Filters */}
                 <ProductFilters />

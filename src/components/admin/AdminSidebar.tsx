@@ -54,7 +54,6 @@ const onlineStoreNav = [
 
 const marketingNav = [
   { href: "/admin/discount", label: "Discounts", icon: Percent },
-  { href: "/admin/collections", label: "Collections", icon: Megaphone },
 ]
 
 export function AdminSidebar() {

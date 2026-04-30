@@ -30,7 +30,7 @@ function getSupabaseClient() {
 export function SearchModal() {
     const [open, setOpen] = React.useState(false);
     const [query, setQuery] = React.useState("");
-    const [results, setResults] = React.useState<{ products: any[]; collections: any[] }>({ products: [], collections: [] });
+    const [results, setResults] = React.useState<{ products: any[] }>({ products: [] });
     const [loading, setLoading] = React.useState(false);
     const [hasSearched, setHasSearched] = React.useState(false);
 
@@ -96,30 +96,21 @@ export function SearchModal() {
     React.useEffect(() => {
         const search = async () => {
             if (!query.trim()) {
-                setResults({ products: [], collections: [] });
+                setResults({ products: [] });
                 return;
             }
 
             setLoading(true);
             try {
-                const [productsRes, collectionsRes] = await Promise.all([
-                    supabase
-                        .from('products')
-                        .select('*')
-                        .or(`title.ilike.%${query.trim()}%,description.ilike.%${query.trim()}%,product_type.ilike.%${query.trim()}%`)
-                        .eq('status', 'active')
-                        .limit(5),
-                    supabase
-                        .from('collections')
-                        .select('title, slug')
-                        .ilike('title', `%${query.trim()}%`)
-                        .eq('is_visible', true)
-                        .limit(3)
-                ]);
+                const { data: productsData } = await supabase
+                    .from('products')
+                    .select('*')
+                    .or(`title.ilike.%${query.trim()}%,description.ilike.%${query.trim()}%,product_type.ilike.%${query.trim()}%`)
+                    .eq('status', 'active')
+                    .limit(5);
 
                 setResults({
-                    products: productsRes.data || [],
-                    collections: collectionsRes.data || []
+                    products: productsData || [],
                 });
                 setHasSearched(true);
             } catch (error) {
@@ -209,7 +200,7 @@ export function SearchModal() {
                                                 <Loader2 className="h-4 w-4 animate-spin" />
                                                 <span>Searching...</span>
                                             </div>
-                                        ) : (hasSearched && results.products.length === 0 && results.collections.length === 0) ? (
+                                        ) : (hasSearched && results.products.length === 0) ? (
                                             <div className="py-6 text-center text-sm text-neutral-500">
                                                 No results found.
                                             </div>
@@ -219,19 +210,6 @@ export function SearchModal() {
                                             </div>
                                         ) : null}
 
-                                        {results.collections.length > 0 && (
-                                            <CommandGroup heading="Collections" className="text-xs font-bold text-neutral-400 uppercase tracking-widest px-2 py-1.5">
-                                                {results.collections.map((collection) => (
-                                                    <CommandItem
-                                                        key={collection.slug}
-                                                        onSelect={() => runCommand(() => router.push(`/collection/${collection.slug}`))}
-                                                        className="flex items-center gap-2 px-3 py-2.5 rounded-lg aria-selected:bg-neutral-50 cursor-pointer"
-                                                    >
-                                                        <span className="text-sm font-medium text-black">{collection.title}</span>
-                                                    </CommandItem>
-                                                ))}
-                                            </CommandGroup>
-                                        )}
 
                                         {results.products.length > 0 && (
                                             <CommandGroup heading="Products" className="text-xs font-bold text-neutral-400 uppercase tracking-widest px-2 py-1.5 mt-2">

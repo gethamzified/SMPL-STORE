@@ -37,7 +37,6 @@ const navigationItems = [
         items: [
             { label: "Dashboard", href: "/admin", icon: LayoutDashboard },
             { label: "Products", href: "/admin/products", icon: ShoppingBag },
-            { label: "Collections", href: "/admin/collections", icon: Package },
             { label: "Orders", href: "/admin/orders", icon: FileText },
             { label: "Customers", href: "/admin/customers", icon: Users },
             { label: "Navigation", href: "/admin/navigation", icon: Navigation },
@@ -49,7 +48,6 @@ const navigationItems = [
         group: "Quick Actions",
         items: [
             { label: "Add New Product", href: "/admin/products/new", icon: Plus },
-            { label: "Create Collection", href: "/admin/collections/new", icon: Plus },
             { label: "Return to Store", href: "/", icon: ArrowRight },
         ],
     },

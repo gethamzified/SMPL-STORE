@@ -71,7 +71,6 @@ const Footer = ({
       title: 'Shop',
       links: [
         { label: 'All Products', url: '/shop' },
-        { label: 'Collections', url: '/collection' },
       ],
     },
     {

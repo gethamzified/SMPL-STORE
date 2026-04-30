@@ -29,7 +29,6 @@ export type StoreConfig = {
         overlayOpacity?: number;
     };
     benefits: BenefitsConfig;
-    categoryGrid: { aspectRatio: string };
     homepageLayout: HomepageSection[];
     globalDiscount: GlobalDiscountConfig;
     delivery: {
@@ -67,7 +66,6 @@ export const StoreConfigService = {
             // Navigation Items
             const mainNav = [
                 { label: 'HOME', url: '/' },
-                { label: 'COLLECTIONS', url: '/collection' },
                 { label: 'SHOP', url: '/shop' }
             ];
 
@@ -109,9 +107,8 @@ export const StoreConfigService = {
                         title: 'Shop',
                         links: [
                             { label: 'All Products', url: '/shop' },
-                            { label: 'New Arrivals', url: '/collection/new-arrivals' },
-                            { label: 'Best Sellers', url: '/collection/best-sellers' },
-                            { label: 'Accessories', url: '/collection/accessories' },
+                            { label: 'Featured', url: '/shop?sort=featured' },
+                            { label: 'New Arrivals', url: '/shop?sort=newest' },
                         ]
                     },
                     {
@@ -167,7 +164,6 @@ export const StoreConfigService = {
             };
 
             const homepageLayout = dbConfig.homepage_layout || [];
-            const categoryGrid = dbConfig.categoryGrid || { aspectRatio: '0.8' };
 
             return {
                 brand,
@@ -178,7 +174,6 @@ export const StoreConfigService = {
                 currency,
                 hero,
                 benefits,
-                categoryGrid,
                 homepageLayout,
                 globalDiscount,
                 delivery

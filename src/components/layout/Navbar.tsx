@@ -42,7 +42,6 @@ const Navbar = ({ brandName = "SMPL", navItems }: { brandName?: string; navItems
   const defaultLinks: MenuItem[] = [
     { label: "HOME", url: "/" },
     { label: "SHOP", url: "/shop" },
-    { label: "COLLECTIONS", url: "/collection" },
     { label: "ABOUT", url: "/about" },
   ];
 

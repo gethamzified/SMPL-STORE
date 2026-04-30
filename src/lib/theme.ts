@@ -9,7 +9,8 @@ import type {
     BenefitsConfig,
     FooterConfig,
     MenuItem,
-    Collection,
+    FooterConfig,
+    MenuItem,
     Product
 } from '@/lib/types'
 
@@ -71,9 +72,8 @@ const defaultFooterConfig: FooterConfig = {
             title: 'Shop',
             links: [
                 { label: 'All Products', url: '/shop' },
-                { label: 'New Arrivals', url: '/collection/new-arrivals' },
-                { label: 'Best Sellers', url: '/collection/best-sellers' },
-                { label: 'Accessories', url: '/collection/accessories' },
+                { label: 'New Arrivals', url: '/shop?sort=newest' },
+                { label: 'Best Sellers', url: '/shop?sort=best-selling' },
             ]
         },
         {
@@ -187,24 +187,7 @@ export const getLatestPosts = unstable_cache(
 // Edge-cached, shared across all users - NO per-request DB
 // ==========================================
 
-export const getFeaturedCollections = unstable_cache(
-    async (limit = 4) => {
-        try {
-            const supabase = getSupabase()
-            const { data } = await supabase
-                .from('collections')
-                .select('id, title, slug, image_url, description, is_visible, sort_order, metadata')
-                .eq('is_visible', true)
-                .order('sort_order', { ascending: true })
-                .limit(limit)
-            return (data as Collection[]) || []
-        } catch {
-            return []
-        }
-    },
-    ['featured-collections'],
-    { tags: ['collections'], revalidate: 3600 }
-)
+
 
 export const getFeaturedProducts = unstable_cache(
     async (limit = 6) => {
@@ -226,57 +209,7 @@ export const getFeaturedProducts = unstable_cache(
     { tags: ['products'], revalidate: 3600 }
 )
 
-export const getCollectionsWithProducts = unstable_cache(
-    async (limit = 10, productLimit = 8) => {
-        try {
-            const supabase = getSupabase()
 
-            // 1. Get collections
-            const { data: collections } = await supabase
-                .from('collections')
-                .select('id, title, slug, image_url, description, is_visible, sort_order, metadata')
-                .eq('is_visible', true)
-                .order('sort_order', { ascending: true })
-                .limit(limit)
-
-            if (!collections || collections.length === 0) return []
-
-            // 2. Fetch ALL products for ALL collections in a single query (eliminates N+1)
-            const collectionIds = (collections as Collection[]).map(col => col.id)
-            const { data: allProducts } = await supabase
-                .from('products')
-                .select('id, title, slug, price, sale_price, cover_image, images, category_id, tags')
-                .in('category_id', collectionIds)
-                .eq('status', 'active')
-                .order('created_at', { ascending: false })
-
-            // 3. Group products by collection and apply per-collection limit
-            const productsByCollection = new Map<string, Product[]>()
-            for (const product of (allProducts || []) as Product[]) {
-                const catId = (product as any).category_id
-                if (!productsByCollection.has(catId)) {
-                    productsByCollection.set(catId, [])
-                }
-                const arr = productsByCollection.get(catId)!
-                if (arr.length < productLimit) {
-                    arr.push(product)
-                }
-            }
-
-            // 4. Hydrate collections with grouped products
-            const hydratedCollections = (collections as Collection[]).map(col => ({
-                ...col,
-                products: productsByCollection.get(col.id) || []
-            }))
-
-            return hydratedCollections
-        } catch {
-            return []
-        }
-    },
-    ['collections-with-products'],
-    { tags: ['collections', 'products'], revalidate: 3600 }
-)
 
 // ==========================================
 // TYPED CONFIG GETTERS (with defaults)
@@ -388,56 +321,17 @@ export const getHomepageLayout = unstable_cache(
                 .single()
 
             // Default layout if missing
-            return (data?.value as any[]) || [
+            return data?.value || [
                 {
                     id: "hero",
                     type: "hero",
                     enabled: true,
                     order: 0,
                     content: {
-                        heading: "Calder Co.",
-                        subheading: "Defined by Detail.\nPrecision Form."
+                        heading: "SMPL",
+                        subheading: "Timeless Wardrobe.\nEveryday Power."
                     }
-                },
-                {
-                    id: "categories",
-                    type: "categories",
-                    enabled: true,
-                    order: 1,
-                    content: {
-                        title: "Modern\nEssentials",
-                        description: "The fundamentals, redefined. Explore our core categories, from precision-cut polos to relaxed tailoring."
-                    }
-                },
-                {
-                    id: "featured",
-                    type: "featured-products",
-                    enabled: true,
-                    order: 2,
-                    content: {
-                        title: "The\nIcons",
-                        description: "Time-tested staples that define the SMPL wardrobe. Versatile, enduring, and curated for daily life."
-                    }
-                },
-                {
-                    id: "outlook",
-                    type: "outlook",
-                    enabled: true,
-                    order: 3,
-                    content: {
-                        title: "Defined by\nDetail"
-                    }
-                },
-                {
-                    id: "news",
-                    type: "news",
-                    enabled: true,
-                    order: 4,
-                    content: {
-                        title: "The Journal",
-                        description: "Stories of craftsmanship, style perspectives, and the latest from our studio."
-                    }
-                },
+                }
             ]
         } catch {
             return [
@@ -447,47 +341,8 @@ export const getHomepageLayout = unstable_cache(
                     enabled: true,
                     order: 0,
                     content: {
-                        heading: "Calder Co.",
-                        subheading: "Timeless Wardrobe.\nEveryday Power."
-                    }
-                },
-                {
-                    id: "categories",
-                    type: "categories",
-                    enabled: true,
-                    order: 1,
-                    content: {
-                        title: "Modern\nEssentials",
-                        description: "The fundamentals, redefined. Explore our core categories, from precision-cut polos to relaxed tailoring."
-                    }
-                },
-                {
-                    id: "featured",
-                    type: "featured-products",
-                    enabled: true,
-                    order: 2,
-                    content: {
-                        title: "Proven\nFavorites",
-                        description: "Icons that endure year after year — top-rated staples chosen again and again for their timeless fit, premium feel, and versatility."
-                    }
-                },
-                {
-                    id: "outlook",
-                    type: "outlook",
-                    enabled: true,
-                    order: 3,
-                    content: {
-                        title: "Style It\nYour Way"
-                    }
-                },
-                {
-                    id: "news",
-                    type: "news",
-                    enabled: true,
-                    order: 4,
-                    content: {
-                        title: "The Journal",
-                        description: "Stories of craftsmanship, style perspectives, and the latest from our studio."
+                        heading: "SMPL",
+                        subheading: "Minimalist Design.\nPremium Quality."
                     }
                 }
             ]
