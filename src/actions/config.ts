@@ -20,27 +20,52 @@ export async function updateStoreConfigAction(key: string, value: any) {
         return { error: error.message || 'Failed to update configuration' };
     }
 }
-import { createAdminClient } from '@/lib/supabase/admin';
-import { processImage, generateImageFilename } from '@/lib/image-processor';
+
 import { v2 as cloudinary } from 'cloudinary';
+
+/**
+ * Parse CLOUDINARY_URL env var reliably.
+ * Format: cloudinary://API_KEY:API_SECRET@CLOUD_NAME
+ */
+function configureCloudinary() {
+    const cloudinaryUrl = process.env.CLOUDINARY_URL;
+
+    if (cloudinaryUrl) {
+        // Use URL constructor for reliable parsing
+        // cloudinary://key:secret@cloud → protocol://username:password@hostname
+        const parsed = new URL(cloudinaryUrl.replace('cloudinary://', 'https://'));
+        cloudinary.config({
+            cloud_name: parsed.hostname,
+            api_key: parsed.username,
+            api_secret: parsed.password,
+        });
+    } else {
+        // Fallback to individual env vars
+        cloudinary.config({
+            cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
+            api_key: process.env.CLOUDINARY_API_KEY,
+            api_secret: process.env.CLOUDINARY_API_SECRET,
+        });
+    }
+}
 
 export async function uploadSiteAsset(formData: FormData) {
     try {
         const file = formData.get('file') as File;
         if (!file) throw new Error('No file provided');
 
-        cloudinary.config({
-            cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
-            api_key: process.env.CLOUDINARY_API_KEY || process.env.CLOUDINARY_URL?.match(/:\/\/([^:]+)/)?.[1],
-            api_secret: process.env.CLOUDINARY_API_SECRET || process.env.CLOUDINARY_URL?.match(/:([^@]+)@/)?.[1]
-        });
+        configureCloudinary();
 
         const arrayBuffer = await file.arrayBuffer();
         const buffer = Buffer.from(arrayBuffer);
 
         const result = await new Promise<any>((resolve, reject) => {
             const uploadStream = cloudinary.uploader.upload_stream(
-                { folder: 'site-assets' },
+                { 
+                    folder: 'site-assets',
+                    // Let Cloudinary auto-detect best format on delivery
+                    resource_type: 'image',
+                },
                 (error, result) => {
                     if (error) reject(error);
                     else resolve(result);
@@ -49,11 +74,13 @@ export async function uploadSiteAsset(formData: FormData) {
             uploadStream.end(buffer);
         });
 
+        // Return the raw secure_url — the cloudinary-loader will handle transforms at delivery time
         const publicUrl = result.secure_url;
-        const optimizedUrl = publicUrl.replace('/upload/', '/upload/f_auto,q_auto,g_auto/');
-        const blurDataURL = publicUrl.replace('/upload/', '/upload/w_10,e_blur:1000,f_auto,q_auto/');
 
-        return { success: true, url: optimizedUrl, blurDataURL };
+        // Pre-generate a tiny blur placeholder for LQIP
+        const blurDataURL = publicUrl.replace('/upload/', '/upload/w_20,e_blur:800,q_auto,f_auto/');
+
+        return { success: true, url: publicUrl, blurDataURL };
     } catch (error: any) {
         console.error('Upload Asset Error:', error);
         return { error: error.message || 'Failed to upload asset' };
@@ -64,11 +91,7 @@ export async function deleteSiteAsset(url: string) {
     try {
         if (!url) return { success: true };
 
-        cloudinary.config({
-            cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
-            api_key: process.env.CLOUDINARY_API_KEY || process.env.CLOUDINARY_URL?.match(/:\/\/([^:]+)/)?.[1],
-            api_secret: process.env.CLOUDINARY_API_SECRET || process.env.CLOUDINARY_URL?.match(/:([^@]+)@/)?.[1]
-        });
+        configureCloudinary();
 
         const urlObj = new URL(url);
         if (urlObj.hostname.includes('cloudinary.com')) {
@@ -76,11 +99,14 @@ export async function deleteSiteAsset(url: string) {
             const uploadIndex = parts.indexOf('upload');
             if (uploadIndex !== -1) {
                 let idParts = parts.slice(uploadIndex + 1);
+                // Skip transformation segments
+                idParts = idParts.filter(p => !p.includes(',') && !/^[a-z]{1,2}_/.test(p) || /^v\d+$/.test(p));
+                // Skip version string
                 if (idParts[0] && /^v\d+$/.test(idParts[0])) idParts = idParts.slice(1);
                 const fullPath = idParts.join('/');
                 const lastDotIndex = fullPath.lastIndexOf('.');
                 const publicId = lastDotIndex !== -1 ? fullPath.substring(0, lastDotIndex) : fullPath;
-                
+
                 await cloudinary.uploader.destroy(publicId);
             }
         }

@@ -5,26 +5,32 @@ import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+
+interface HeroConfig {
+    heading?: string;
+    subheading?: string;
+    ctaText?: string;
+    ctaLink?: string;
+}
 
 interface HeroCarouselProps {
     products: any[];
+    hero?: HeroConfig;
 }
 
-export function HeroCarousel({ products }: HeroCarouselProps) {
+export function HeroCarousel({ products, hero }: HeroCarouselProps) {
     const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true }, [Autoplay({ delay: 5000, stopOnInteraction: false })]);
     const [selectedIndex, setSelectedIndex] = React.useState(0);
     const [scrollSnaps, setScrollSnaps] = React.useState<number[]>([]);
 
     const scrollPrev = React.useCallback(() => emblaApi && emblaApi.scrollPrev(), [emblaApi]);
     const scrollNext = React.useCallback(() => emblaApi && emblaApi.scrollNext(), [emblaApi]);
-    const scrollTo = React.useCallback((index: number) => emblaApi && emblaApi.scrollTo(index), [emblaApi]);
 
     const onSelect = React.useCallback(() => {
         if (!emblaApi) return;
         setSelectedIndex(emblaApi.selectedScrollSnap());
-    }, [emblaApi, setSelectedIndex]);
+    }, [emblaApi]);
 
     React.useEffect(() => {
         if (!emblaApi) return;
@@ -43,7 +49,7 @@ export function HeroCarousel({ products }: HeroCarouselProps) {
 
     return (
         <div className="relative h-screen w-full overflow-hidden bg-transparent">
-            {/* 1. Static/Fading Background Elements (BEHIND IMAGES) */}
+            {/* 1. Static Background Layer */}
             <div className="absolute inset-0 z-0 pointer-events-none" />
 
             {/* 2. Sliding Images (Carousel) */}
@@ -72,9 +78,35 @@ export function HeroCarousel({ products }: HeroCarouselProps) {
                 </div>
             </div>
 
-            {/* 3. Interactive/Metadata Overlays (IN FRONT OF EVERYTHING) */}
+            {/* 3. Hero Heading & Subheading from Admin Config */}
+            {(hero?.heading || hero?.subheading) && (
+                <div className="absolute top-28 left-6 md:left-12 z-20 max-w-lg pointer-events-none">
+                    {hero.heading && (
+                        <h1 className="text-[10px] md:text-xs font-black uppercase tracking-[0.4em] text-black/30 mb-1">
+                            {hero.heading}
+                        </h1>
+                    )}
+                    {hero.subheading && (
+                        <p className="text-[9px] md:text-[10px] font-bold uppercase tracking-[0.25em] text-black/20">
+                            {hero.subheading}
+                        </p>
+                    )}
+                </div>
+            )}
 
-            {/* Bottom Right: Price */}
+            {/* CTA from admin */}
+            {hero?.ctaText && hero?.ctaLink && (
+                <div className="absolute top-28 right-6 md:right-12 z-20">
+                    <Link
+                        href={hero.ctaLink}
+                        className="text-[9px] font-black uppercase tracking-[0.3em] text-black/30 hover:text-black transition-colors duration-300"
+                    >
+                        {hero.ctaText} →
+                    </Link>
+                </div>
+            )}
+
+            {/* 4. Bottom Right: Price */}
             <div
                 key={`cta-${selectedIndex}`}
                 className="absolute bottom-24 right-6 md:right-12 text-right z-20 animate-in fade-in slide-in-from-right-8 duration-700"

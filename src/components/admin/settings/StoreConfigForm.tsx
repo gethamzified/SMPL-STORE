@@ -8,13 +8,11 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from 'sonner';
-import { Upload, Trash2, Crop as CropIcon, Plus, ChevronUp, ChevronDown, GripVertical } from 'lucide-react';
+import { Upload, Trash2, Crop as CropIcon, Loader2, ImageIcon, Globe, Truck, DollarSign, Palette } from 'lucide-react';
 import { ImageCropper } from '@/components/ui/image-cropper';
 import { StoreConfig } from '@/services/config';
-import { BenefitItem } from '@/lib/types';
-
+import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Slider } from '@/components/ui/slider';
 
 interface StoreConfigFormProps {
     initialConfig: StoreConfig;
@@ -23,6 +21,7 @@ interface StoreConfigFormProps {
 export function StoreConfigForm({ initialConfig }: StoreConfigFormProps) {
     const [config, setConfig] = useState(initialConfig);
     const [isSaving, setIsSaving] = useState(false);
+    const [isUploading, setIsUploading] = useState(false);
 
     // Track images queued for deletion (deleted only after successful save)
     const [imagesToDelete, setImagesToDelete] = useState<string[]>([]);
@@ -30,23 +29,20 @@ export function StoreConfigForm({ initialConfig }: StoreConfigFormProps) {
     const [heroFile, setHeroFile] = useState<File | null>(null);
     const [tempCropImage, setTempCropImage] = useState<string | null>(null);
 
-    const [mobileHeroFile, setMobileHeroFile] = useState<File | null>(null);
-    const [tempMobileCropImage, setTempMobileCropImage] = useState<string | null>(null);
-
-
-
     const handleSave = async (section: keyof StoreConfig) => {
         setIsSaving(true);
         let currentConfig = { ...config };
-        let toastId = undefined; // Track toast ID for updates
+        let toastId: string | number | undefined = undefined;
 
-        // Handle File Upload for Hero
+        // Handle File Upload for Hero Background
         if (section === 'hero' && heroFile) {
+            setIsUploading(true);
             const formData = new FormData();
-            toastId = toast.loading('Uploading hero image...');
+            toastId = toast.loading('Uploading background image to Cloudinary...');
             formData.append('file', heroFile);
 
             const uploadRes = await uploadSiteAsset(formData);
+            setIsUploading(false);
 
             if (uploadRes.success && uploadRes.url) {
                 currentConfig = {
@@ -62,43 +58,20 @@ export function StoreConfigForm({ initialConfig }: StoreConfigFormProps) {
             }
         }
 
-        // Handle File Upload for Mobile Hero
-        if (section === 'hero' && mobileHeroFile) {
-            const formData = new FormData();
-            if (!toastId) toastId = toast.loading('Uploading mobile image...');
-            else toast.loading('Uploading mobile image...', { id: toastId });
-
-            formData.append('file', mobileHeroFile);
-
-            const uploadRes = await uploadSiteAsset(formData);
-
-            if (uploadRes.success && uploadRes.url) {
-                currentConfig = {
-                    ...currentConfig,
-                    hero: { ...currentConfig.hero, mobileImage: uploadRes.url }
-                };
-                setConfig(currentConfig);
-                setMobileHeroFile(null);
-            } else {
-                toast.error(uploadRes.error || 'Failed to upload mobile image', { id: toastId });
-                setIsSaving(false);
-                return;
-            }
-        }
-
-
-
-        // If no file upload happened yet, start saving toast
+        // Save to DB
         if (!toastId) toastId = toast.loading('Saving settings...');
-        else toast.loading('Saving settings...', { id: toastId });
+        else toast.loading('Saving to database...', { id: toastId });
 
         const result = await updateStoreConfigAction(section, currentConfig[section]);
         setIsSaving(false);
 
         if (result.success) {
-            toast.success(`${section.charAt(0).toUpperCase() + section.slice(1)} settings saved`, { id: toastId });
+            toast.success(`Settings saved`, {
+                id: toastId,
+                description: 'Changes will appear on the storefront shortly.',
+            });
 
-            // SAFE DELETION
+            // Delete old images after successful save
             if (section === 'hero' && imagesToDelete.length > 0) {
                 for (const url of imagesToDelete) {
                     await deleteSiteAsset(url);
@@ -110,160 +83,149 @@ export function StoreConfigForm({ initialConfig }: StoreConfigFormProps) {
         }
     };
 
-    // Queue image for deletion (doesn't actually delete until save)
     const queueImageForDeletion = (url: string | undefined) => {
-        if (url) {
-            setImagesToDelete(prev => [...prev, url]);
-        }
+        if (url) setImagesToDelete(prev => [...prev, url]);
     };
 
+    const heroPreview = heroFile ? URL.createObjectURL(heroFile) : config.hero?.image;
+
     return (
-        <Tabs defaultValue="brand" className="space-y-4">
-            <TabsList>
-                <TabsTrigger value="brand">Brand & Identity</TabsTrigger>
-                <TabsTrigger value="hero">Hero</TabsTrigger>
-                <TabsTrigger value="categoryGrid">Collections</TabsTrigger>
-                <TabsTrigger value="benefits">Benefits</TabsTrigger>
-                <TabsTrigger value="currency">Currency</TabsTrigger>
-                <TabsTrigger value="delivery">Delivery</TabsTrigger>
+        <Tabs defaultValue="homepage" className="space-y-6">
+            <TabsList className="bg-gray-100 p-1 rounded-lg">
+                <TabsTrigger value="homepage" className="flex items-center gap-2 data-[state=active]:bg-white data-[state=active]:shadow-sm rounded-md px-4">
+                    <Globe className="w-4 h-4" />
+                    Homepage
+                </TabsTrigger>
+                <TabsTrigger value="brand" className="flex items-center gap-2 data-[state=active]:bg-white data-[state=active]:shadow-sm rounded-md px-4">
+                    <Palette className="w-4 h-4" />
+                    Brand
+                </TabsTrigger>
+                <TabsTrigger value="delivery" className="flex items-center gap-2 data-[state=active]:bg-white data-[state=active]:shadow-sm rounded-md px-4">
+                    <Truck className="w-4 h-4" />
+                    Delivery
+                </TabsTrigger>
+                <TabsTrigger value="currency" className="flex items-center gap-2 data-[state=active]:bg-white data-[state=active]:shadow-sm rounded-md px-4">
+                    <DollarSign className="w-4 h-4" />
+                    Currency
+                </TabsTrigger>
             </TabsList>
 
-            <TabsContent value="brand">
+            {/* ═══════════════════════════════════════════════════════════════
+                 HOMEPAGE TAB — Background, Hero Text, CTA
+                 ═══════════════════════════════════════════════════════════════ */}
+            <TabsContent value="homepage" className="space-y-6">
+                {/* Background Image */}
                 <Card>
                     <CardHeader>
-                        <CardTitle>Brand Settings</CardTitle>
-                        <CardDescription>Manage your store's identity and basic information.</CardDescription>
+                        <CardTitle className="text-base">Background Image</CardTitle>
+                        <CardDescription>The atmospheric image that spans the entire homepage. Uploaded to Cloudinary for optimal delivery.</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
-                        <div className="space-y-2">
-                            <Label>Store Name</Label>
-                            <Input
-                                value={config.brand.name || ''}
-                                onChange={(e) => setConfig({ ...config, brand: { ...config.brand, name: e.target.value } })}
-                            />
-                        </div>
-                        <div className="space-y-2">
-                            <Label>Tagline</Label>
-                            <Input
-                                value={config.brand.tagline || ''}
-                                onChange={(e) => setConfig({ ...config, brand: { ...config.brand, tagline: e.target.value } })}
-                            />
-                        </div>
-                        <div className="space-y-2">
-                            <Label>Announcement Bar</Label>
-                            <Input
-                                value={config.brand.announcement || ''}
-                                onChange={(e) => setConfig({ ...config, brand: { ...config.brand, announcement: e.target.value } })}
-                                placeholder="e.g. Free shipping over Rs. 10,000"
-                            />
-                        </div>
-                        <div className="flex items-center space-x-2">
-                            <input
-                                type="checkbox"
-                                id="show-announcement"
-                                checked={config.brand.showAnnouncement || false}
-                                onChange={(e) => setConfig({ ...config, brand: { ...config.brand, showAnnouncement: e.target.checked } })}
-                                className="rounded border-input"
-                            />
-                            <Label htmlFor="show-announcement">Show Announcement Bar</Label>
-                        </div>
-                        <Button onClick={() => handleSave('brand')} disabled={isSaving}>
-                            {isSaving ? 'Saving...' : 'Save Brand Settings'}
-                        </Button>
+                        {heroPreview ? (
+                            <div className="relative w-full aspect-[21/9] rounded-xl overflow-hidden border border-gray-200 group bg-gray-50">
+                                <img
+                                    src={heroPreview}
+                                    alt="Background preview"
+                                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+                                />
+                                {/* Overlay Actions */}
+                                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
+                                    <label className="cursor-pointer p-3 bg-white/90 hover:bg-white rounded-full transition-colors shadow-md">
+                                        <Upload className="w-5 h-5 text-gray-700" />
+                                        <input
+                                            type="file"
+                                            accept="image/*"
+                                            className="hidden"
+                                            onChange={(e) => {
+                                                if (e.target.files?.[0]) {
+                                                    setHeroFile(e.target.files[0]);
+                                                }
+                                            }}
+                                        />
+                                    </label>
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            if (heroFile) {
+                                                setHeroFile(null);
+                                            } else if (config.hero?.image) {
+                                                queueImageForDeletion(config.hero.image);
+                                                setConfig({ ...config, hero: { ...config.hero, image: '' } });
+                                            }
+                                        }}
+                                        className="p-3 bg-white/90 hover:bg-red-50 rounded-full transition-colors shadow-md"
+                                    >
+                                        <Trash2 className="w-5 h-5 text-red-600" />
+                                    </button>
+                                </div>
+                                {/* Upload indicator */}
+                                {isUploading && (
+                                    <div className="absolute inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center">
+                                        <div className="flex items-center gap-3 bg-white rounded-xl px-6 py-3 shadow-lg">
+                                            <Loader2 className="w-5 h-5 animate-spin text-blue-600" />
+                                            <span className="text-sm font-medium text-gray-700">Uploading to Cloudinary...</span>
+                                        </div>
+                                    </div>
+                                )}
+                                {/* Pending change indicator */}
+                                {heroFile && (
+                                    <div className="absolute bottom-3 left-3 bg-amber-500/90 text-white text-xs font-medium px-3 py-1.5 rounded-full">
+                                        Unsaved — click Save to upload
+                                    </div>
+                                )}
+                            </div>
+                        ) : (
+                            <label className="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed border-gray-200 rounded-xl cursor-pointer hover:border-blue-400 hover:bg-blue-50/30 transition-all group">
+                                <ImageIcon className="w-10 h-10 text-gray-300 group-hover:text-blue-400 transition-colors mb-3" />
+                                <span className="text-sm text-gray-500 group-hover:text-blue-600 font-medium">Click to upload background image</span>
+                                <span className="text-xs text-gray-400 mt-1">High-res PNG or JPG recommended</span>
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    className="hidden"
+                                    onChange={(e) => {
+                                        if (e.target.files?.[0]) setHeroFile(e.target.files[0]);
+                                    }}
+                                />
+                            </label>
+                        )}
+
+                        {imagesToDelete.length > 0 && (
+                            <p className="text-xs text-amber-600 bg-amber-50 px-3 py-2 rounded-lg">
+                                ⚠️ {imagesToDelete.length} image(s) will be removed from Cloudinary when you save.
+                            </p>
+                        )}
                     </CardContent>
                 </Card>
-            </TabsContent>
 
-            <TabsContent value="currency">
+                {/* Hero Text & CTA */}
                 <Card>
                     <CardHeader>
-                        <CardTitle>Currency Settings</CardTitle>
-                        <CardDescription>Set the currency used for product pricing.</CardDescription>
+                        <CardTitle className="text-base">Hero Overlay</CardTitle>
+                        <CardDescription>Text and CTA button displayed over the product carousel.</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
                         <div className="grid grid-cols-2 gap-4">
-                            <div className="col-span-2 space-y-2">
-                                <Label>Preset Currencies</Label>
-                                <Select onValueChange={(val) => {
-                                    const presets: Record<string, { code: string, symbol: string }> = {
-                                        'PKR': { code: 'PKR', symbol: 'Rs.' },
-                                        'USD': { code: 'USD', symbol: '$' },
-                                        'GBP': { code: 'GBP', symbol: '£' },
-                                        'EUR': { code: 'EUR', symbol: '€' },
-                                        'AED': { code: 'AED', symbol: 'د.إ' }
-                                    };
-                                    if (presets[val]) {
-                                        setConfig({ ...config, currency: presets[val] });
-                                    }
-                                }}>
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="Select a preset..." />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="PKR">PKR - Pakistani Rupee</SelectItem>
-                                        <SelectItem value="USD">USD - US Dollar</SelectItem>
-                                        <SelectItem value="GBP">GBP - British Pound</SelectItem>
-                                        <SelectItem value="EUR">EUR - Euro</SelectItem>
-                                        <SelectItem value="AED">AED - UAE Dirham</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                            </div>
                             <div className="space-y-2">
-                                <Label>Currency Code (ISO)</Label>
-                                <Input
-                                    value={config.currency?.code ?? ''}
-                                    onChange={(e) => setConfig({ ...config, currency: { ...(config.currency || { symbol: 'Rs.' }), code: e.target.value } })}
-                                    placeholder="PKR"
-                                />
-                            </div>
-                            <div className="space-y-2">
-                                <Label>Currency Symbol</Label>
-                                <Input
-                                    value={config.currency?.symbol ?? ''}
-                                    onChange={(e) => setConfig({ ...config, currency: { ...(config.currency || { code: 'PKR' }), symbol: e.target.value } })}
-                                    placeholder="Rs."
-                                />
-                            </div>
-                        </div>
-                        <Button onClick={() => handleSave('currency')} disabled={isSaving}>
-                            {isSaving ? 'Saving...' : 'Save Currency Settings'}
-                        </Button>
-                    </CardContent>
-                </Card>
-            </TabsContent>
-
-            <TabsContent value="hero">
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Hero Configuration</CardTitle>
-                        <CardDescription>Manage your homepage hero section. Set a main image, heading, and call-to-action.</CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-6">
-
-                        {/* Heading & Text */}
-                        <div className="grid grid-cols-2 gap-4">
-                            <div className="space-y-2">
-                                <Label>Main Heading</Label>
+                                <Label className="text-xs font-medium text-gray-500 uppercase tracking-wider">Heading</Label>
                                 <Input
                                     value={config.hero?.heading || ''}
                                     onChange={(e) => setConfig({ ...config, hero: { ...config.hero, heading: e.target.value } })}
-                                    placeholder="e.g. SMPL"
+                                    placeholder="e.g. SMPL / SPRING 26"
                                 />
                             </div>
                             <div className="space-y-2">
-                                <Label>Subheading</Label>
+                                <Label className="text-xs font-medium text-gray-500 uppercase tracking-wider">Subheading</Label>
                                 <Input
                                     value={config.hero?.subheading || ''}
                                     onChange={(e) => setConfig({ ...config, hero: { ...config.hero, subheading: e.target.value } })}
-                                    placeholder="e.g. Spring/Summer Collection"
+                                    placeholder="e.g. BEYOND THE BASICS"
                                 />
                             </div>
                         </div>
-
-                        {/* CTA */}
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-2">
-                                <Label>Button Text</Label>
+                                <Label className="text-xs font-medium text-gray-500 uppercase tracking-wider">CTA Text</Label>
                                 <Input
                                     value={config.hero?.ctaText || ''}
                                     onChange={(e) => setConfig({ ...config, hero: { ...config.hero, ctaText: e.target.value } })}
@@ -271,7 +233,7 @@ export function StoreConfigForm({ initialConfig }: StoreConfigFormProps) {
                                 />
                             </div>
                             <div className="space-y-2">
-                                <Label>Button Link</Label>
+                                <Label className="text-xs font-medium text-gray-500 uppercase tracking-wider">CTA Link</Label>
                                 <Input
                                     value={config.hero?.ctaLink || ''}
                                     onChange={(e) => setConfig({ ...config, hero: { ...config.hero, ctaLink: e.target.value } })}
@@ -279,300 +241,99 @@ export function StoreConfigForm({ initialConfig }: StoreConfigFormProps) {
                                 />
                             </div>
                         </div>
-
-                        {/* Overlay Opacity */}
-                        <div className="space-y-4">
-                            <div className="flex items-center justify-between">
-                                <Label>Overlay Opacity</Label>
-                                <span className="text-sm text-muted-foreground">
-                                    {Math.round((config.hero?.overlayOpacity ?? 0.3) * 100)}%
-                                </span>
-                            </div>
-                            <Slider
-                                value={[config.hero?.overlayOpacity ?? 0.3]}
-                                min={0}
-                                max={0.9}
-                                step={0.05}
-                                onValueChange={(vals) => setConfig({ ...config, hero: { ...config.hero, overlayOpacity: vals[0] } })}
-                            />
-                        </div>
-
-                        {/* Hero Image */}
-                        <div className="space-y-4 pt-4 border-t border-white/10">
-                            <Label className="text-base font-semibold">Desktop Image</Label>
-
-                            {(config.hero?.image || heroFile) ? (
-                                <div className="relative aspect-video w-full rounded-lg overflow-hidden border border-white/10 group">
-                                    <img
-                                        src={heroFile ? URL.createObjectURL(heroFile) : config.hero?.image}
-                                        alt="Hero Desktop"
-                                        className="w-full h-full object-cover"
-                                    />
-                                    <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
-                                        <label className="cursor-pointer p-2 bg-white/10 hover:bg-white/20 rounded-full transition-colors">
-                                            <Upload className="w-4 h-4" />
-                                            <input
-                                                type="file"
-                                                accept="image/*"
-                                                className="hidden"
-                                                onChange={(e) => {
-                                                    if (e.target.files?.[0]) {
-                                                        const file = e.target.files[0];
-                                                        const reader = new FileReader();
-                                                        reader.onload = (ev) => {
-                                                            if (ev.target?.result && typeof ev.target.result === 'string') {
-                                                                setTempCropImage(ev.target.result);
-                                                            }
-                                                        };
-                                                        reader.readAsDataURL(file);
-                                                    }
-                                                }}
-                                            />
-                                        </label>
-                                        <Button
-                                            type="button"
-                                            variant="secondary"
-                                            size="icon"
-                                            onClick={() => {
-                                                if (heroFile) {
-                                                    setHeroFile(null);
-                                                } else if (config.hero?.image) {
-                                                    queueImageForDeletion(config.hero.image);
-                                                    setConfig({ ...config, hero: { ...config.hero, image: '' } });
-                                                }
-                                            }}
-                                        >
-                                            <Trash2 className="w-4 h-4" />
-                                        </Button>
-                                    </div>
-                                </div>
-                            ) : (
-                                <label className="flex flex-col items-center justify-center w-full aspect-video border-2 border-dashed border-white/10 rounded-lg cursor-pointer hover:border-white/30 transition-all bg-black/20">
-                                    <Upload className="w-8 h-8 text-white/40 mb-2" />
-                                    <span className="text-sm text-white/40">Click to upload desktop image (16:9 recommended)</span>
-                                    <input
-                                        type="file"
-                                        accept="image/*"
-                                        className="hidden"
-                                        onChange={(e) => {
-                                            if (e.target.files?.[0]) {
-                                                const file = e.target.files[0];
-                                                const reader = new FileReader();
-                                                reader.onload = (ev) => {
-                                                    if (ev.target?.result && typeof ev.target.result === 'string') {
-                                                        setTempCropImage(ev.target.result);
-                                                    }
-                                                };
-                                                reader.readAsDataURL(file);
-                                            }
-                                        }}
-                                    />
-                                </label>
-                            )}
-                        </div>
-
-                        {/* Mobile Image */}
-                        <div className="space-y-4 pt-4 border-t border-white/10">
-                            <Label className="text-base font-semibold">Mobile Image (Optional)</Label>
-
-                            {(config.hero?.mobileImage || mobileHeroFile) ? (
-                                <div className="relative aspect-[9/16] w-full max-w-xs mx-auto rounded-lg overflow-hidden border border-white/10 group">
-                                    <img
-                                        src={mobileHeroFile ? URL.createObjectURL(mobileHeroFile) : config.hero?.mobileImage}
-                                        alt="Hero Mobile"
-                                        className="w-full h-full object-cover"
-                                    />
-                                    <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
-                                        <label className="cursor-pointer p-2 bg-white/10 hover:bg-white/20 rounded-full transition-colors">
-                                            <Upload className="w-4 h-4" />
-                                            <input
-                                                type="file"
-                                                accept="image/*"
-                                                className="hidden"
-                                                onChange={(e) => {
-                                                    if (e.target.files?.[0]) {
-                                                        const file = e.target.files[0];
-                                                        const reader = new FileReader();
-                                                        reader.onload = (ev) => {
-                                                            if (ev.target?.result && typeof ev.target.result === 'string') {
-                                                                setTempMobileCropImage(ev.target.result);
-                                                            }
-                                                        };
-                                                        reader.readAsDataURL(file);
-                                                    }
-                                                }}
-                                            />
-                                        </label>
-                                        <Button
-                                            type="button"
-                                            variant="secondary"
-                                            size="icon"
-                                            onClick={() => {
-                                                if (mobileHeroFile) {
-                                                    setMobileHeroFile(null);
-                                                } else if (config.hero?.mobileImage) {
-                                                    queueImageForDeletion(config.hero.mobileImage);
-                                                    setConfig({ ...config, hero: { ...config.hero, mobileImage: '' } });
-                                                }
-                                            }}
-                                        >
-                                            <Trash2 className="w-4 h-4" />
-                                        </Button>
-                                    </div>
-                                </div>
-                            ) : (
-                                <label className="flex flex-col items-center justify-center w-full max-w-xs mx-auto aspect-[9/16] border-2 border-dashed border-white/10 rounded-lg cursor-pointer hover:border-white/30 transition-all bg-black/20">
-                                    <Upload className="w-6 h-6 text-white/40 mb-2" />
-                                    <span className="text-xs text-white/40">Click to upload mobile image (9:16)</span>
-                                    <input
-                                        type="file"
-                                        accept="image/*"
-                                        className="hidden"
-                                        onChange={(e) => {
-                                            if (e.target.files?.[0]) {
-                                                const file = e.target.files[0];
-                                                const reader = new FileReader();
-                                                reader.onload = (ev) => {
-                                                    if (ev.target?.result && typeof ev.target.result === 'string') {
-                                                        setTempMobileCropImage(ev.target.result);
-                                                    }
-                                                };
-                                                reader.readAsDataURL(file);
-                                            }
-                                        }}
-                                    />
-                                </label>
-                            )}
-                        </div>
-
-                        {imagesToDelete.length > 0 && (
-                            <p className="text-xs text-amber-500">
-                                ⚠️ {imagesToDelete.length} image(s) will be deleted when you save.
-                            </p>
-                        )}
-
-                        <Button onClick={() => handleSave('hero')} disabled={isSaving} className="w-full">
-                            {isSaving ? 'Saving...' : 'Save Hero Settings'}
-                        </Button>
                     </CardContent>
                 </Card>
+
+                <Button onClick={() => handleSave('hero')} disabled={isSaving || isUploading} className="w-full h-11">
+                    {isUploading ? 'Uploading...' : isSaving ? 'Saving...' : 'Save Homepage Settings'}
+                </Button>
             </TabsContent>
 
-            <TabsContent value="benefits">
+            {/* ═══════════════════════════════════════════════════════════════
+                 BRAND TAB — Name, Tagline, Announcement, Theme Color
+                 ═══════════════════════════════════════════════════════════════ */}
+            <TabsContent value="brand" className="space-y-6">
                 <Card>
                     <CardHeader>
-                        <CardTitle>Benefits Strip</CardTitle>
-                        <CardDescription>Value propositions displayed on the homepage.</CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                        <div className="flex items-center space-x-2">
-                            <input
-                                type="checkbox"
-                                id="benefits-enabled"
-                                checked={config.benefits?.enabled ?? true}
-                                onChange={(e) => setConfig({
-                                    ...config,
-                                    benefits: {
-                                        items: config.benefits?.items || [],
-                                        enabled: e.target.checked
-                                    }
-                                })}
-                                className="rounded border-input"
-                            />
-                            <Label htmlFor="benefits-enabled">Enable Benefits Strip</Label>
-                        </div>
-
-                        {config.benefits?.items?.map((item, index) => (
-                            <div key={index} className="grid grid-cols-[100px_1fr] gap-2 items-center border p-2 rounded-lg border-white/5">
-                                <select
-                                    className="bg-black border border-white/10 rounded px-2 py-1 text-sm h-9"
-                                    value={item.icon || 'truck'}
-                                    onChange={(e) => {
-                                        const newItems = [...(config.benefits?.items || [])];
-                                        newItems[index] = { ...item, icon: e.target.value as BenefitItem['icon'] };
-                                        setConfig({ ...config, benefits: { ...config.benefits!, items: newItems } });
-                                    }}
-                                >
-                                    <option value="truck">Truck</option>
-                                    <option value="rotate">Return</option>
-                                    <option value="shield">Shield</option>
-                                    <option value="headphones">Support</option>
-                                    <option value="star">Star</option>
-                                    <option value="gift">Gift</option>
-                                </select>
-                                <Input
-                                    value={item.text || ''}
-                                    onChange={(e) => {
-                                        const currentItems = config.benefits?.items || [];
-                                        const newItems: BenefitItem[] = [...currentItems];
-                                        if (newItems[index]) {
-                                            newItems[index] = { ...newItems[index], text: e.target.value };
-                                            setConfig({
-                                                ...config,
-                                                benefits: {
-                                                    enabled: config.benefits?.enabled ?? true,
-                                                    items: newItems
-                                                }
-                                            });
-                                        }
-                                    }}
-                                    placeholder="Benefit text"
-                                />
-                            </div>
-                        ))}
-
-                        <Button onClick={() => handleSave('benefits')} disabled={isSaving}>
-                            {isSaving ? 'Saving...' : 'Save Benefits Settings'}
-                        </Button>
-                    </CardContent>
-                </Card>
-            </TabsContent>
-            <TabsContent value="categoryGrid">
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Collection Grid</CardTitle>
-                        <CardDescription>Customize the appearance of collection cards.</CardDescription>
+                        <CardTitle className="text-base">Brand Identity</CardTitle>
+                        <CardDescription>Core identity settings visible across your store.</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
                         <div className="space-y-2">
-                            <Label>Card Aspect Ratio</Label>
-                            <select
-                                className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                                value={config.categoryGrid?.aspectRatio || '0.8'}
-                                onChange={(e) => setConfig({
-                                    ...config,
-                                    categoryGrid: { aspectRatio: e.target.value }
-                                })}
-                            >
-                                <option value="0.8">Portrait (4:5) - Default</option>
-                                <option value="1">Square (1:1)</option>
-                                <option value="1.33">Landscape (4:3)</option>
-                                <option value="0.66">Tall (2:3)</option>
-                            </select>
-                            <p className="text-[0.8rem] text-muted-foreground">
-                                This controls the shape of collection cards on the homepage and cropping aspect ratio.
-                            </p>
+                            <Label className="text-xs font-medium text-gray-500 uppercase tracking-wider">Store Name</Label>
+                            <Input
+                                value={config.brand.name || ''}
+                                onChange={(e) => setConfig({ ...config, brand: { ...config.brand, name: e.target.value } })}
+                            />
                         </div>
-                        <Button onClick={() => handleSave('categoryGrid')} disabled={isSaving}>
-                            {isSaving ? 'Saving...' : 'Save Collection Settings'}
-                        </Button>
+                        <div className="space-y-2">
+                            <Label className="text-xs font-medium text-gray-500 uppercase tracking-wider">Tagline</Label>
+                            <Input
+                                value={config.brand.tagline || ''}
+                                onChange={(e) => setConfig({ ...config, brand: { ...config.brand, tagline: e.target.value } })}
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <Label className="text-xs font-medium text-gray-500 uppercase tracking-wider">Announcement Bar</Label>
+                            <Input
+                                value={config.brand.announcement || ''}
+                                onChange={(e) => setConfig({ ...config, brand: { ...config.brand, announcement: e.target.value } })}
+                                placeholder="e.g. Free shipping over Rs. 10,000"
+                            />
+                        </div>
+                        <div className="flex items-center justify-between py-2">
+                            <Label htmlFor="show-announcement" className="text-sm">Show Announcement Bar</Label>
+                            <Switch
+                                id="show-announcement"
+                                checked={config.brand.showAnnouncement || false}
+                                onCheckedChange={(checked) => setConfig({ ...config, brand: { ...config.brand, showAnnouncement: checked } })}
+                            />
+                        </div>
                     </CardContent>
                 </Card>
-            </TabsContent>
 
-            <TabsContent value="delivery">
                 <Card>
                     <CardHeader>
-                        <CardTitle>Delivery Settings</CardTitle>
-                        <CardDescription>Configure multiple delivery methods and free shipping threshold.</CardDescription>
+                        <CardTitle className="text-base">Theme</CardTitle>
+                        <CardDescription>Primary accent color used across the store.</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="flex items-center gap-4">
+                            <input
+                                type="color"
+                                value={config.theme?.primaryColor || '#000000'}
+                                onChange={(e) => setConfig({ ...config, theme: { ...config.theme, primaryColor: e.target.value } })}
+                                className="w-12 h-12 rounded-lg cursor-pointer border border-gray-200 p-1"
+                            />
+                            <div className="flex-1">
+                                <p className="text-sm font-medium text-gray-900">{config.theme?.primaryColor || '#000000'}</p>
+                                <p className="text-xs text-gray-500">Used for buttons, links, and accents</p>
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
+
+                <Button onClick={() => handleSave('brand')} disabled={isSaving} className="w-full h-11">
+                    {isSaving ? 'Saving...' : 'Save Brand Settings'}
+                </Button>
+            </TabsContent>
+
+            {/* ═══════════════════════════════════════════════════════════════
+                 DELIVERY TAB
+                 ═══════════════════════════════════════════════════════════════ */}
+            <TabsContent value="delivery" className="space-y-6">
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="text-base">Delivery Configuration</CardTitle>
+                        <CardDescription>Configure shipping methods and free delivery threshold.</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-6">
-                        {/* STANDARD DELIVERY */}
-                        <div className="space-y-4 border-b border-border pb-6">
-                            <h3 className="text-sm font-semibold uppercase tracking-wider">Standard Delivery</h3>
+                        {/* Standard */}
+                        <div className="space-y-4 pb-6 border-b">
+                            <h3 className="text-sm font-semibold uppercase tracking-wider text-gray-500">Standard Delivery</h3>
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-2">
-                                    <Label>Price (Rs.)</Label>
+                                    <Label className="text-xs font-medium text-gray-500 uppercase tracking-wider">Price (Rs.)</Label>
                                     <Input
                                         type="number"
                                         value={config.delivery?.standard?.price ?? 250}
@@ -586,7 +347,7 @@ export function StoreConfigForm({ initialConfig }: StoreConfigFormProps) {
                                     />
                                 </div>
                                 <div className="space-y-2">
-                                    <Label>Delivery Time</Label>
+                                    <Label className="text-xs font-medium text-gray-500 uppercase tracking-wider">Delivery Time</Label>
                                     <Input
                                         value={config.delivery?.standard?.time ?? '3-5 Working Days'}
                                         onChange={(e) => setConfig({
@@ -598,28 +359,15 @@ export function StoreConfigForm({ initialConfig }: StoreConfigFormProps) {
                                         })}
                                     />
                                 </div>
-                                <div className="col-span-2 space-y-2">
-                                    <Label>Description</Label>
-                                    <Input
-                                        value={config.delivery?.standard?.description ?? 'Reliable delivery via TCS or Leopards.'}
-                                        onChange={(e) => setConfig({
-                                            ...config,
-                                            delivery: {
-                                                ...config.delivery,
-                                                standard: { ...config.delivery.standard, description: e.target.value }
-                                            }
-                                        })}
-                                    />
-                                </div>
                             </div>
                         </div>
 
-                        {/* EXPRESS DELIVERY */}
-                        <div className="space-y-4 border-b border-border pb-6">
-                            <h3 className="text-sm font-semibold uppercase tracking-wider">Express Delivery</h3>
+                        {/* Express */}
+                        <div className="space-y-4 pb-6 border-b">
+                            <h3 className="text-sm font-semibold uppercase tracking-wider text-gray-500">Express Delivery</h3>
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-2">
-                                    <Label>Price (Rs.)</Label>
+                                    <Label className="text-xs font-medium text-gray-500 uppercase tracking-wider">Price (Rs.)</Label>
                                     <Input
                                         type="number"
                                         value={config.delivery?.express?.price ?? 450}
@@ -633,7 +381,7 @@ export function StoreConfigForm({ initialConfig }: StoreConfigFormProps) {
                                     />
                                 </div>
                                 <div className="space-y-2">
-                                    <Label>Delivery Time</Label>
+                                    <Label className="text-xs font-medium text-gray-500 uppercase tracking-wider">Delivery Time</Label>
                                     <Input
                                         value={config.delivery?.express?.time ?? '1-2 Working Days'}
                                         onChange={(e) => setConfig({
@@ -645,84 +393,108 @@ export function StoreConfigForm({ initialConfig }: StoreConfigFormProps) {
                                         })}
                                     />
                                 </div>
-                                <div className="col-span-2 space-y-2">
-                                    <Label>Description</Label>
-                                    <Input
-                                        value={config.delivery?.express?.description ?? 'Priority processing and overnight shipping.'}
-                                        onChange={(e) => setConfig({
-                                            ...config,
-                                            delivery: {
-                                                ...config.delivery,
-                                                express: { ...config.delivery.express, description: e.target.value }
-                                            }
-                                        })}
-                                    />
-                                </div>
                             </div>
                         </div>
 
-                        {/* FREE THRESHOLD */}
-                        <div className="space-y-4">
-                            <div className="space-y-2">
-                                <Label>Free Delivery Threshold (Rs.)</Label>
-                                <Input
-                                    type="number"
-                                    value={config.delivery?.freeThreshold ?? 2000}
-                                    onChange={(e) => setConfig({
-                                        ...config,
-                                        delivery: {
-                                            ...config.delivery,
-                                            freeThreshold: Number(e.target.value)
-                                        }
-                                    })}
-                                    placeholder="2000"
-                                />
-                                <p className="text-[0.8rem] text-muted-foreground">
-                                    Orders above this amount get free <strong>Standard</strong> delivery.
-                                </p>
-                            </div>
-
-                            <div className="p-4 bg-muted/50 rounded-lg border border-border">
-                                <p className="text-sm">
-                                    <strong>Logic:</strong> Orders ≥ Rs. {config.delivery?.freeThreshold ?? 2000} lead to
-                                    <span className="text-green-500 font-medium mx-1">FREE STANDARD DELIVERY</span>.
-                                    Express delivery always maintains its set price.
-                                </p>
+                        {/* Free Threshold */}
+                        <div className="space-y-3">
+                            <Label className="text-xs font-medium text-gray-500 uppercase tracking-wider">Free Delivery Threshold (Rs.)</Label>
+                            <Input
+                                type="number"
+                                value={config.delivery?.freeThreshold ?? 2000}
+                                onChange={(e) => setConfig({
+                                    ...config,
+                                    delivery: {
+                                        ...config.delivery,
+                                        freeThreshold: Number(e.target.value)
+                                    }
+                                })}
+                            />
+                            <div className="p-3 bg-green-50 rounded-lg border border-green-100 text-sm text-green-800">
+                                Orders ≥ Rs. {config.delivery?.freeThreshold ?? 2000} → <strong>Free Standard Delivery</strong>
                             </div>
                         </div>
-
-                        <Button onClick={() => handleSave('delivery')} disabled={isSaving} className="w-full">
-                            {isSaving ? 'Saving...' : 'Save All Delivery Settings'}
-                        </Button>
                     </CardContent>
                 </Card>
+
+                <Button onClick={() => handleSave('delivery')} disabled={isSaving} className="w-full h-11">
+                    {isSaving ? 'Saving...' : 'Save Delivery Settings'}
+                </Button>
             </TabsContent>
 
+            {/* ═══════════════════════════════════════════════════════════════
+                 CURRENCY TAB
+                 ═══════════════════════════════════════════════════════════════ */}
+            <TabsContent value="currency" className="space-y-6">
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="text-base">Currency</CardTitle>
+                        <CardDescription>Set the currency used for product pricing.</CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        <div className="space-y-2">
+                            <Label className="text-xs font-medium text-gray-500 uppercase tracking-wider">Preset</Label>
+                            <Select onValueChange={(val) => {
+                                const presets: Record<string, { code: string, symbol: string }> = {
+                                    'PKR': { code: 'PKR', symbol: 'Rs.' },
+                                    'USD': { code: 'USD', symbol: '$' },
+                                    'GBP': { code: 'GBP', symbol: '£' },
+                                    'EUR': { code: 'EUR', symbol: '€' },
+                                    'AED': { code: 'AED', symbol: 'د.إ' }
+                                };
+                                if (presets[val]) setConfig({ ...config, currency: presets[val] });
+                            }}>
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Select a preset..." />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="PKR">PKR - Pakistani Rupee</SelectItem>
+                                    <SelectItem value="USD">USD - US Dollar</SelectItem>
+                                    <SelectItem value="GBP">GBP - British Pound</SelectItem>
+                                    <SelectItem value="EUR">EUR - Euro</SelectItem>
+                                    <SelectItem value="AED">AED - UAE Dirham</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                                <Label className="text-xs font-medium text-gray-500 uppercase tracking-wider">Code (ISO)</Label>
+                                <Input
+                                    value={config.currency?.code ?? ''}
+                                    onChange={(e) => setConfig({ ...config, currency: { ...(config.currency || { symbol: 'Rs.' }), code: e.target.value } })}
+                                    placeholder="PKR"
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <Label className="text-xs font-medium text-gray-500 uppercase tracking-wider">Symbol</Label>
+                                <Input
+                                    value={config.currency?.symbol ?? ''}
+                                    onChange={(e) => setConfig({ ...config, currency: { ...(config.currency || { code: 'PKR' }), symbol: e.target.value } })}
+                                    placeholder="Rs."
+                                />
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
+
+                <Button onClick={() => handleSave('currency')} disabled={isSaving} className="w-full h-11">
+                    {isSaving ? 'Saving...' : 'Save Currency Settings'}
+                </Button>
+            </TabsContent>
+
+            {/* Image Cropper Modal */}
             {tempCropImage && (
                 <ImageCropper
                     image={tempCropImage}
-                    aspect={16 / 9}
+                    aspect={21 / 9}
                     onCropComplete={(blob) => {
-                        const file = new File([blob], 'hero.webp', { type: 'image/webp' });
+                        const file = new File([blob], 'background.webp', { type: 'image/webp' });
                         setHeroFile(file);
                         setTempCropImage(null);
                     }}
                     onCancel={() => setTempCropImage(null)}
                 />
             )}
-            {tempMobileCropImage && (
-                <ImageCropper
-                    image={tempMobileCropImage}
-                    aspect={9 / 16}
-                    onCropComplete={(blob) => {
-                        const file = new File([blob], 'hero-mobile.webp', { type: 'image/webp' });
-                        setMobileHeroFile(file);
-                        setTempMobileCropImage(null);
-                    }}
-                    onCancel={() => setTempMobileCropImage(null)}
-                />
-            )}
         </Tabs>
     );
 }
-

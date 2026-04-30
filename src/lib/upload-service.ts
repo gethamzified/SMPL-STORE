@@ -186,12 +186,13 @@ async function uploadFileWithProgress(
         const response = JSON.parse(xhr.responseText);
         
         // Map Cloudinary response to our expected UploadResult
-        // Add automatic format (WebP/AVIF), quality, and smart gravity optimization
-        const optimizedUrl = response.secure_url.replace('/upload/', '/upload/f_auto,q_auto,g_auto/');
-        const blurDataUrl = response.secure_url.replace('/upload/', '/upload/w_10,e_blur:1000,f_auto,q_auto/');
+        // Store the RAW URL — the cloudinary-loader handles all transforms at delivery time
+        // This prevents double-transform issues (f_auto,q_auto being injected twice)
+        const rawUrl = response.secure_url;
+        const blurDataUrl = rawUrl.replace('/upload/', '/upload/w_20,e_blur:800,q_auto,f_auto/');
         
         resolve({
-          url: optimizedUrl,
+          url: rawUrl,
           blurDataUrl: blurDataUrl,
           width: response.width,
           height: response.height,

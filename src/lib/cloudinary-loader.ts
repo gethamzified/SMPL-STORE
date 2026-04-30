@@ -1,3 +1,70 @@
+/**
+ * Cloudinary Image Loader for Next.js
+ * 
+ * Strategy:
+ * 1. Cloudinary URLs → Strip existing transforms, apply fresh optimized ones
+ * 2. Supabase/External URLs → Route through Cloudinary Fetch API for CDN + optimization
+ * 3. Local URLs → Pass through with width query param (for SVGs, favicons, etc.)
+ * 
+ * Optimization stack:
+ * - f_auto: Auto-negotiate format (AVIF > WebP > JPEG based on browser)
+ * - q_auto: Perceptual quality optimization (Cloudinary's ML-based)
+ * - w_{width}: Responsive width matching Next.js deviceSizes/imageSizes
+ * - c_limit: Never upscale, only downscale
+ * - dpr_auto: Serve 2x for retina displays automatically
+ */
+
+const CLOUD_NAME = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || 'ddk9lonhp';
+
+/**
+ * Build a clean Cloudinary transformation string
+ */
+function buildTransforms(width: number, quality?: number): string {
+  return [
+    `w_${width}`,
+    'c_limit',        // Never upscale
+    `q_${quality || 'auto'}`,
+    'f_auto',         // AVIF/WebP auto-negotiation
+  ].join(',');
+}
+
+/**
+ * For Cloudinary upload URLs, strip ALL transformation segments
+ * and return just the base + clean asset path.
+ * 
+ * Input:  https://res.cloudinary.com/cloud/image/upload/f_auto,q_auto/v123/folder/image.png
+ * Output: { base: "https://res.cloudinary.com/cloud/image/upload", path: "v123/folder/image.png" }
+ */
+function parseCloudinaryUrl(url: string): { base: string; path: string } | null {
+  const uploadSplit = url.split('/upload/');
+  if (uploadSplit.length !== 2) return null;
+
+  const base = uploadSplit[0] + '/upload';
+  const segments = uploadSplit[1].split('/');
+
+  // Walk segments until we find a non-transform one
+  // Transforms look like: "f_auto", "w_500,c_limit,q_auto", "g_auto", "e_blur:1000"
+  // Non-transforms: version strings "v1234567890", folder names, filenames
+  let firstNonTransformIndex = 0;
+  for (let i = 0; i < segments.length; i++) {
+    const seg = segments[i];
+    // A segment is a transform if it:
+    // - Contains a comma (multi-param transform like "w_500,c_limit")
+    // - Matches the pattern letter(s)_value (like "f_auto", "q_80", "w_1920", "e_blur:1000")
+    // - Is NOT a version string (v followed by digits)
+    const isVersionString = /^v\d+$/.test(seg);
+    const isTransform = !isVersionString && (seg.includes(',') || /^[a-z]{1,2}_/.test(seg));
+    
+    if (!isTransform) {
+      firstNonTransformIndex = i;
+      break;
+    }
+  }
+
+  const path = segments.slice(firstNonTransformIndex).join('/');
+  return { base, path };
+}
+
 export default function cloudinaryLoader({
   src,
   width,
@@ -7,29 +74,38 @@ export default function cloudinaryLoader({
   width: number;
   quality?: number;
 }) {
-  // If it's not a Cloudinary URL, return as is
-  if (!src.includes('res.cloudinary.com')) {
+  const transforms = buildTransforms(width, quality);
+
+  // ── 1. Cloudinary Upload URLs ─────────────────────────────────────────
+  // Already hosted on Cloudinary — just swap/inject transforms
+  if (src.includes('res.cloudinary.com') && src.includes('/upload/')) {
+    const parsed = parseCloudinaryUrl(src);
+    if (parsed) {
+      return `${parsed.base}/${transforms}/${parsed.path}`;
+    }
+    // Fallback: just inject after /upload/
+    return src.replace('/upload/', `/upload/${transforms}/`);
+  }
+
+  // ── 2. Cloudinary Fetch URLs ──────────────────────────────────────────
+  // Already a fetch URL — return as-is (already optimized)
+  if (src.includes('res.cloudinary.com') && src.includes('/fetch/')) {
     return src;
   }
 
-  // Extract base URL and options
-  // Cloudinary URL format: https://res.cloudinary.com/[cloud_name]/image/upload/[transformations]/[version]/[public_id].[ext]
-  
-  // We want to inject or replace transformations
-  // Standard optimizations: f_auto (format), q_auto (quality), w_[width] (width), c_limit (fit)
-  const params = [
-    `w_${width}`,
-    'c_limit',
-    `q_${quality || 'auto'}`,
-    'f_auto',
-    'g_auto',
-  ].join(',');
-
-  // If the URL already has transformations, we need to be careful
-  // But usually, we just want to replace the /upload/ part with /upload/[params]/
-  if (src.includes('/upload/')) {
-    return src.replace('/upload/', `/upload/${params}/`);
+  // ── 3. Local/Static Assets ────────────────────────────────────────────
+  // SVGs, favicons, local images — pass through, just satisfy the width contract
+  if (src.startsWith('/') || src.startsWith('data:')) {
+    const connector = src.includes('?') ? '&' : '?';
+    return `${src}${connector}w=${width}`;
   }
 
-  return src;
+  // ── 4. External URLs (Supabase Storage, Unsplash, Pexels, etc.) ──────
+  // Route through Cloudinary's Fetch API for CDN delivery + auto optimization
+  // This is Cloudinary's most powerful feature for external images:
+  // - Cached at Cloudinary's edge nodes worldwide
+  // - Auto format negotiation (AVIF/WebP)
+  // - Responsive resizing
+  // - No re-upload needed
+  return `https://res.cloudinary.com/${CLOUD_NAME}/image/fetch/${transforms}/${encodeURI(src)}`;
 }

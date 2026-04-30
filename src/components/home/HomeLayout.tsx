@@ -1,14 +1,10 @@
 import { Suspense } from "react";
 import { HomeData } from "@/lib/home-data";
-import { HomeProductsLoader } from "@/components/home/HomeProductsLoader";
 import { HeroCarousel } from "./HeroCarousel";
 
-// Skeletons
-import { ProductGridSkeleton } from "@/components/skeletons/ProductGridSkeleton";
-
-async function HomeHeroLoader({ productsPromise }: { productsPromise: Promise<any[]> }) {
+async function HomeHeroLoader({ productsPromise, hero }: { productsPromise: Promise<any[]>; hero: any }) {
     const products = await productsPromise;
-    return <HeroCarousel products={products} />;
+    return <HeroCarousel products={products} hero={hero} />;
 }
 
 interface HomeLayoutProps {
@@ -16,16 +12,13 @@ interface HomeLayoutProps {
 }
 
 export default function HomeLayout({ data }: HomeLayoutProps) {
-    const { productsPromise } = data;
+    const { productsPromise, hero } = data;
 
     return (
         <div className="relative w-full">
-            {/* High-Tech Product Carousel Hero */}
             <Suspense fallback={<div className="h-screen w-full animate-pulse bg-black/5 backdrop-blur-sm" />}>
-                <HomeHeroLoader productsPromise={productsPromise} />
+                <HomeHeroLoader productsPromise={productsPromise} hero={hero} />
             </Suspense>
-
-
         </div>
     );
 }

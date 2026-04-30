@@ -136,8 +136,8 @@ export default async function RootLayout({
         {/* Preconnect to critical CDNs for faster resource loading */}
         <link rel="preconnect" href="https://qlopyjttjddgupgyktux.supabase.co" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://qlopyjttjddgupgyktux.supabase.co" />
-
-
+        <link rel="preconnect" href="https://res.cloudinary.com" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="https://res.cloudinary.com" />
 
         {/* Organization Schema */}
         <script
