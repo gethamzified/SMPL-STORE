@@ -53,3 +53,17 @@ lerna-debug.log*
 
 # OS specific
 Thumbs.db
+
+# AI Agents & Skills
+.agents/
+skills-lock.json
+.instructions.md
+.prompt.md
+.agent.md
+AGENTS.md
+CODEBASE_REPORT.md
+ADMIN_PANEL_REPORT.md
+implementation_plan.md
+task.md
+schema_dump.sql
+
