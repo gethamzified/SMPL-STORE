@@ -94,12 +94,13 @@ export function SearchModal() {
     }, []);
 
     React.useEffect(() => {
-        const search = async () => {
-            if (!query.trim()) {
-                setResults({ products: [] });
-                return;
-            }
+        if (!open || !query.trim()) {
+            setResults({ products: [] });
+            setLoading(false);
+            return;
+        }
 
+        const search = async () => {
             setLoading(true);
             try {
                 const { data: productsData } = await supabase
@@ -122,7 +123,7 @@ export function SearchModal() {
 
         const debounce = setTimeout(search, 300);
         return () => clearTimeout(debounce);
-    }, [query, supabase]);
+    }, [open, query, supabase]);
 
     const runCommand = React.useCallback((command: () => unknown) => {
         setOpen(false);

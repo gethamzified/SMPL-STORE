@@ -2,8 +2,6 @@ import { Suspense } from "react";
 // rebuild-force-1
 import { ProductService } from "@/services/products";
 
-import AsyncProductGrid from "@/components/collection/AsyncProductGrid";
-import ProductFilters from "@/components/collection/ProductFilters";
 import {
     Breadcrumb,
     BreadcrumbItem,

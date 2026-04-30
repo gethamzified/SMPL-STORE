@@ -3,7 +3,6 @@ import { createStaticClient } from "@/lib/supabase/static";
 import { ProductService } from "@/services/products";
 
 import ProductDetail from "@/components/product/ProductDetail";
-import Featuring from "@/components/sections/Featuring";
 import RelatedProducts from "@/components/product/RelatedProducts";
 import Link from "next/link";
 import { Product } from "@/lib/types";
@@ -153,12 +152,6 @@ export default async function ProductPage({ params }: Props) {
         <ProductDetail product={typedProduct} />
       </div>
 
-      <div className="w-full mb-20">
-        <Featuring
-          images={[typedProduct.cover_image, ...(typedProduct.images || [])].filter(Boolean) as string[]}
-          blurDataUrls={(typedProduct.metadata as Record<string, unknown>)?.blurDataUrls as Record<string, string> | undefined}
-        />
-      </div>
 
       <div className="max-w-[1400px] mx-auto px-6 md:px-12 mb-32">
         <div className="flex flex-col items-center justify-center mb-12 gap-4">

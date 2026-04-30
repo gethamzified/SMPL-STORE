@@ -51,14 +51,14 @@ const Navbar = ({ brandName = "SMPL", navItems }: { brandName?: string; navItems
     <>
       {/* Only mount CartSheet after user interacts with cart */}
       {isCartSheetLoaded && <CartSheet />}
-      <header className="w-full px-4 py-4 flex items-center justify-between z-40">
+      <header className="relative z-40 w-full px-4 py-4 flex items-center justify-between">
         {/* Left: Hamburger */}
         <div className="flex-1 flex justify-start">
           <button
             onClick={() => setIsMenuOpen(true)}
-            className="bg-[#ff0000] text-white w-5 h-5 flex items-center justify-center cursor-pointer transition-transform active:scale-95 "
+            className="bg-[#ff0000] text-white h-10 w-10 flex items-center justify-center cursor-pointer transition-transform active:scale-95"
           >
-            <Menu className="w-7 h-7 stroke-[2]" />
+            <Menu className="w-5 h-5 stroke-[2]" />
           </button>
         </div>
 
@@ -79,7 +79,7 @@ const Navbar = ({ brandName = "SMPL", navItems }: { brandName?: string; navItems
         {/* Right Side: Search & Cart */}
         <div className="flex-1 flex justify-end gap-2">
           {/* Search */}
-          <div className="bg-[#ff0000] text-white w-5 h-5 flex items-center justify-center cursor-pointer transition-transform active:scale-95  overflow-hidden">
+          <div className="bg-[#ff0000] text-white h-10 w-10 flex items-center justify-center cursor-pointer transition-transform active:scale-95">
             <SearchModal />
           </div>
 
@@ -89,7 +89,7 @@ const Navbar = ({ brandName = "SMPL", navItems }: { brandName?: string; navItems
               if (!isCartSheetLoaded) setIsCartSheetLoaded(true);
               setIsCartOpen(true);
             }}
-            className="bg-[#ff0000] text-white w-5 h-5 flex items-center justify-center cursor-pointer transition-transform active:scale-95 "
+            className="relative bg-[#ff0000] text-white h-10 w-10 flex items-center justify-center cursor-pointer transition-transform active:scale-95"
           >
             <ShoppingCart className="w-5 h-5 stroke-[2]" />
             {isMounted && cartCount > 0 && (

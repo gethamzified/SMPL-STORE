@@ -90,10 +90,10 @@ export default function MobileMenuOverlay({ navLinks, onClose }: MobileMenuOverl
                     </div>
                     
                     <div className="flex gap-6 mb-8">
-                        <Link href="https://www.instagram.com/smpl.pakistan/" target="_blank" className="hover:opacity-60 transition-opacity">
+                        <Link href="https://www.instagram.com/smpl.pakistan/" target="_blank" rel="noopener noreferrer" className="hover:opacity-60 transition-opacity">
                             <Instagram className="w-5 h-5 text-black/60" />
                         </Link>
-                        <Link href="https://facebook.com" target="_blank" className="hover:opacity-60 transition-opacity">
+                        <Link href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="hover:opacity-60 transition-opacity">
                             <Facebook className="w-5 h-5 text-black/60" />
                         </Link>
                     </div>

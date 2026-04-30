@@ -62,7 +62,7 @@ export function HeroCarousel({ products, hero }: HeroCarouselProps) {
                         >
                             <Link
                                 href={`/product/${product.slug}`}
-                                className="relative w-full h-[70vh] max-w-5xl cursor-pointer group/img transform-gpu"
+                                className="relative w-full h-[70vh] max-w-5xl cursor-pointer group/img transform-gpu -translate-y-8"
                             >
                                 <Image
                                     src={product.cover_image || ''}
@@ -78,33 +78,6 @@ export function HeroCarousel({ products, hero }: HeroCarouselProps) {
                 </div>
             </div>
 
-            {/* 3. Hero Heading & Subheading from Admin Config */}
-            {(hero?.heading || hero?.subheading) && (
-                <div className="absolute top-28 left-6 md:left-12 z-20 max-w-lg pointer-events-none">
-                    {hero.heading && (
-                        <h1 className="text-[10px] md:text-xs font-black uppercase tracking-[0.4em] text-black/30 mb-1">
-                            {hero.heading}
-                        </h1>
-                    )}
-                    {hero.subheading && (
-                        <p className="text-[9px] md:text-[10px] font-bold uppercase tracking-[0.25em] text-black/20">
-                            {hero.subheading}
-                        </p>
-                    )}
-                </div>
-            )}
-
-            {/* CTA from admin */}
-            {hero?.ctaText && hero?.ctaLink && (
-                <div className="absolute top-28 right-6 md:right-12 z-20">
-                    <Link
-                        href={hero.ctaLink}
-                        className="text-[9px] font-black uppercase tracking-[0.3em] text-black/30 hover:text-black transition-colors duration-300"
-                    >
-                        {hero.ctaText} →
-                    </Link>
-                </div>
-            )}
 
             {/* 4. Bottom Right: Price */}
             <div
