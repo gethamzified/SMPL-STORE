@@ -1,4 +1,5 @@
 import { getHeroConfig, getHomepageLayout } from "@/lib/theme";
+import { HomepageSection } from "@/lib/types";
 
 import Image from "next/image";
 import style2 from "@/assets/style-2.jpg";
@@ -12,8 +13,8 @@ export default async function AboutPage() {
   ]);
 
   // Determine Hero Image (Same logic as Homepage)
-  const heroSection = layout.find(s => s.type === 'hero');
-  const heroImage = heroSection?.content?.image || heroConfig.image || "https://framerusercontent.com/images/T0Z10o3Yaf4JPrk9f5lhcmJJwno.jpg";
+  const heroSection = layout.find((s: HomepageSection) => s.type === 'hero');
+  const heroImage = (heroSection?.content as any)?.image || heroConfig.image || "https://framerusercontent.com/images/T0Z10o3Yaf4JPrk9f5lhcmJJwno.jpg";
 
   return (
     <main className="min-h-screen bg-background selection:bg-black selection:text-white">
@@ -27,6 +28,7 @@ export default async function AboutPage() {
             className="object-cover object-top"
             priority
             sizes="100vw"
+            quality={80}
           />
           <div className="absolute inset-0 bg-black/60" />
         </div>

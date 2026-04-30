@@ -9,8 +9,6 @@ import type {
     BenefitsConfig,
     FooterConfig,
     MenuItem,
-    FooterConfig,
-    MenuItem,
     Product
 } from '@/lib/types'
 

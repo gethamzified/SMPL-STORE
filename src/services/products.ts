@@ -53,7 +53,6 @@ function normalizeProductPayload(data: ProductInput) {
         allow_backorder: data.allow_backorder ?? false,
         weight: data.weight ?? null,
         weight_unit: data.weight_unit ?? 'kg',
-        weight_unit: data.weight_unit ?? 'kg',
         tags,
         vendor: data.vendor ?? null,
         product_type: data.product_type ?? null,

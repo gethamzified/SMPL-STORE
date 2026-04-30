@@ -52,7 +52,7 @@ export default async function StoreLayout({
                     </div>
 
                     {/* Page Content */}
-                    <div className="flex-grow relative z-10">
+                    <div className="flex-grow relative">
                         {children}
                     </div>
 

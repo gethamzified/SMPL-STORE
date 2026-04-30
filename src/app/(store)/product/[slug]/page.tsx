@@ -83,7 +83,6 @@ export default async function ProductPage({ params }: Props) {
 
   // Fetch Related Products (Cached)
   const relatedProducts = await ProductService.getProducts({
-    categoryId: typedProduct.category_id || undefined,
     status: 'active',
     limit: 4
   }).then(res => res.data.filter(p => p.id !== typedProduct.id));

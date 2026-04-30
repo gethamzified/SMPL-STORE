@@ -7,17 +7,15 @@ export default async function EditProductPage({ params }: { params: Promise<{ id
   const resolvedParams = await params;
   const supabase = await createAdminClient();
 
-  // Fetch product with variants and collections in parallel
-  const [productResult, collectionsResult] = await Promise.all([
+  // Fetch product with variants in parallel
+  const [productResult] = await Promise.all([
     supabase.from('products').select(`
       *,
       variants:product_variants(*)
-    `).eq('id', resolvedParams.id).maybeSingle(),
-    supabase.from('collections').select('*').order('title')
+    `).eq('id', resolvedParams.id).maybeSingle()
   ]);
 
   let product = productResult.data;
-  const collections = collectionsResult.data || [];
 
   if (!product) {
     return (
@@ -65,7 +63,7 @@ export default async function EditProductPage({ params }: { params: Promise<{ id
           <p className="text-gray-500 text-sm">Update details for {product.title}</p>
         </div>
       </div>
-      <ProductForm initialData={product} collections={collections} />
+      <ProductForm initialData={product} />
     </div>
   );
 }

@@ -150,14 +150,6 @@ export function MobileProductCard({
                             </span>
                         </div>
 
-                        {/* Category Info */}
-                        {product.category && (
-                            <div className="flex items-center justify-between py-2 border-t border-gray-100">
-                                <span className="text-gray-500 text-sm">Category</span>
-                                <span className="text-gray-700 text-sm">{product.category}</span>
-                            </div>
-                        )}
-
                         {/* Created Date */}
                         {product.created_at && (
                             <div className="flex items-center justify-between py-2 border-t border-gray-100">

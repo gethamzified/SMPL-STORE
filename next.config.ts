@@ -62,7 +62,7 @@ const nextConfig: NextConfig = {
     imageSizes: [128, 256, 384, 512, 640],
     // Cache optimized images for 1 year
     minimumCacheTTL: 31536000,
-    qualities: [75, 85],
+    qualities: [75, 80, 85],
   },
 
 

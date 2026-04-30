@@ -10,6 +10,8 @@ import {
     BreadcrumbPage,
     BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+import ProductCard from "@/components/product/ProductCard";
+import { Product } from "@/lib/types";
 
 export const revalidate = 3600; // ISR: 1 hour — cached shop listing
 
@@ -138,5 +140,40 @@ export default async function ShopPage({ searchParams }: {
 
 
         </main>
+    );
+}
+
+async function AsyncProductGrid({ productsPromise }: { productsPromise: Promise<Product[]> }) {
+    const products = await productsPromise;
+
+    if (!products || products.length === 0) {
+        return (
+            <div className="py-20 text-center">
+                <h3 className="text-2xl font-display mb-2">No items found</h3>
+                <p className="text-muted-foreground font-light text-sm uppercase tracking-widest">
+                    Try adjusting your silhouette or size selection
+                </p>
+            </div>
+        );
+    }
+
+    return (
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-y-8 gap-x-4 md:gap-y-16 md:gap-x-8">
+            {products.map((product, i) => (
+                <div key={product.id} className="animate-in fade-in slide-in-from-bottom-8 duration-700 ease-out-expo fill-mode-both" style={{ animationDelay: `${(i % 12) * 50}ms` }}>
+                    <ProductCard {...product} priority={i < 4} />
+                </div>
+            ))}
+        </div>
+    );
+}
+
+function ProductFilters() {
+    return (
+        <div className="flex flex-wrap items-center justify-between gap-4 mb-12 py-6 border-y border-border/50">
+            <div className="flex items-center gap-8 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+               <span>Showing All Silhouettes</span>
+            </div>
+        </div>
     );
 }

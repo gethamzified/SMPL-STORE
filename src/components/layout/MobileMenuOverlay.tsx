@@ -25,19 +25,11 @@ export default function MobileMenuOverlay({ navLinks, onClose }: MobileMenuOverl
 
             {/* Sidebar Content */}
             <div
-                className="absolute top-0 left-0 h-full w-[88%] max-w-[420px] bg-white/40 backdrop-blur-2xl text-black shadow-2xl flex flex-col animate-in slide-in-from-left duration-300 ease-out-expo"
-                style={{ 
-                    backgroundImage: "url('https://images.unsplash.com/photo-1513002749550-c59d786b8e6c?q=80&w=2574&auto=format&fit=crop')",
-                    backgroundSize: 'cover',
-                    backgroundPosition: 'left center'
-                }}
+                className="absolute top-0 left-0 h-full w-[88%] max-w-[420px] bg-white text-[#ff0000] shadow-2xl flex flex-col animate-in slide-in-from-left duration-300 ease-out-expo"
             >
-                {/* Overlay to ensure readability on clouds */}
-                <div className="absolute inset-0 bg-white/20 pointer-events-none" />
-
                 {/* Header */}
-                <div className="relative z-10 flex items-center justify-between px-5 py-4 border-b border-black/5">
-                    <span className="text-[10px] font-black uppercase tracking-[0.28em] text-black/60">Explore</span>
+                <div className="relative z-10 flex items-center justify-between px-5 py-4 border-b border-[#ff0000]/10">
+                    <span className="text-[10px] font-black uppercase tracking-[0.28em] text-[#ff0000]/70">Explore</span>
                     <button
                         onClick={onClose}
                         className="bg-[#ff0000] text-white w-8 h-8 flex items-center justify-center cursor-pointer transition-transform active:scale-95"
@@ -72,9 +64,9 @@ export default function MobileMenuOverlay({ navLinks, onClose }: MobileMenuOverl
                                         onClose();
                                     }
                                 }}
-                                className="group flex items-center justify-between py-3 border-b border-black/5"
+                                className="group flex items-center justify-between py-3 border-b border-[#ff0000]/10"
                             >
-                                <span className="text-4xl font-black uppercase tracking-tighter group-hover:pl-2 transition-all duration-300">
+                                <span className="text-4xl font-black uppercase tracking-tighter group-hover:pl-2 transition-all duration-300 text-black">
                                     {link.label}
                                 </span>
                                 <ArrowRight className="w-6 h-6 opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300" />
@@ -84,24 +76,24 @@ export default function MobileMenuOverlay({ navLinks, onClose }: MobileMenuOverl
                 </nav>
 
                 {/* Footer */}
-                <div className="relative z-10 p-6 border-t border-black/5 mt-auto">
+                <div className="relative z-10 p-6 border-t border-[#ffffff]/10 mt-auto">
                     <div className="mb-8">
-                         <span className="text-4xl font-black tracking-tighter text-[#ff0000]">SMPL.</span>
+                        <span className="text-4xl font-black tracking-tighter text-[#ffffff]">SMPL.</span>
                     </div>
                     
                     <div className="flex gap-6 mb-8">
                         <Link href="https://www.instagram.com/smpl.pakistan/" target="_blank" rel="noopener noreferrer" className="hover:opacity-60 transition-opacity">
-                            <Instagram className="w-5 h-5 text-black/60" />
+                            <Instagram className="w-5 h-5 text-[#ff0000]" />
                         </Link>
                         <Link href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="hover:opacity-60 transition-opacity">
-                            <Facebook className="w-5 h-5 text-black/60" />
+                            <Facebook className="w-5 h-5 text-[#ff0000]" />
                         </Link>
                     </div>
                     <div className="space-y-2">
-                        <p className="text-[10px] font-black uppercase tracking-[0.28em] text-black/40">
+                        <p className="text-[10px] font-black uppercase tracking-[0.28em] text-black">
                             © 2026 SMPL STUDIOS
                         </p>
-                        <p className="text-[10px] font-bold leading-relaxed text-black/40 max-w-[220px] uppercase">
+                        <p className="text-[10px] font-bold leading-relaxed text-black max-w-[220px] uppercase">
                             DEFINING THE FUTURE OF MODERN MINIMALISM.
                         </p>
                     </div>
