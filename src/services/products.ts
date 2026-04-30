@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server';
 import { InventoryService } from '@/services/inventory';
 import { createStaticClient } from '@/lib/supabase/static';
 import { createAdminClient } from '@/lib/supabase/admin';
+import { v2 as cloudinary } from 'cloudinary';
 import { AppError } from './errors';
 import { Product, ProductVariant, PaginatedResponse } from '@/lib/types';
 import { unstable_cache } from 'next/cache';
@@ -208,18 +209,33 @@ export const ProductService = {
             throw new AppError(error.message, 'DB_ERROR', 500);
         }
 
-        // Delete all associated images from storage
+        // Delete all associated images from Cloudinary
         if (product?.images && Array.isArray(product.images)) {
+            cloudinary.config({
+                cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
+                api_key: process.env.CLOUDINARY_API_KEY || process.env.CLOUDINARY_URL?.match(/:\/\/([^:]+)/)?.[1],
+                api_secret: process.env.CLOUDINARY_API_SECRET || process.env.CLOUDINARY_URL?.match(/:([^@]+)@/)?.[1]
+            });
+
             for (const imageUrl of product.images) {
                 if (!imageUrl) continue;
                 try {
-                    // Extract filename from URL
-                    const parts = imageUrl.split('/');
-                    const fileName = `products/${parts[parts.length - 1]}`;
-                    await supabase.storage.from('products').remove([fileName]);
+                    const url = new URL(imageUrl);
+                    if (url.hostname.includes('cloudinary.com')) {
+                        const parts = url.pathname.split('/');
+                        const uploadIndex = parts.indexOf('upload');
+                        if (uploadIndex !== -1) {
+                            let idParts = parts.slice(uploadIndex + 1);
+                            if (idParts[0] && /^v\d+$/.test(idParts[0])) idParts = idParts.slice(1);
+                            const fullPath = idParts.join('/');
+                            const lastDotIndex = fullPath.lastIndexOf('.');
+                            const publicId = lastDotIndex !== -1 ? fullPath.substring(0, lastDotIndex) : fullPath;
+                            
+                            await cloudinary.uploader.destroy(publicId);
+                        }
+                    }
                 } catch (err) {
-                    console.error('Failed to delete product image:', err);
-                    // Continue deleting other images even if one fails
+                    console.error('Failed to delete product image from Cloudinary:', err);
                 }
             }
         }
@@ -637,13 +653,12 @@ export const ProductService = {
         return { isValid: allValid, items: validatedItems, errors };
     },
 
-    // Helper for image uploads — now with Sharp processing
+    // Helper for image uploads — now with Cloudinary
     async handleImageUploads(files: File[], existingUrls: string[]): Promise<{
         urls: string[];
         blurDataUrls: Record<string, string>;
         errors: string[];
     }> {
-        const supabase = await createAdminClient();
         console.log('handleImageUploads: Starting', { fileCount: files.length, existingCount: existingUrls.length });
         const preservedUrls = Array.isArray(existingUrls) ? existingUrls.filter(Boolean) : [];
         const validFiles = files.filter(f => f && f.size > 0);
@@ -651,56 +666,35 @@ export const ProductService = {
         const blurMap: Record<string, string> = {};
         const errors: string[] = [];
 
+        cloudinary.config({
+            cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
+            api_key: process.env.CLOUDINARY_API_KEY || process.env.CLOUDINARY_URL?.match(/:\/\/([^:]+)/)?.[1],
+            api_secret: process.env.CLOUDINARY_API_SECRET || process.env.CLOUDINARY_URL?.match(/:([^@]+)@/)?.[1]
+        });
+
         for (const file of validFiles) {
             try {
-                // Process through Sharp: resize, convert to WebP, generate blur
-                console.log(`Processing file: ${file.name}, size: ${file.size}, type: ${file.type}`);
-                const processed = await processImage(file, 'product');
-                console.log('Image processed successfully', {
-                    originalSize: file.size,
-                    processedSize: processed.buffer.length,
-                    contentType: processed.contentType
+                const arrayBuffer = await file.arrayBuffer();
+                const buffer = Buffer.from(arrayBuffer);
+
+                const result = await new Promise<any>((resolve, reject) => {
+                    const uploadStream = cloudinary.uploader.upload_stream(
+                        { folder: 'products' },
+                        (error, result) => {
+                            if (error) reject(error);
+                            else resolve(result);
+                        }
+                    );
+                    uploadStream.end(buffer);
                 });
 
-                const fileName = generateImageFilename('products');
-
-                const { error: uploadError } = await supabase.storage
-                    .from('products')
-                    .upload(fileName, processed.buffer, {
-                        contentType: processed.contentType,
-                        cacheControl: '31536000',
-                    });
-
-                if (uploadError) {
-                    console.error('Upload error:', uploadError);
-                    errors.push(`Failed to upload ${file.name}: ${uploadError.message}`);
-                    continue;
-                }
-                console.log('Upload successful:', fileName);
-
-                const { data: { publicUrl } } = supabase.storage.from('products').getPublicUrl(fileName);
+                const publicUrl = result.secure_url;
                 newUrls.push(publicUrl);
-                blurMap[publicUrl] = processed.blurDataURL;
+                blurMap[publicUrl] = publicUrl.replace('/upload/', '/upload/w_10,e_blur:1000,f_auto,q_auto/');
+                console.log('Upload successful:', publicUrl);
             } catch (err: any) {
-                console.error('Image processing error:', err);
-
-                // Fallback: upload raw file if Sharp fails
-                try {
-                    const fileExt = file.name.split('.').pop()?.toLowerCase() || 'jpg';
-                    const fileName = `products/${Date.now()}-${Math.random().toString(36).substring(2, 15)}.${fileExt}`;
-                    const { error: uploadError } = await supabase.storage
-                        .from('products')
-                        .upload(fileName, file, { contentType: file.type, cacheControl: '31536000' });
-
-                    if (!uploadError) {
-                        const { data: { publicUrl } } = supabase.storage.from('products').getPublicUrl(fileName);
-                        newUrls.push(publicUrl);
-                    } else {
-                        errors.push(`Failed to upload ${file.name} (fallback): ${uploadError.message}`);
-                    }
-                } catch (fallbackErr: any) {
-                    errors.push(`Failed to upload ${file.name}: ${err.message || fallbackErr.message}`);
-                }
+                console.error('Image processing/upload error:', err);
+                errors.push(`Failed to upload ${file.name}: ${err.message || 'Unknown error'}`);
             }
         }
 

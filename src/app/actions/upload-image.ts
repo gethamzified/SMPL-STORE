@@ -1,7 +1,6 @@
 'use server';
 
-import { processImage, generateImageFilename } from '@/lib/image-processor';
-import { createAdminClient, ensureBucketExists } from '@/lib/supabase/admin';
+import { v2 as cloudinary } from 'cloudinary';
 
 const MAX_FILE_SIZE = 16 * 1024 * 1024; // 16 MB
 const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/avif', 'image/gif'];
@@ -23,6 +22,13 @@ export type UploadSuccess = {
 
 export type UploadResponse = UploadSuccess | UploadError;
 
+// Ensure Cloudinary is configured
+cloudinary.config({
+  cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY || process.env.CLOUDINARY_URL?.match(/:\/\/([^:]+)/)?.[1],
+  api_secret: process.env.CLOUDINARY_API_SECRET || process.env.CLOUDINARY_URL?.match(/:([^@]+)@/)?.[1]
+});
+
 export async function uploadImage(formData: FormData): Promise<UploadResponse> {
     try {
         const file = formData.get('file');
@@ -33,7 +39,7 @@ export async function uploadImage(formData: FormData): Promise<UploadResponse> {
 
         // Validate file type
         if (!ALLOWED_TYPES.includes(file.type)) {
-            return { error: `Unsupported file type: ${file.type}. Allowed: JPEG, PNG, WebP, AVIF` };
+            return { error: `Unsupported file type: ${file.type}. Allowed: JPEG, PNG, WebP, AVIF, GIF` };
         }
 
         // Validate file size
@@ -41,56 +47,32 @@ export async function uploadImage(formData: FormData): Promise<UploadResponse> {
             return { error: `File too large (${Math.round(file.size / 1024 / 1024)}MB). Maximum: ${MAX_FILE_SIZE / 1024 / 1024}MB` };
         }
 
-        // Process image through Sharp pipeline
-        let processed;
-        try {
-            processed = await processImage(file, 'product');
-        } catch (err) {
-            console.error('Sharp processing failed:', err);
-            return { error: 'Image processing failed. Please try a different image.' };
-        }
+        const arrayBuffer = await file.arrayBuffer();
+        const buffer = Buffer.from(arrayBuffer);
 
-        // Upload to Supabase Storage
-        const supabase = await createAdminClient();
+        // Upload to Cloudinary
+        const result = await new Promise<any>((resolve, reject) => {
+            const uploadStream = cloudinary.uploader.upload_stream(
+                { folder: 'products' },
+                (error, result) => {
+                    if (error) reject(error);
+                    else resolve(result);
+                }
+            );
+            uploadStream.end(buffer);
+        });
 
-        // Ensure bucket exists
-        try {
-            await ensureBucketExists('products', {
-                public: true,
-                fileSizeLimit: MAX_FILE_SIZE,
-                allowedMimeTypes: ['image/webp', 'image/jpeg', 'image/png', 'image/avif'],
-            });
-        } catch {
-            // Bucket likely already exists, continue
-        }
-
-        const fileName = generateImageFilename('products');
-
-        const { error: uploadError } = await supabase.storage
-            .from('products')
-            .upload(fileName, processed.buffer, {
-                contentType: processed.contentType,
-                cacheControl: '31536000', // 1 year immutable
-                upsert: false,
-            });
-
-        if (uploadError) {
-            console.error('Supabase upload error:', uploadError);
-            return { error: 'Failed to upload image to storage' };
-        }
-
-        const { data: { publicUrl } } = supabase.storage
-            .from('products')
-            .getPublicUrl(fileName);
+        const publicUrl = result.secure_url;
+        const blurDataUrl = publicUrl.replace('/upload/', '/upload/w_10,e_blur:1000,f_auto,q_auto/');
 
         return {
             data: {
                 url: publicUrl,
-                blurDataUrl: processed.blurDataURL,
-                width: processed.width,
-                height: processed.height,
-                originalSize: processed.originalSize,
-                processedSize: processed.processedSize,
+                blurDataUrl,
+                width: result.width,
+                height: result.height,
+                originalSize: file.size,
+                processedSize: result.bytes,
             }
         };
 

@@ -11,6 +11,7 @@ import { revalidatePath, revalidateTag, unstable_cache } from 'next/cache'
 import { redirect } from 'next/navigation'
 import type { Collection, ApiResponse, Product } from '@/lib/types'
 import { processImage, generateImageFilename } from '@/lib/image-processor'
+import { v2 as cloudinary } from 'cloudinary'
 
 
 // ==========================================
@@ -26,31 +27,26 @@ import { processImage, generateImageFilename } from '@/lib/image-processor'
 async function deleteImageFromStorage(url: string) {
   if (!url) return
   try {
-    const supabase = await createAdminClient()
+    cloudinary.config({
+      cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
+      api_key: process.env.CLOUDINARY_API_KEY || process.env.CLOUDINARY_URL?.match(/:\/\/([^:]+)/)?.[1],
+      api_secret: process.env.CLOUDINARY_API_SECRET || process.env.CLOUDINARY_URL?.match(/:([^@]+)@/)?.[1]
+    });
 
-    // Extract filename/path from URL
-    // URL: https://.../storage/v1/object/public/collections/filename.webp
     const urlObj = new URL(url)
-    const parts = urlObj.pathname.split('/')
-    const bucketIndex = parts.indexOf('collections') // Find bucket name in path
-
-    let storagePath = ''
-    if (bucketIndex !== -1 && bucketIndex < parts.length - 1) {
-      storagePath = parts.slice(bucketIndex + 1).join('/')
-    } else {
-      // Fallback to filename
-      storagePath = parts[parts.length - 1]
-    }
-
-    if (storagePath) {
-      const { error } = await supabase.storage
-        .from('collections')
-        .remove([storagePath])
-
-      if (error) {
-        console.error(`Failed to delete image ${storagePath} from collections:`, error.message)
-      } else {
-        console.log(`Deleted old collection image: ${storagePath}`)
+    if (urlObj.hostname.includes('cloudinary.com')) {
+      const parts = urlObj.pathname.split('/')
+      const uploadIndex = parts.indexOf('upload')
+      
+      if (uploadIndex !== -1) {
+        let idParts = parts.slice(uploadIndex + 1)
+        if (idParts[0] && /^v\d+$/.test(idParts[0])) idParts = idParts.slice(1)
+        const fullPath = idParts.join('/')
+        const lastDotIndex = fullPath.lastIndexOf('.')
+        const publicId = lastDotIndex !== -1 ? fullPath.substring(0, lastDotIndex) : fullPath
+        
+        const result = await cloudinary.uploader.destroy(publicId)
+        console.log(`Deleted old collection image: ${publicId}`, result)
       }
     }
   } catch (err) {

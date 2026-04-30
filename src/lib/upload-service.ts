@@ -150,9 +150,6 @@ export function getUploadQueue(maxConcurrent = 3): UploadQueue {
 
 // ─── Core upload function with XHR for progress ─────────────────────────
 
-import { optimizeImage, type OptimizeResult } from '@/app/actions/optimize-image';
-import { createClient } from '@/lib/supabase/client';
-
 // ─── Direct Upload + Server Optimization ─────────────────────────────────
 
 async function uploadFileWithProgress(
@@ -160,72 +157,63 @@ async function uploadFileWithProgress(
   signal: AbortSignal,
   onProgress: (progress: number) => void,
 ): Promise<UploadResult> {
-  const supabase = createClient();
-
-  // 1. Generate unique filename for raw upload
-  // format: raw/{timestamp}-{random}.{ext}
-  const fileExt = file.name.split('.').pop();
-  const rawFileName = `raw/${Date.now()}-${Math.random().toString(36).substring(2, 10)}.${fileExt}`;
-
-  // 2. Simulate Upload Progress (Supabase JS SDK doesn't expose progress events easily yet)
-  // We split progress: 0-50% = Uploading, 50-90% = Processing, 100% = Done
-  let progress = 0;
-  const progressInterval = setInterval(() => {
-    if (progress < 50) progress += 5; // Uploading phase
-    else if (progress < 90) progress += 1; // Processing phase (slower)
-
-    if (progress > 90) progress = 90;
-    onProgress(progress);
-  }, 200);
-
-  try {
-    // 3. Upload Raw File directly to Supabase Storage
-    const { data: uploadData, error: uploadError } = await supabase.storage
-      .from('products')
-      .upload(rawFileName, file, {
-        cacheControl: '3600',
-        upsert: false,
-      });
-
-    if (uploadError) throw new Error(`Upload failed: ${uploadError.message}`);
-
-    // Jump to 50% (Upload done, starting optimization)
-    progress = 50;
-    onProgress(50);
-
-    // Checks for abort before potentially expensive server action
-    if (signal.aborted) throw new DOMException('Upload cancelled', 'AbortError');
-
-    // 4. Trigger Server-Side Optimization
-    // This action downloads the raw file, processes it, saves optimized version, and deletes raw.
-    const result: OptimizeResult = await optimizeImage(rawFileName);
-
-    if (result.error) throw new Error(result.error);
-    if (!result.data) throw new Error('No data returned from optimization');
-
-    // Finish
-    clearInterval(progressInterval);
-    onProgress(100);
-    return result.data;
-
-  } catch (err) {
-    clearInterval(progressInterval);
-
-    // Try to cleanup raw file if optimization failed (best effort)
-    // We can fire-and-forget this cleanup
-    if (err instanceof Error && !err.message.includes('Upload failed')) {
-      supabase.storage.from('products').remove([rawFileName]).then(({ error }) => {
-        if (error) console.error('Failed to cleanup raw file:', error);
-      });
+  return new Promise((resolve, reject) => {
+    const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
+    const uploadPreset = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET;
+    
+    if (!cloudName || !uploadPreset) {
+      return reject(new Error('Cloudinary environment variables are missing'));
     }
 
-    if (err instanceof Error && err.name === 'AbortError') {
-      throw new DOMException('Upload cancelled', 'AbortError');
-    }
+    const url = `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`;
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('upload_preset', uploadPreset);
+    formData.append('folder', 'products'); // Optional: organize uploads into a folder
 
-    console.error('Upload pipeline failed:', err);
-    throw new Error(err instanceof Error ? err.message : 'Upload failed');
-  }
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', url, true);
+
+    xhr.upload.onprogress = (e) => {
+      if (e.lengthComputable) {
+        const progress = Math.round((e.loaded / e.total) * 100);
+        onProgress(progress);
+      }
+    };
+
+    xhr.onload = () => {
+      if (xhr.status === 200) {
+        const response = JSON.parse(xhr.responseText);
+        
+        // Map Cloudinary response to our expected UploadResult
+        // Cloudinary handles optimization automatically based on delivery URL parameters,
+        // but since we need a blurDataUrl, we can generate a low-quality placeholder URL.
+        const blurDataUrl = response.secure_url.replace('/upload/', '/upload/w_10,e_blur:1000,f_auto,q_auto/');
+        
+        resolve({
+          url: response.secure_url,
+          blurDataUrl: blurDataUrl,
+          width: response.width,
+          height: response.height,
+          originalSize: response.bytes,
+          processedSize: response.bytes // Cloudinary transforms on the fly
+        });
+      } else {
+        const errorMsg = xhr.responseText ? JSON.parse(xhr.responseText).error?.message : 'Unknown error';
+        reject(new Error(`Upload failed: ${errorMsg}`));
+      }
+    };
+
+    xhr.onerror = () => reject(new Error('Upload failed due to network error'));
+    
+    // Wire up cancellation
+    signal.addEventListener('abort', () => {
+      xhr.abort();
+      reject(new DOMException('Upload cancelled', 'AbortError'));
+    });
+
+    xhr.send(formData);
+  });
 }
 
 // ─── Delete uploaded image from storage ──────────────────────────────────

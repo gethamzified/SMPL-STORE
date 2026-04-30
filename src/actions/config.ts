@@ -20,32 +20,39 @@ export async function updateStoreConfigAction(key: string, value: any) {
         return { error: error.message || 'Failed to update configuration' };
     }
 }
-import { createAdminClient, ensureBucketExists } from '@/lib/supabase/admin';
+import { createAdminClient } from '@/lib/supabase/admin';
 import { processImage, generateImageFilename } from '@/lib/image-processor';
+import { v2 as cloudinary } from 'cloudinary';
 
 export async function uploadSiteAsset(formData: FormData) {
     try {
         const file = formData.get('file') as File;
         if (!file) throw new Error('No file provided');
 
-        await ensureBucketExists('site-assets');
-        const supabase = await createAdminClient();
+        cloudinary.config({
+            cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
+            api_key: process.env.CLOUDINARY_API_KEY || process.env.CLOUDINARY_URL?.match(/:\/\/([^:]+)/)?.[1],
+            api_secret: process.env.CLOUDINARY_API_SECRET || process.env.CLOUDINARY_URL?.match(/:([^@]+)@/)?.[1]
+        });
 
-        // Process through Sharp: resize for hero (up to 2560px), convert to WebP, generate blur
-        const processed = await processImage(file, 'hero');
-        const fileName = generateImageFilename('hero');
+        const arrayBuffer = await file.arrayBuffer();
+        const buffer = Buffer.from(arrayBuffer);
 
-        const { error: uploadError } = await supabase.storage
-            .from('site-assets')
-            .upload(fileName, processed.buffer, {
-                contentType: processed.contentType,
-                cacheControl: '31536000',
-            });
+        const result = await new Promise<any>((resolve, reject) => {
+            const uploadStream = cloudinary.uploader.upload_stream(
+                { folder: 'site-assets' },
+                (error, result) => {
+                    if (error) reject(error);
+                    else resolve(result);
+                }
+            );
+            uploadStream.end(buffer);
+        });
 
-        if (uploadError) throw uploadError;
+        const publicUrl = result.secure_url;
+        const blurDataURL = publicUrl.replace('/upload/', '/upload/w_10,e_blur:1000,f_auto,q_auto/');
 
-        const { data: { publicUrl } } = supabase.storage.from('site-assets').getPublicUrl(fileName);
-        return { success: true, url: publicUrl, blurDataURL: processed.blurDataURL };
+        return { success: true, url: publicUrl, blurDataURL };
     } catch (error: any) {
         console.error('Upload Asset Error:', error);
         return { error: error.message || 'Failed to upload asset' };
@@ -56,17 +63,26 @@ export async function deleteSiteAsset(url: string) {
     try {
         if (!url) return { success: true };
 
-        // Extract path from URL
+        cloudinary.config({
+            cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
+            api_key: process.env.CLOUDINARY_API_KEY || process.env.CLOUDINARY_URL?.match(/:\/\/([^:]+)/)?.[1],
+            api_secret: process.env.CLOUDINARY_API_SECRET || process.env.CLOUDINARY_URL?.match(/:([^@]+)@/)?.[1]
+        });
+
         const urlObj = new URL(url);
-        const pathParts = urlObj.pathname.split('/site-assets/');
-        if (pathParts.length < 2) return { success: true }; // Not a site-asset URL
-
-        const filePath = pathParts[1];
-
-        const supabase = await createAdminClient();
-        const { error } = await supabase.storage.from('site-assets').remove([filePath]);
-
-        if (error) throw error;
+        if (urlObj.hostname.includes('cloudinary.com')) {
+            const parts = urlObj.pathname.split('/');
+            const uploadIndex = parts.indexOf('upload');
+            if (uploadIndex !== -1) {
+                let idParts = parts.slice(uploadIndex + 1);
+                if (idParts[0] && /^v\d+$/.test(idParts[0])) idParts = idParts.slice(1);
+                const fullPath = idParts.join('/');
+                const lastDotIndex = fullPath.lastIndexOf('.');
+                const publicId = lastDotIndex !== -1 ? fullPath.substring(0, lastDotIndex) : fullPath;
+                
+                await cloudinary.uploader.destroy(publicId);
+            }
+        }
 
         return { success: true };
     } catch (error: any) {

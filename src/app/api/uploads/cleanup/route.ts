@@ -1,7 +1,7 @@
 /**
  * DELETE /api/uploads/cleanup
  * 
- * Removes an uploaded image from Supabase storage.
+ * Removes an uploaded image from Cloudinary.
  * Called when:
  * - Admin removes an image before saving product
  * - Admin cancels product creation (cleanup orphaned uploads)
@@ -11,7 +11,13 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { createAdminClient } from '@/lib/supabase/admin';
+import { v2 as cloudinary } from 'cloudinary';
+
+cloudinary.config({
+  cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY || process.env.CLOUDINARY_URL?.match(/:\/\/([^:]+)/)?.[1],
+  api_secret: process.env.CLOUDINARY_API_SECRET || process.env.CLOUDINARY_URL?.match(/:([^@]+)@/)?.[1]
+});
 
 export async function DELETE(request: NextRequest) {
   try {
@@ -32,32 +38,27 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
-    const supabase = await createAdminClient();
     const results: { url: string; deleted: boolean; error?: string }[] = [];
 
     for (const url of urls) {
       try {
-        // Extract the storage path from the public URL
-        // URL format: https://{project}.supabase.co/storage/v1/object/public/products/products/{filename}
-        const storagePath = extractStoragePath(url);
-        if (!storagePath) {
+        const publicId = extractPublicId(url);
+        if (!publicId) {
           results.push({ url, deleted: false, error: 'Invalid URL format' });
           continue;
         }
 
-        const { error } = await supabase.storage
-          .from('products')
-          .remove([storagePath]);
+        const result = await cloudinary.uploader.destroy(publicId);
 
-        if (error) {
-          console.error(`Failed to delete ${storagePath}:`, error);
-          results.push({ url, deleted: false, error: error.message });
+        if (result.result !== 'ok' && result.result !== 'not found') {
+          console.error(`Failed to delete ${publicId}:`, result);
+          results.push({ url, deleted: false, error: result.result });
         } else {
           results.push({ url, deleted: true });
         }
-      } catch (err) {
+      } catch (err: any) {
         console.error(`Error deleting ${url}:`, err);
-        results.push({ url, deleted: false, error: 'Unexpected error' });
+        results.push({ url, deleted: false, error: err.message || 'Unexpected error' });
       }
     }
 
@@ -80,37 +81,24 @@ export async function DELETE(request: NextRequest) {
   }
 }
 
-/**
- * Extract the storage path from a Supabase public URL.
- * The path after the bucket name is what we need for the remove() call.
- * 
- * Example URL: https://xxx.supabase.co/storage/v1/object/public/products/products/slug-123-abc.webp
- * Storage path: products/slug-123-abc.webp
- */
-function extractStoragePath(publicUrl: string): string | null {
-  try {
-    const url = new URL(publicUrl);
-    // Path looks like: /storage/v1/object/public/products/products/{filename}
-    const parts = url.pathname.split('/');
-
-    // Find "products" bucket in the path, then take everything after
-    const bucketIndex = parts.indexOf('products');
-    if (bucketIndex === -1) return null;
-
-    // The storage path is everything after the bucket name
-    const storagePath = parts.slice(bucketIndex + 1).join('/');
-    return storagePath || null;
-  } catch {
-    // Fallback: try to extract filename from simple URL
+function extractPublicId(url: string): string | null {
     try {
-      const parts = publicUrl.split('/');
-      const fileName = parts[parts.length - 1];
-      if (fileName && fileName.includes('.')) {
-        return `products/${fileName}`;
-      }
+        const urlObj = new URL(url);
+        if (!urlObj.hostname.includes('cloudinary.com')) return null;
+
+        const parts = urlObj.pathname.split('/');
+        const uploadIndex = parts.indexOf('upload');
+        if (uploadIndex === -1) return null;
+
+        let idParts = parts.slice(uploadIndex + 1);
+        if (idParts[0] && /^v\d+$/.test(idParts[0])) {
+            idParts = idParts.slice(1);
+        }
+        
+        const fullPath = idParts.join('/');
+        const lastDotIndex = fullPath.lastIndexOf('.');
+        return lastDotIndex !== -1 ? fullPath.substring(0, lastDotIndex) : fullPath;
     } catch {
-      // ignore
+        return null;
     }
-    return null;
-  }
 }

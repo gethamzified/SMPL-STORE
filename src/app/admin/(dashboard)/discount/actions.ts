@@ -5,6 +5,7 @@ import { revalidatePath } from 'next/cache';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { GlobalDiscountConfig } from '@/lib/types';
 import { verifyAdmin } from '@/lib/admin-auth';
+import { v2 as cloudinary } from 'cloudinary';
 
 export async function updateGlobalDiscount(formData: FormData) {
     try {
@@ -49,10 +50,25 @@ export async function deleteDiscountImage() {
             .single();
 
         if (data?.value?.imageUrl) {
+            cloudinary.config({
+                cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
+                api_key: process.env.CLOUDINARY_API_KEY || process.env.CLOUDINARY_URL?.match(/:\/\/([^:]+)/)?.[1],
+                api_secret: process.env.CLOUDINARY_API_SECRET || process.env.CLOUDINARY_URL?.match(/:([^@]+)@/)?.[1]
+            });
+
             const urlObj = new URL(data.value.imageUrl);
-            const pathParts = urlObj.pathname.split('/site-assets/');
-            if (pathParts.length >= 2) {
-                await supabase.storage.from('site-assets').remove([pathParts[1]]);
+            if (urlObj.hostname.includes('cloudinary.com')) {
+                const parts = urlObj.pathname.split('/');
+                const uploadIndex = parts.indexOf('upload');
+                if (uploadIndex !== -1) {
+                    let idParts = parts.slice(uploadIndex + 1);
+                    if (idParts[0] && /^v\d+$/.test(idParts[0])) idParts = idParts.slice(1);
+                    const fullPath = idParts.join('/');
+                    const lastDotIndex = fullPath.lastIndexOf('.');
+                    const publicId = lastDotIndex !== -1 ? fullPath.substring(0, lastDotIndex) : fullPath;
+                    
+                    await cloudinary.uploader.destroy(publicId);
+                }
             }
 
             // Update config to remove image
@@ -69,4 +85,3 @@ export async function deleteDiscountImage() {
         return { error: error.message || 'Failed to delete image' };
     }
 }
-
