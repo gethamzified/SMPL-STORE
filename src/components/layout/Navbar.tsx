@@ -54,7 +54,7 @@ const Navbar = ({ brandName = "SMPL", navItems }: { brandName?: string; navItems
       {isCartSheetLoaded && <CartSheet />}
       <header className={cn(
         "relative z-40 w-full px-4 py-4 flex items-center justify-between transition-colors duration-300",
-        !isHome ? "bg-white border-b-2 border-black" : "bg-transparent"
+        !isHome ? "bg-white shadow-sm" : "bg-transparent"
       )}>
         {/* Left: Hamburger */}
         <div className="flex-1 flex justify-start">

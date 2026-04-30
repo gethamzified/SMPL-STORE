@@ -62,7 +62,7 @@ export function HeroCarousel({ products, hero }: HeroCarouselProps) {
                         >
                             <Link
                                 href={`/product/${product.slug}`}
-                                className="relative w-full h-[70vh] max-w-5xl cursor-pointer group/img transform-gpu -translate-y-8"
+                                className="relative w-full h-[85vh] md:h-[70vh] max-w-none md:max-w-5xl cursor-pointer group/img transform-gpu -translate-y-8"
                             >
                                 <Image
                                     src={product.cover_image || ''}

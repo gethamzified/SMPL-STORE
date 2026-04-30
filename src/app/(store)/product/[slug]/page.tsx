@@ -147,7 +147,7 @@ export default async function ProductPage({ params }: Props) {
           })
         }}
       />
-      <div className="pt-24 md:pt-28 pb-16 md:pb-20 px-6 md:px-12">
+      <div className="pt-24 md:pt-28 pb-16 md:pb-20 px-2 md:px-6">
         <ProductDetail product={typedProduct} />
       </div>
 
