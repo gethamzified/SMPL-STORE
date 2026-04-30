@@ -70,7 +70,7 @@ export function HeroCarousel({ products }: HeroCarouselProps) {
                         </span>
                     </div>
                     <h2 className="text-4xl md:text-7xl font-black uppercase tracking-tighter text-white mix-blend-mode-difference leading-[0.85] mt-4">
-                        {activeProduct.title.split(' ').map((word, i) => (
+                        {activeProduct.title.split(' ').map((word: string, i: number) => (
                             <span key={i} className="block">{word}</span>
                         ))}
                     </h2>
