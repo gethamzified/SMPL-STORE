@@ -135,7 +135,7 @@ export function ProductZoomImage({
     >
       {/* Base image — optimized by Next.js for fast loading */}
       <Image
-        src={src}
+        src={`${src}?gravity=auto`}
         alt={alt}
         fill
         className="object-cover"

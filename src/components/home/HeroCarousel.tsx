@@ -70,7 +70,7 @@ export function HeroCarousel({ products, hero }: HeroCarouselProps) {
                                     fill
                                     priority={index < 2}
                                     className="object-contain drop-shadow-[0_50px_60px_rgba(0,0,0,0.)] transition-transform duration-700 group-hover/img:scale-105 will-change-transform"
-                                    sizes="(max-width: 1024px) 100vw, 80vw"
+                                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 90vw, 1200px"
                                 />
                             </Link>
                         </div>

@@ -19,13 +19,19 @@ const CLOUD_NAME = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || 'ddk9lonhp';
 /**
  * Build a clean Cloudinary transformation string
  */
-function buildTransforms(width: number, quality?: number): string {
-  return [
+function buildTransforms(width: number, quality?: number, gravity?: string): string {
+  const transforms = [
     `w_${width}`,
-    'c_limit',        // Never upscale
+    gravity ? 'c_fill' : 'c_limit', // Use fill if gravity is specified, otherwise limit
     `q_${quality || 'auto'}`,
     'f_auto',         // AVIF/WebP auto-negotiation
-  ].join(',');
+  ];
+
+  if (gravity) {
+    transforms.push(`g_${gravity}`);
+  }
+
+  return transforms.join(',');
 }
 
 /**
@@ -74,38 +80,48 @@ export default function cloudinaryLoader({
   width: number;
   quality?: number;
 }) {
-  const transforms = buildTransforms(width, quality);
+  // Check for gravity in query string (e.g. ?gravity=auto)
+  let gravity: string | undefined;
+  let cleanSrc = src;
+
+  if (src.includes('?')) {
+    const [url, query] = src.split('?');
+    const params = new URLSearchParams(query);
+    if (params.has('gravity')) {
+      gravity = params.get('gravity') || undefined;
+      params.delete('gravity');
+      const newQuery = params.toString();
+      cleanSrc = newQuery ? `${url}?${newQuery}` : url;
+    }
+  }
+
+  const transforms = buildTransforms(width, quality, gravity);
 
   // ── 1. Cloudinary Upload URLs ─────────────────────────────────────────
   // Already hosted on Cloudinary — just swap/inject transforms
-  if (src.includes('res.cloudinary.com') && src.includes('/upload/')) {
-    const parsed = parseCloudinaryUrl(src);
+  if (cleanSrc.includes('res.cloudinary.com') && cleanSrc.includes('/upload/')) {
+    const parsed = parseCloudinaryUrl(cleanSrc);
     if (parsed) {
       return `${parsed.base}/${transforms}/${parsed.path}`;
     }
     // Fallback: just inject after /upload/
-    return src.replace('/upload/', `/upload/${transforms}/`);
+    return cleanSrc.replace('/upload/', `/upload/${transforms}/`);
   }
 
   // ── 2. Cloudinary Fetch URLs ──────────────────────────────────────────
   // Already a fetch URL — return as-is (already optimized)
-  if (src.includes('res.cloudinary.com') && src.includes('/fetch/')) {
-    return src;
+  if (cleanSrc.includes('res.cloudinary.com') && cleanSrc.includes('/fetch/')) {
+    return cleanSrc;
   }
 
   // ── 3. Local/Static Assets ────────────────────────────────────────────
   // SVGs, favicons, local images — pass through, just satisfy the width contract
-  if (src.startsWith('/') || src.startsWith('data:')) {
-    const connector = src.includes('?') ? '&' : '?';
-    return `${src}${connector}w=${width}`;
+  if (cleanSrc.startsWith('/') || cleanSrc.startsWith('data:')) {
+    const connector = cleanSrc.includes('?') ? '&' : '?';
+    return `${cleanSrc}${connector}w=${width}`;
   }
 
   // ── 4. External URLs (Supabase Storage, Unsplash, Pexels, etc.) ──────
   // Route through Cloudinary's Fetch API for CDN delivery + auto optimization
-  // This is Cloudinary's most powerful feature for external images:
-  // - Cached at Cloudinary's edge nodes worldwide
-  // - Auto format negotiation (AVIF/WebP)
-  // - Responsive resizing
-  // - No re-upload needed
-  return `https://res.cloudinary.com/${CLOUD_NAME}/image/fetch/${transforms}/${encodeURI(src)}`;
+  return `https://res.cloudinary.com/${CLOUD_NAME}/image/fetch/${transforms}/${encodeURI(cleanSrc)}`;
 }

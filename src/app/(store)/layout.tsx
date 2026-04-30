@@ -1,6 +1,7 @@
 import { Suspense } from 'react';
 import Footer from '@/components/layout/Footer';
 import Navbar from '@/components/layout/Navbar';
+import Image from 'next/image';
 import { AnnouncementBar } from '@/components/layout/AnnouncementBar';
 import { StoreConfigService } from '@/services/config';
 import { FooterSkeleton } from '@/components/skeletons/FooterSkeleton';
@@ -24,16 +25,26 @@ export default async function StoreLayout({
     return (
         <StoreProviders>
             <SmoothScroll>
-                <div
-                    className="flex flex-col min-h-screen text-foreground bg-cover bg-top bg-no-repeat"
-                    style={backgroundImage ? {
-                        backgroundImage: `url('${backgroundImage}')`,
-                        backgroundSize: 'cover',
-                        backgroundPosition: 'top center',
-                    } : undefined}
-                >
+                <div className="flex flex-col min-h-screen text-foreground relative">
+                    {/* Optimized Background Image Layer */}
+                    {backgroundImage && (
+                        <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
+                            <div className="relative w-full h-full">
+                                <Image
+                                    src={backgroundImage}
+                                    alt="Store Background"
+                                    fill
+                                    priority
+                                    className="object-cover object-top"
+                                    sizes="100vw"
+                                    quality={85}
+                                />
+                            </div>
+                        </div>
+                    )}
+
                     {/* Navbar layer — absolute so hero content can go under it */}
-                    <div className="absolute top-0 left-0 w-full z-50">
+                    <div className="relative z-50">
                         {brand.showAnnouncement && brand.announcement && (
                             <AnnouncementBar text={brand.announcement} />
                         )}
@@ -41,7 +52,7 @@ export default async function StoreLayout({
                     </div>
 
                     {/* Page Content */}
-                    <div className="flex-grow">
+                    <div className="flex-grow relative z-10">
                         {children}
                     </div>
 

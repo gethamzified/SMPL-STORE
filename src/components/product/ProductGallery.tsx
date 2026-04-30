@@ -93,7 +93,7 @@ export default function ProductGallery({ images, title, blurDataUrl, blurDataUrl
                             )}
                         >
                             <Image
-                                src={img}
+                                src={`${img}?gravity=auto`}
                                 alt={`${title} view ${idx + 1}`}
                                 fill
                                 className="object-cover"
@@ -122,7 +122,7 @@ export default function ProductGallery({ images, title, blurDataUrl, blurDataUrl
                                     }}
                                 >
                                     <Image
-                                        src={img}
+                                        src={`${img}?gravity=auto`}
                                         alt={`${title} - view ${idx + 1}`}
                                         fill
                                         className="object-cover"
