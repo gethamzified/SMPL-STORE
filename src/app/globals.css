@@ -1,0 +1,440 @@
+/* Font loaded via next/font (Manrope) */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    /* Lenis handles smooth scrolling, scroll-behavior: smooth can cause jitter */
+    scroll-behavior: auto !important;
+  }
+
+  :root {
+    --brand-primary: #000000;
+    /* Fallback */
+
+    --background: 0 0% 100%;
+    --foreground: 0 0% 8%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 8%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 8%;
+
+    /* Map --primary to --brand-primary if intended, BUT shadcn expects HSL numbers usually. 
+     * To support dynamic hex colors without JS conversion, we should use `from var(--brand-primary)` relative color syntax (modern browsers)
+     * OR stick to simple hex for primary if we redefine the utilities.
+     * For broad compatibility without complex conversion, we can repurpose --primary to take the HEX variable directly, 
+     * but we must break tailwind's opacity modifiers (bg-primary/20) unless we use `rgb(from ...)`
+     */
+
+    --primary: 0 0% 8%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 0 0% 96%;
+    --secondary-foreground: 0 0% 8%;
+
+    --muted: 0 0% 96%;
+    --muted-foreground: 0 0% 45%;
+
+    --accent: 0 0% 96%;
+    --accent-foreground: 0 0% 8%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 0 0% 90%;
+    --input: 0 0% 90%;
+    --ring: 0 0% 8%;
+
+    --radius: 0.25rem;
+
+    --cta: 0 0% 8%;
+    --cta-foreground: 0 0% 100%;
+
+    /* Font Bindings */
+    --font-helvetica: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    /* Accessing the font variable injected by next/font */
+    /* If next/font injects a class, we use inheritance. If it injects a variable, we map it here. */
+    /* In layout.tsx, we apply font.className to body, so inheritance works. */
+    /* But if tokens rely on var(--font-body), we need to ensure that variable is present */
+    /* We can bind the variable passed by the font instance */
+  }
+
+  /* Dark Theme Overrides - applied via .dark class or data-theme='dark' */
+  [data-theme='dark'] {
+    --background: 0 0% 4%;
+    --foreground: 0 0% 98%;
+
+    --card: 0 0% 4%;
+    --card-foreground: 0 0% 98%;
+
+    --popover: 0 0% 4%;
+    --popover-foreground: 0 0% 98%;
+
+    --primary: 0 0% 98%;
+    --primary-foreground: 0 0% 9%;
+
+    --secondary: 0 0% 14.9%;
+    --secondary-foreground: 0 0% 98%;
+
+    --muted: 0 0% 14.9%;
+    --muted-foreground: 0 0% 63.9%;
+
+    --accent: 0 0% 14.9%;
+    --accent-foreground: 0 0% 98%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 0 0% 14.9%;
+    --input: 0 0% 14.9%;
+    --ring: 0 0% 83.1%;
+    --cta: 0 0% 98%;
+    --cta: 0 0% 98%;
+    --cta-foreground: 0 0% 9%;
+  }
+
+  .admin-panel {
+    --border: 0 0% 0% / 0.8;
+    --input: 0 0% 0% / 1;
+    --ring: 0 0% 0%;
+    --primary: 0 0% 0%;
+    --primary-foreground: 0 0% 100%;
+    --accent: 0 0% 93%;
+    --accent-foreground: 0 0% 0%;
+  }
+
+  /* Keep inputs subtle while allowing button outlines to remain solid black */
+  .admin-panel input:not([type="button"]):not([type="submit"]),
+  .admin-panel textarea,
+  .admin-panel select {
+    border-color: rgba(0, 0, 0, 0.2);
+  }
+
+  .admin-panel [role="switch"][data-state="unchecked"] {
+    @apply bg-gray-200;
+  }
+}
+
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    scroll-behavior: auto !important;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased overflow-x-hidden;
+    font-family: var(--font-body);
+  }
+
+  /* Lenis smooth scrolling support */
+  html.lenis,
+  html.lenis body {
+    height: auto;
+  }
+
+  .lenis.lenis-smooth {
+    scroll-behavior: auto !important;
+  }
+
+  .lenis.lenis-smooth [data-lenis-prevent] {
+    overscroll-behavior: contain;
+  }
+
+  .lenis.lenis-stopped {
+    overflow: hidden;
+  }
+
+  .lenis.lenis-scrolling iframe {
+    pointer-events: none;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-display);
+    letter-spacing: -0.03em;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .mix-blend-difference {
+    mix-blend-mode: difference;
+  }
+
+  /* Hide scrollbar but keep scroll functionality */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@layer components {
+  .nav-link {
+    @apply relative text-foreground/80 hover:text-foreground transition-colors duration-300;
+  }
+
+  .nav-link::after {
+    content: '';
+    @apply absolute bottom-0 left-0 w-0 h-px bg-foreground transition-all duration-300;
+  }
+
+  .nav-link:hover::after {
+    @apply w-full;
+  }
+
+  .hero-title {
+    font-family: var(--font-display);
+    @apply text-5xl md:text-7xl lg:text-8xl font-normal tracking-tight;
+  }
+
+  .script-font {
+    font-family: var(--font-body), sans-serif;
+  }
+
+  .section-title {
+    font-family: var(--font-display);
+    @apply text-4xl md:text-5xl lg:text-6xl font-normal tracking-tight;
+  }
+
+  .category-card {
+    @apply relative overflow-hidden cursor-pointer;
+  }
+
+  .category-card img {
+    @apply transition-transform duration-700 ease-out;
+  }
+
+  .category-card:hover img {
+    @apply scale-110;
+  }
+
+  .product-card {
+    @apply cursor-pointer;
+  }
+
+  .product-card .image-primary {
+    @apply opacity-100 transition-opacity duration-500;
+  }
+
+  .product-card .image-secondary {
+    @apply opacity-0 absolute inset-0 transition-opacity duration-500;
+  }
+
+  .product-card:hover .image-primary {
+    @apply opacity-0;
+  }
+
+  .product-card:hover .image-secondary {
+    @apply opacity-100;
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center justify-center px-8 py-3 bg-foreground text-background font-medium transition-all duration-300 hover:bg-foreground/90;
+  }
+
+  .btn-outline {
+    @apply inline-flex items-center justify-center px-8 py-3 border border-foreground/20 text-foreground font-medium transition-all duration-300 hover:bg-foreground hover:text-background;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .animate-fade-up {
+    animation: fadeUp 0.8s ease-out forwards;
+  }
+
+  .animate-fade-in {
+    animation: fadeIn 0.6s ease-out forwards;
+  }
+
+  @keyframes fadeUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+
+    to {
+      opacity: 1;
+    }
+  }
+
+  .delay-100 {
+    animation-delay: 100ms;
+  }
+
+  .delay-200 {
+    animation-delay: 200ms;
+  }
+
+  .delay-300 {
+    animation-delay: 300ms;
+  }
+
+  .delay-400 {
+    animation-delay: 400ms;
+  }
+
+  .delay-500 {
+    animation-delay: 500ms;
+  }
+
+  /* Scroll-Triggered Animation Logic - narrowed to avoid accidental hiding of Hero */
+  .scroll-reveal.is-hidden [data-reveal-animate] {
+    animation: none !important;
+    opacity: 0 !important;
+  }
+
+  /* Performance-Optimized Hero Animations (CSS Only) */
+  .animate-image-entrance {
+    transform: scale(1.5);
+    opacity: 0;
+    animation: heroImageReveal 1.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    will-change: transform, opacity;
+  }
+
+  @keyframes heroImageReveal {
+    to {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+
+  .hero-subtext,
+  .hero-text,
+  .hero-cta {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+
+  .is-visible .hero-subtext,
+  .is-visible .hero-text,
+  .is-visible .hero-cta {
+    will-change: transform, opacity; /* Promote only during animation */
+    animation: heroTextReveal 1s cubic-bezier(0.33, 1, 0.68, 1) forwards;
+  }
+
+  .is-visible .hero-subtext {
+    animation-delay: 0.4s;
+  }
+
+  .is-visible .hero-text {
+    animation-delay: 0.6s;
+  }
+
+  .is-visible .hero-cta {
+    animation-delay: 0.8s;
+  }
+
+  @keyframes heroTextReveal {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
+
+/* Missing Text Reveal Classes */
+.clip-text-hidden {
+  transform: translateY(100%);
+  opacity: 0;
+  transition: transform 1.2s cubic-bezier(0.22, 1, 0.36, 1), opacity 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.clip-text-visible {
+  transform: translateY(0);
+  opacity: 1;
+  will-change: auto; /* Release compositor layer after transition */
+}
+
+/* Staggered reveal delays for text line-by-line animations */
+.reveal-delay-100 {
+  transition-delay: 100ms;
+}
+.reveal-delay-200 {
+  transition-delay: 200ms;
+}
+.reveal-delay-300 {
+  transition-delay: 300ms;
+}
+
+/* Carousel / grid card entrance animation */
+.reveal-hidden {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1), transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.reveal-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Subtle pulse for announcement bar */
+@keyframes pulseSubtle {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+.animate-pulse-subtle {
+  animation: pulseSubtle 3s ease-in-out infinite;
+}
+
+.cv-auto {
+  content-visibility: auto;
+  contain-intrinsic-size: 100vh;
+}
+
+@layer utilities {
+  /*
+   * iOS safe-area helpers for fixed/sticky UI.
+   * Keep these minimal and opt-in via classnames.
+   */
+  .safe-area-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .safe-area-top {
+    padding-top: env(safe-area-inset-top);
+  }
+}
