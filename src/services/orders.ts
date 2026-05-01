@@ -157,6 +157,17 @@ export const OrderService = {
         }
 
         revalidatePath('/admin/orders');
+        revalidatePath(`/admin/orders/${orderId}`);
+        revalidatePath('/profile');
+        revalidatePath('/');
+        revalidatePath('/shop');
+        
+        // Revalidate specific products
+        for (const item of input.items) {
+            // We need the slug here, but if not available, we can rely on general shop revalidation
+            // or fetch slugs if necessary. For now, general paths should suffice for most users.
+        }
+
         return createdOrder as Order;
     },
 
@@ -178,7 +189,7 @@ export const OrderService = {
 
         // Handle Stock Restoration on Cancellation
         if (updates.status === 'cancelled') {
-            await supabase.rpc('restore_order_stock', { p_order_id: orderId });
+            return await this.cancelOrder(orderId);
         }
 
         // Send Email Notification
@@ -230,33 +241,34 @@ export const OrderService = {
     async cancelOrder(id: string): Promise<Order> {
         const supabase = await createAdminClient();
 
-        const { data: order, error } = await supabase
-            .from('orders')
-            .select('status')
-            .eq('id', id)
-            .single();
-
-        if (error || !order) throw new AppError('Order not found', 'NOT_FOUND');
-        if (order.status === 'cancelled') throw new AppError('Order already cancelled', 'BAD_REQUEST');
-
-        // Restore stock using optimized DB function
-        const { error: rpcError } = await supabase.rpc('restore_order_stock', {
+        // Call the atomic cancel RPC
+        const { data: updated, error: rpcError } = await supabase.rpc('cancel_order_secure', {
             p_order_id: id
         });
 
         if (rpcError) {
-            console.error('Failed to restore stock for cancelled order:', rpcError);
+            console.error('Cancel Order RPC Error:', rpcError);
+            if (rpcError.code === 'P0003') throw new AppError('Order already cancelled', 'BAD_REQUEST');
+            if (rpcError.code === 'P0002') throw new AppError('Order not found', 'NOT_FOUND');
+            throw new AppError(rpcError.message || 'Failed to cancel order', 'DB_ERROR');
         }
 
-        const { data: updated, error: updateError } = await supabase
-            .from('orders')
-            .update({ status: 'cancelled', cancelled_at: new Date().toISOString() })
-            .eq('id', id)
-            .select()
-            .single();
-
-        if (updateError) throw new AppError(updateError.message, 'DB_ERROR');
         revalidatePath('/admin/orders');
+        revalidatePath(`/admin/orders/${id}`);
+        revalidatePath('/profile');
+        
+        // Revalidate products in the order (optional but recommended)
+        try {
+            const fullOrder = updated as any;
+            if (fullOrder.items) {
+                for (const item of fullOrder.items) {
+                    revalidatePath(`/products/${item.slug}`);
+                }
+            }
+        } catch (e) {
+            // Ignore revalidation errors
+        }
+
         return updated as Order;
     },
 
