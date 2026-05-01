@@ -298,50 +298,46 @@ export default function ProductInfo({ product }: ProductInfoProps) {
     };
 
     return (
-        <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-700">
-            {/* Unified Header - Responsive */}
+        <div className="space-y-8 animate-in fade-in slide-in-from-right-4 duration-700">
+            {/* Header */}
             <div className="space-y-4">
-                <div className="space-y-1">
-                    <p className="text-[10px] font-black uppercase tracking-[0.3em] text-neutral-400">SMPL Store</p>
-                    <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-neutral-900 leading-none uppercase">
-                        {product.title}
-                    </h1>
-                </div>
+                <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-black leading-none uppercase">
+                    {product.title}
+                </h1>
                 
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-4 border-t border-b border-[#1a1a1a] py-4">
                     {hasSale ? (
                         <>
-                            <span className="text-2xl font-bold text-red-600">
+                            <span className="text-xl font-bold text-[#d95e32] uppercase">
                                 RS. {formatCurrency(currentSalePrice).replace(/[^0-9.,]/g, '')}
                             </span>
-                            <span className="text-lg text-neutral-400 line-through font-light">
+                            <span className="text-sm text-black line-through font-medium uppercase">
                                 RS. {formatCurrency(currentPrice).replace(/[^0-9.,]/g, '')}
                             </span>
                         </>
                     ) : (
-                        <span className="text-2xl font-bold text-neutral-900">
+                        <span className="text-xl font-bold text-black uppercase">
                             RS. {formatCurrency(currentPrice).replace(/[^0-9.,]/g, '')}
                         </span>
                     )}
                 </div>
             </div>
 
-
             {/* Description Short */}
-            <div className="prose prose-sm text-neutral-600 leading-relaxed">
-                <p>{product.short_description || product.description?.slice(0, 150) + "..."}</p>
-            </div>
-
-            <div className="h-px bg-neutral-200" />
+            {product.short_description && (
+                <div className="text-black text-sm font-medium leading-relaxed">
+                    <p>{product.short_description}</p>
+                </div>
+            )}
 
             {/* Clothing Variant Options (Color/Size) */}
             {product.enable_color_variants && product.available_colors && product.available_colors.length > 0 && (
-                <div className="space-y-3">
-                    <div className="flex justify-between items-center text-xs uppercase tracking-widest font-bold text-neutral-900">
-                        <span>Color: <span className="text-neutral-500 font-medium">{selectedOptions['Color']}</span></span>
+                <div className="space-y-4">
+                    <div className="text-[11px] uppercase tracking-widest font-bold text-black">
+                        Color: {selectedOptions['Color']}
                     </div>
-                    <div className="flex flex-wrap gap-3">
-                        {product.available_colors.map((color) => {
+                    <div className="flex flex-wrap gap-0 border border-[#1a1a1a] w-fit">
+                        {product.available_colors.map((color, index) => {
                             const outOfStock = isOptionOutOfStock('Color', color);
                             const isSelected = selectedOptions['Color'] === color;
                             const colorValue = getColorValue(color);
@@ -353,19 +349,15 @@ export default function ProductInfo({ product }: ProductInfoProps) {
                                     disabled={outOfStock}
                                     title={color}
                                     className={cn(
-                                        "w-8 h-8 rounded-full border border-neutral-200 transition-all duration-200 relative",
-                                        isSelected
-                                            ? "ring-2 ring-offset-2 ring-neutral-900 scale-110"
-                                            : !outOfStock && "hover:scale-110 hover:border-neutral-400",
-                                        outOfStock && "opacity-40 cursor-not-allowed",
-                                        // Specific border for white/light colors to be visible
-                                        (colorValue.toLowerCase() === '#ffffff' || colorValue.toLowerCase() === 'white') && "border-neutral-300"
+                                        "w-12 h-12 transition-all duration-0 relative border-r border-[#1a1a1a] last:border-r-0",
+                                        isSelected ? "bg-[#1a1a1a] p-1" : "hover:bg-neutral-100 p-2",
+                                        outOfStock && "opacity-40 cursor-not-allowed bg-neutral-200"
                                     )}
-                                    style={{ backgroundColor: colorValue }}
                                 >
+                                    <div className="w-full h-full border border-[#1a1a1a]" style={{ backgroundColor: colorValue }} />
                                     {outOfStock && (
-                                        <div className="absolute inset-0 flex items-center justify-center">
-                                            <div className="w-full h-px bg-neutral-400 -rotate-45" />
+                                        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                                            <div className="w-full h-px bg-black -rotate-45" />
                                         </div>
                                     )}
                                     <span className="sr-only">{color}</span>
@@ -379,45 +371,41 @@ export default function ProductInfo({ product }: ProductInfoProps) {
             {product.enable_size_variants && product.available_sizes && product.available_sizes.length > 0 && (
                 <div className="space-y-4">
                     <div className="flex justify-between items-end">
-                        <span className="text-[11px] uppercase tracking-widest font-bold text-neutral-900">Select size</span>
+                        <span className="text-[11px] uppercase tracking-widest font-bold text-black">Size</span>
                         <button
                             onClick={() => setShowSizeGuide(true)}
-                            className="flex items-center gap-1.5 text-[11px] uppercase tracking-widest font-bold text-neutral-900 hover:opacity-70 transition-opacity border-b border-black/20 pb-0.5"
+                            className="text-[10px] uppercase tracking-widest font-bold text-black hover:text-[#d95e32] transition-colors underline underline-offset-4"
                         >
-                            <span className="flex gap-[1.5px] items-end h-2.5 mb-0.5">
-                                <span className="w-[1px] h-1.5 bg-black"></span>
-                                <span className="w-[1px] h-2.5 bg-black"></span>
-                                <span className="w-[1px] h-2 bg-black"></span>
-                            </span>
-                            Sizing
+                            Size Guide
                         </button>
                     </div>
 
-                    <div className="flex flex-wrap gap-2">
+                    <div className="flex flex-wrap gap-0 border-t border-l border-[#1a1a1a]">
                         {STANDARD_SIZES.map((size) => {
                             const isEnabled = product.available_sizes?.includes(size);
-                            const outOfStock = isEnabled && isOptionOutOfStock('Size', size);
+                            if (!isEnabled) return null;
+                            const outOfStock = isOptionOutOfStock('Size', size);
                             const isSelected = selectedOptions['Size'] === size;
 
                             return (
                                 <button
                                     key={size}
-                                    onClick={() => isEnabled && !outOfStock && handleOptionSelect('Size', size)}
-                                    disabled={!isEnabled || outOfStock}
+                                    onClick={() => !outOfStock && handleOptionSelect('Size', size)}
+                                    disabled={outOfStock}
                                     className={cn(
-                                        "relative py-3 text-[11px] font-bold uppercase transition-all border min-w-[3.5rem] flex items-center justify-center h-12",
+                                        "relative py-3 px-6 text-[11px] font-bold uppercase transition-colors border-b border-r border-[#1a1a1a] min-w-[3.5rem] flex items-center justify-center h-12",
                                         isSelected
-                                            ? "border-black bg-black text-white"
-                                            : "border-neutral-200 hover:border-neutral-400 text-neutral-900",
-                                        (!isEnabled || outOfStock) && "text-neutral-400 bg-neutral-50/50 cursor-not-allowed border-neutral-200"
+                                            ? "bg-black text-white"
+                                            : "bg-white text-black hover:bg-neutral-100",
+                                        outOfStock && "text-neutral-400 bg-neutral-100 cursor-not-allowed"
                                     )}
                                 >
                                     <span>{size}</span>
 
-                                    {/* Diagonal Slash for Disabled/Out of Stock */}
-                                    {(!isEnabled || outOfStock) && (
-                                        <div className="absolute inset-0 pointer-events-none">
-                                            <svg className="w-full h-full text-neutral-300" preserveAspectRatio="none">
+                                    {/* Diagonal Slash for Out of Stock */}
+                                    {outOfStock && (
+                                        <div className="absolute inset-0 pointer-events-none overflow-hidden">
+                                            <svg className="w-full h-full text-[#1a1a1a]" preserveAspectRatio="none">
                                                 <line x1="0" y1="100%" x2="100%" y2="0" stroke="currentColor" strokeWidth="1" />
                                             </svg>
                                         </div>
@@ -426,38 +414,25 @@ export default function ProductInfo({ product }: ProductInfoProps) {
                             );
                         })}
                     </div>
-
-                    {/* Model Info (Placeholder aesthetic) */}
-                    <div className="pt-2 text-center text-[12px] text-neutral-500 italic">
-                        Male Model: 6'0", wearing size M
-                    </div>
                 </div>
             )}
 
-            {/* Legacy Options (fallback for products not using clothing variant system) */}
+            {/* Legacy Options */}
             {!(product.enable_color_variants || product.enable_size_variants) && product.options?.map((option) => (
-                <div key={option.id} className="space-y-3">
-                    <div className="flex justify-between items-center text-xs uppercase tracking-widest font-bold text-neutral-900">
-                        <span>{option.name}: <span className="text-neutral-500 font-medium">{selectedOptions[option.name]}</span></span>
-                        {option.name.toLowerCase() === 'size' && (
-                            <button
-                                onClick={() => setShowSizeGuide(true)}
-                                className="flex items-center gap-1 hover:text-neutral-500 transition-colors underline underline-offset-4"
-                            >
-                                <Ruler className="w-3 h-3" /> Find Your Fit
-                            </button>
-                        )}
+                <div key={option.id} className="space-y-4">
+                    <div className="text-[11px] uppercase tracking-widest font-bold text-black">
+                        {option.name}
                     </div>
-                    <div className="flex flex-wrap gap-2">
+                    <div className="flex flex-wrap gap-0 border-t border-l border-[#1a1a1a]">
                         {option.values.map((value) => (
                             <button
                                 key={value}
                                 onClick={() => handleOptionSelect(option.name, value)}
                                 className={cn(
-                                    "px-6 py-3 text-xs font-bold uppercase tracking-wider transition-all border min-w-[3rem]",
+                                    "px-6 py-3 text-[11px] font-bold uppercase tracking-wider transition-colors border-b border-r border-[#1a1a1a] min-w-[4rem]",
                                     selectedOptions[option.name] === value
-                                        ? "border-black bg-white text-black font-bold"
-                                        : "border-neutral-200 hover:border-neutral-400 text-neutral-900 bg-transparent"
+                                        ? "bg-black text-white"
+                                        : "bg-white text-black hover:bg-neutral-100"
                                 )}
                             >
                                 {value}
@@ -473,83 +448,35 @@ export default function ProductInfo({ product }: ProductInfoProps) {
                     onClick={() => handleAddToCart(true)}
                     disabled={isOutOfStock || isPending}
                     className={cn(
-                        "w-full h-12 rounded-none uppercase tracking-[0.2em] font-bold text-[11px] transition-all duration-300",
+                        "w-full h-14 rounded-none uppercase tracking-widest font-bold text-[12px] transition-colors border border-[#1a1a1a]",
                         isOutOfStock
-                            ? "bg-[#AFAFAF] text-white border-none cursor-not-allowed"
-                            : "bg-black text-white hover:bg-neutral-800"
+                            ? "bg-neutral-200 text-neutral-500 cursor-not-allowed"
+                            : "bg-black text-white hover:bg-white hover:text-black"
                     )}
                 >
-                    {isPending ? "Adding..." : isOutOfStock ? "SOLD OUT" : "ADD TO CART"}
+                    {isPending ? "ADDING..." : isOutOfStock ? "SOLD OUT" : "ADD TO CART"}
                 </Button>
 
-                <p className="text-[11px] text-neutral-600 text-center">
-                    <span className="underline cursor-pointer">Shipping</span> calculated at checkout.
-                </p>
-
                 {/* Availability Status */}
-                <div className="flex items-center justify-center gap-2 pt-2 text-[11px] font-medium uppercase tracking-wide">
+                <div className="flex items-center justify-center gap-2 pt-2 text-[10px] font-bold uppercase tracking-widest">
                     {isOutOfStock ? (
                         <>
-                            <div className="w-2 h-2 rounded-full bg-red-500"></div>
-                            <span className="text-red-600">Out of Stock</span>
+                            <div className="w-1.5 h-1.5 bg-[#d95e32]"></div>
+                            <span className="text-[#d95e32]">Out of Stock</span>
                         </>
                     ) : isLowStock ? (
                         <>
-                            <div className="relative flex h-2 w-2">
-                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
-                                <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
-                            </div>
+                            <div className="w-1.5 h-1.5 bg-amber-500"></div>
                             <span className="text-amber-600">
-                                Only {currentStock} left - Order Soon
+                                Limited Stock ({currentStock})
                             </span>
                         </>
                     ) : (
                         <>
-                            <div className="w-2 h-2 rounded-full bg-green-500"></div>
-                            <span className="text-green-600">In Stock & Ready to Ship</span>
+                            <div className="w-1.5 h-1.5 bg-black"></div>
+                            <span className="text-black">In Stock</span>
                         </>
                     )}
-                </div>
-            </div>
-
-            {/* Trust Badges */}
-            <div className="space-y-4 pt-6 border-t border-neutral-100">
-                <div className="flex items-center gap-4 text-neutral-700">
-                    <Truck className="w-5 h-5 stroke-[1.5px]" />
-                    <span className="text-[11px] font-bold uppercase tracking-widest text-neutral-900">Free shipping nationwide</span>
-                </div>
-                <div className="flex items-center gap-4 text-neutral-700">
-                    <Zap className="w-5 h-5 stroke-[1.5px]" />
-                    <span className="text-[11px] font-bold uppercase tracking-widest text-neutral-900">Limited Drop · A One-Time Release</span>
-                </div>
-                {/* Availability Status */}
-                <div className="flex items-center justify-center gap-2 pt-2">
-                    {isOutOfStock ? (
-                        <>
-                            <div className="w-2 h-2 rounded-full bg-red-500"></div>
-                            <span className="text-[11px] font-medium text-neutral-900">Out of stock</span>
-                        </>
-                    ) : (
-                        <>
-                            <div className="w-2 h-2 rounded-full bg-green-500"></div>
-                            <span className="text-[11px] font-medium text-neutral-900">
-                                {currentStock > 0 && currentStock <= 5 ? `Only ${currentStock} left` : "In stock"}
-                            </span>
-                        </>
-                    )}
-                    <button onClick={() => {
-                        if (navigator.share) {
-                            navigator.share({
-                                title: product.title,
-                                url: window.location.href
-                            }).catch(() => { });
-                        } else {
-                            toast.success("Link copied to clipboard");
-                            navigator.clipboard.writeText(window.location.href);
-                        }
-                    }}>
-                        <Share2 className="w-3.5 h-3.5 text-neutral-500 ml-2 cursor-pointer hover:text-black transition-colors" />
-                    </button>
                 </div>
             </div>
 

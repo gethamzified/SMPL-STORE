@@ -147,24 +147,24 @@ export default async function ProductPage({ params }: Props) {
           })
         }}
       />
-      <div className="pt-24 md:pt-28 pb-16 md:pb-20 px-2 md:px-6">
+      <div className="pt-32 md:pt-40 pb-16 md:pb-20 px-2 md:px-6">
         <ProductDetail product={typedProduct} />
       </div>
 
 
-      <div className="max-w-[1400px] mx-auto px-6 md:px-12 mb-40 md:mb-56">
-        <div className="flex flex-col items-center justify-center mb-12 gap-4">
-          <h2 className="font-great-vibes text-red-900 text-4xl md:text-5xl leading-normal select-none">
-            You May Also Like
+      <div className="max-w-[1920px] mx-auto border-t border-[#1a1a1a] bg-white">
+        <div className="flex items-center justify-between px-6 md:px-12 py-8 border-b border-[#1a1a1a]">
+          <h2 className="text-[14px] font-bold uppercase tracking-widest text-black">
+            Related Objects
           </h2>
-          <Link href="/shop" className="text-[10px] font-medium uppercase tracking-[0.1em] text-neutral-500 hover:text-black transition-colors underline underline-offset-4">
-            View all
+          <Link href="/shop" className="text-[10px] font-bold uppercase tracking-widest text-black hover:text-[#d95e32] transition-colors underline underline-offset-4">
+            View Collection
           </Link>
         </div>
-        <RelatedProducts products={safeRelated} />
+        <div className="px-0">
+          <RelatedProducts products={safeRelated} />
+        </div>
       </div>
-
-
     </main>
   );
 }

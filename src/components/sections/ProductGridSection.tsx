@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Product } from "@/lib/types";
-import ProductCard from "@/components/product/ProductCard";
+import ProductGrid from "@/components/product/ProductGrid";
 import { ScrollReveal } from "../animations/ScrollReveal";
 
 interface ProductGridSectionProps {
@@ -12,12 +12,6 @@ interface ProductGridSectionProps {
   viewAllLink?: string;
 }
 
-/**
- * ProductGridSection - Client Component Version
- * 
- * Updated to use ScrollReveal for state-based entrance animations
- * following Shopify-style best practices.
- */
 const ProductGridSection = ({
   products,
   title = "Proven\nFavorites",
@@ -34,9 +28,8 @@ const ProductGridSection = ({
           className="flex flex-col items-center justify-center w-full"
           style={{ maxWidth: '1920px', margin: '0 auto' }}
         >
-          {/* Container with padding matching template */}
-          <div className="w-full px-6 md:px-10 py-24 md:py-[150px] flex flex-col gap-16 md:gap-20">
-
+          {/* Header with padding */}
+          <div className="w-full px-6 md:px-10 pt-24 md:pt-[150px] flex flex-col gap-16 md:gap-20">
             {/* Section Header - Split layout */}
             <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-8 w-full overflow-hidden border-b border-foreground/10 pb-12">
               {/* Title - Left */}
@@ -73,19 +66,15 @@ const ProductGridSection = ({
                 </Link>
               </div>
             </div>
+          </div>
 
-            {/* Grid - 3 columns with stagger animation linked to scroll */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-24">
-              {displayProducts.map((product, index) => (
-                <div
-                  key={product.id}
-                  className="h-full transition-[opacity,transform] duration-700 ease-out opacity-0 translate-y-8 group-[.is-visible]/reveal:opacity-100 group-[.is-visible]/reveal:translate-y-0"
-                  style={{ transitionDelay: `${index * 200 + 100}ms` }}
-                >
-                  <ProductCard {...product} />
-                </div>
-              ))}
-            </div>
+          {/* Grid - Universal Component */}
+          <div className="w-full pb-24 md:pb-[150px]">
+            <ProductGrid 
+              products={displayProducts} 
+              animate={true} 
+              gridClassName="md:grid-cols-3 xl:grid-cols-5" 
+            />
           </div>
         </div>
       </ScrollReveal>

@@ -96,37 +96,38 @@ export default function ProductGallery({ images, title, blurDataUrl, blurDataUrl
 
     return (
         <>
-            <div className="flex flex-col-reverse md:flex-row gap-4 h-fit sticky top-28 md:top-32">
+            <div className="flex flex-col md:flex-row h-fit sticky top-28 md:top-32 w-full">
                 {/* Desktop Thumbnails (Left Side) */}
-                <div className="hidden md:flex flex-col gap-4 w-20 lg:w-24 shrink-0 max-h-[70vh] overflow-y-auto no-scrollbar">
+                <div className="hidden md:flex flex-col w-20 lg:w-24 shrink-0 max-h-[80vh] overflow-y-auto no-scrollbar border-r border-[#1a1a1a]">
                     {images.map((img, idx) => (
                         <button
                             key={idx}
                             onClick={() => scrollTo(idx)}
                             className={cn(
-                                "relative aspect-[3/4] w-full border overflow-hidden transition-all duration-300",
+                                "relative aspect-square w-full border-b border-[#1a1a1a] overflow-hidden transition-all duration-0",
                                 selectedIndex === idx
-                                    ? "border-black ring-1 ring-black ring-offset-2 opacity-100"
-                                    : "border-transparent hover:border-black/20 opacity-70 hover:opacity-100"
+                                    ? "bg-[#1a1a1a] p-1"
+                                    : "bg-white hover:bg-neutral-100 p-2 opacity-70 hover:opacity-100"
                             )}
                         >
-                            <Image
-                                src={`${img}?gravity=auto`}
-                                alt={`${title} view ${idx + 1}`}
-                                fill
-                                className="object-cover"
-                                sizes="96px"
-                                quality={80}
-                                placeholder={getBlurUrl(img, idx) ? "blur" : "empty"}
-                                blurDataURL={getBlurUrl(img, idx) ?? undefined}
-                            />
+                            <div className="relative w-full h-full bg-white">
+                                <Image
+                                    src={`${img}?gravity=auto`}
+                                    alt={`${title} view ${idx + 1}`}
+                                    fill
+                                    className="object-contain"
+                                    sizes="96px"
+                                    quality={80}
+                                    placeholder={getBlurUrl(img, idx) ? "blur" : "empty"}
+                                    blurDataURL={getBlurUrl(img, idx) ?? undefined}
+                                />
+                            </div>
                         </button>
                     ))}
                 </div>
 
                 {/* Main Image Area */}
-                <div className="relative w-full aspect-[3/4] md:aspect-[3/4] lg:aspect-[4/5] bg-white overflow-hidden group">
-
+                <div className="relative w-full aspect-square md:aspect-auto md:h-[80vh] bg-white overflow-hidden group">
                     {/* Mobile Carousel View */}
                     <div className="md:hidden h-full" ref={emblaRef}>
                         <div className="flex h-full touch-pan-y">
@@ -157,12 +158,12 @@ export default function ProductGallery({ images, title, blurDataUrl, blurDataUrl
 
                     {/* Desktop: Stacked Hi-Res Zoom Views (Shopify Style) */}
                     {/* Render ALL images, toggle opacity for instant switching */}
-                    <div className="hidden md:block absolute inset-0 w-full h-full">
+                    <div className="hidden md:block absolute inset-0 w-full h-full p-12 lg:p-24">
                         {images.map((img, idx) => (
                             <div
                                 key={idx}
                                 className={cn(
-                                    "absolute inset-0 w-full h-full transition-opacity duration-300 ease-in-out",
+                                    "absolute inset-0 w-full h-full transition-opacity duration-0 ease-in-out",
                                     selectedIndex === idx ? "opacity-100 z-10" : "opacity-0 z-0 pointer-events-none"
                                 )}
                             >
@@ -170,13 +171,9 @@ export default function ProductGallery({ images, title, blurDataUrl, blurDataUrl
                                     src={img}
                                     alt={title}
                                     blurDataUrl={getBlurUrl(img, idx)}
-                                    // Optimized Strategy (Shopify Style):
-                                    // 1. Priority=true only for FIRST image (LCP). This maps to fetchpriority="high".
-                                    // 2. Loading="eager" only for the currently selected image if not LCP.
-                                    // 3. All other images "lazy" to save bandwidth for initial load.
                                     priority={idx === 0}
                                     loading={idx === 0 ? undefined : (idx === selectedIndex ? "eager" : "lazy")}
-                                    className="w-full h-full"
+                                    className="w-full h-full object-contain"
                                     onClick={() => setLightboxOpen(true)}
                                 />
                             </div>
