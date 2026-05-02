@@ -9,16 +9,16 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground hover:bg-primary/90",
+        default: "bg-black text-white hover:bg-black/90",
         destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90",
-        outline: "border border-input bg-background hover:bg-accent hover:text-accent-foreground",
+        outline: "border border-[#1a1a1a] bg-background hover:bg-neutral-50 hover:text-accent-foreground",
         secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80",
-        ghost: "hover:bg-accent hover:text-accent-foreground",
+        ghost: "hover:bg-neutral-50 hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
-        cta: "bg-cta text-cta-foreground font-body font-black tracking-[0.2em] uppercase text-[11px] rounded-none hover:bg-cta/90 transition-all",
-        ctaOutline: "border border-cta bg-transparent text-cta font-body font-black tracking-[0.2em] uppercase text-[11px] rounded-none hover:bg-cta hover:text-cta-foreground transition-all",
-        ctaHero: "bg-white text-black font-body font-black tracking-[0.2em] uppercase text-[11px] rounded-none hover:bg-white/90 transition-all",
-        ctaHeroOutline: "border border-white bg-transparent text-white font-body font-black tracking-[0.2em] uppercase text-[11px] rounded-none hover:bg-white hover:text-black transition-all",
+        cta: "bg-brand-ascent text-white font-black tracking-[0.2em] uppercase text-[11px] hover:bg-brand-ascent/90 transition-all",
+        ctaOutline: "border border-[#1a1a1a] bg-transparent text-brand-ascent font-black tracking-[0.2em] uppercase text-[11px] hover:bg-brand-ascent hover:text-white transition-all",
+        ctaHero: "bg-white text-black font-black tracking-[0.2em] uppercase text-[11px] hover:bg-white/90 transition-all",
+        ctaHeroOutline: "border border-white bg-transparent text-white font-black tracking-[0.2em] uppercase text-[11px] hover:bg-white hover:text-black transition-all",
       },
       size: {
         default: "h-10 px-4 py-2",

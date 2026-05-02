@@ -11,21 +11,21 @@ export function getOrderConfirmationHtml(order: Order, currency: string, siteUrl
   const itemsList = order.items?.map(item => {
     const imageUrl = getAbsoluteUrl(item.image_url);
     return `
-    <div style="border-bottom: 1px solid #eaeaea; padding: 15px 0; display: flex; align-items: flex-start;">
+    <div style="border: 1px solid #1a1a1a; padding: 20px; margin-bottom: 16px; display: flex; align-items: flex-start;">
        ${imageUrl ? `
-         <div style="width: 60px; margin-right: 15px;">
-           <img src="${imageUrl}" alt="${item.title}" width="60" height="75" style="display: block; object-fit: cover; border: 1px solid #eaeaea;" />
+         <div style="width: 70px; margin-right: 20px;">
+           <img src="${imageUrl}" alt="${item.title}" width="70" height="90" style="display: block; object-fit: cover; border: 1px solid #1a1a1a;" />
          </div>
        ` : ''}
        <div style="flex: 1;">
-          <span style="display: block; font-size: 14px; color: #000; font-weight: 500;">${item.title}</span>
+          <span style="display: block; font-size: 14px; color: #000; font-weight: 700; text-transform: uppercase;">${item.title}</span>
           ${item.properties && (item.properties.color || item.properties.size)
-        ? `<span style="display: block; font-size: 12px; color: #666; margin-top: 4px;">Color: ${item.properties.color || 'N/A'} | Size: ${item.properties.size || 'N/A'}</span>`
-        : `<span style="display: block; font-size: 12px; color: #999; margin-top: 4px;">${item.variant_title || ''}</span>`
+        ? `<span style="display: block; font-size: 12px; color: #1a1a1a; margin-top: 6px; font-weight: 600;">Color: ${item.properties.color || 'N/A'} | Size: ${item.properties.size || 'N/A'}</span>`
+        : `<span style="display: block; font-size: 12px; color: #1a1a1a; margin-top: 6px; font-weight: 500;">${item.variant_title || ''}</span>`
       }
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 8px;">
-            <span style="font-size: 12px; color: #999;">Qty: ${item.quantity}</span>
-            <span style="font-size: 14px; color: #000; font-weight: 500;">${formatCurrency(item.unit_price, { code: currency, symbol: currency === 'PKR' ? 'Rs.' : '$', format: 'symbol amount' })}</span>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 12px;">
+            <span style="font-size: 12px; color: #1a1a1a; font-weight: 600;">QTY: ${item.quantity}</span>
+            <span style="font-size: 14px; color: #000; font-weight: 700;">${formatCurrency(item.unit_price, { code: currency, symbol: currency === 'PKR' ? 'Rs.' : '$', format: 'symbol amount' })}</span>
           </div>
        </div>
     </div>
@@ -45,37 +45,37 @@ export function getOrderConfirmationHtml(order: Order, currency: string, siteUrl
     <!DOCTYPE html>
     <html>
       <body style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background-color: #f9f9f9; margin: 0; padding: 40px 0;">
-        <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; padding: 60px; border: 1px solid #eaeaea;">
-          <div style="text-align: center; margin-bottom: 60px;">
-             <h1 style="font-size: 24px; font-weight: 700; letter-spacing: 4px; text-transform: uppercase; margin: 0; color: #000;">SMPL</h1>
+        <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; padding: 0; border: 2px solid #1a1a1a;">
+          <div style="text-align: center; padding: 40px; border-bottom: 2px solid #1a1a1a;">
+             <h1 style="font-size: 28px; font-weight: 800; letter-spacing: 6px; text-transform: uppercase; margin: 0; color: #000;">SMPL</h1>
           </div>
 
-          <div style="margin-bottom: 40px; text-align: center;">
-            <p style="font-size: 14px; color: #666; margin-bottom: 8px;">Thank you for your order</p>
-            <h2 style="font-size: 20px; font-weight: 400; color: #000; margin: 0;">Order #${order.order_number || order.id.slice(0, 8)}</h2>
+          <div style="padding: 40px; border-bottom: 2px solid #1a1a1a;">
+            <p style="font-size: 12px; color: #1a1a1a; margin: 0 0 12px 0; text-transform: uppercase; letter-spacing: 2px; font-weight: 600;">Thank You For Your Order</p>
+            <h2 style="font-size: 20px; font-weight: 800; color: #000; margin: 0; text-transform: uppercase;">#${order.order_number || order.id.slice(0, 8)}</h2>
           </div>
 
-          <div style="margin-bottom: 40px;">
+          <div style="padding: 40px; border-bottom: 2px solid #1a1a1a;">
             ${itemsList}
           </div>
 
-          <div style="border-top: 2px solid #000; padding-top: 20px; font-size: 14px; color: #000;">
-             <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
-                <span>Subtotal</span>
-                <span>${fmt(order.subtotal)}</span>
+          <div style="padding: 40px; border-bottom: 2px solid #1a1a1a;">
+             <div style="display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 13px; font-weight: 600;">
+                <span style="text-transform: uppercase; letter-spacing: 1px;">Subtotal</span>
+                <span style="color: #000;">${fmt(order.subtotal)}</span>
              </div>
-             <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
-                <span>Shipping</span>
-                <span>${fmt(order.shipping_total)}</span>
+             <div style="display: flex; justify-content: space-between; margin-bottom: 16px; font-size: 13px; font-weight: 600;">
+                <span style="text-transform: uppercase; letter-spacing: 1px;">Shipping</span>
+                <span style="color: #000;">${fmt(order.shipping_total)}</span>
              </div>
-             <div style="display: flex; justify-content: space-between; font-weight: 700; font-size: 16px; margin-top: 20px;">
-                <span>Total</span>
+             <div style="display: flex; justify-content: space-between; font-weight: 800; font-size: 16px; padding-top: 16px; border-top: 2px solid #1a1a1a; color: #000;">
+                <span style="text-transform: uppercase; letter-spacing: 1px;">Total</span>
                 <span>${fmt(order.total)}</span>
              </div>
           </div>
 
-          <div style="margin-top: 60px; text-align: center;">
-            <a href="${siteUrl}/account/orders/${order.id}" style="background-color: #000; color: #fff; padding: 15px 30px; text-decoration: none; font-size: 12px; text-transform: uppercase; letter-spacing: 2px;">View Order Status</a>
+          <div style="padding: 40px; text-align: center;">
+            <a href="${siteUrl}/account/orders/${order.id}" style="display: inline-block; background-color: #1a1a1a; color: #fff; padding: 16px 40px; text-decoration: none; font-size: 11px; text-transform: uppercase; letter-spacing: 3px; font-weight: 800; border: 2px solid #1a1a1a;">View Order Status</a>
           </div>
         </div>
       </body>

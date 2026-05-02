@@ -1,6 +1,5 @@
 'use client'
 
-import { useState } from 'react'
 import {
   Sidebar,
   SidebarContent,
@@ -19,17 +18,12 @@ import {
   Settings,
   Package,
   Users,
-  BarChart3,
-  Globe,
-  FileText,
-  Navigation,
-  Palette,
-  Megaphone,
-  ChevronDown,
-  Store,
   MessageSquare,
   Percent,
   BookOpen,
+  FileText,
+  Navigation,
+  Store,
 } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
@@ -40,32 +34,24 @@ const coreNav = [
   { href: "/admin/orders", label: "Orders", icon: Package },
   { href: "/admin/products", label: "Products", icon: ShoppingBag },
   { href: "/admin/customers", label: "Customers", icon: Users },
-  { href: "/admin/reviews", label: "Reviews", icon: MessageSquare },
-  { href: "/admin/analytics", label: "Analytics", icon: BarChart3 },
 ]
 
-const onlineStoreNav = [
-  { href: "/admin/theme", label: "Themes", icon: Palette },
-  { href: "/admin/design/homepage", label: "Homepage", icon: LayoutDashboard },
-  { href: "/admin/blog", label: "Blog Posts", icon: BookOpen },
+const storeNav = [
+  { href: "/admin/settings", label: "Settings", icon: Settings },
+  { href: "/admin/reviews", label: "Reviews", icon: MessageSquare },
+  { href: "/admin/blog", label: "Blog", icon: BookOpen },
   { href: "/admin/pages", label: "Pages", icon: FileText },
   { href: "/admin/navigation", label: "Navigation", icon: Navigation },
-]
-
-const marketingNav = [
   { href: "/admin/discount", label: "Discounts", icon: Percent },
 ]
 
 export function AdminSidebar() {
   const pathname = usePathname()
-  const [onlineStoreOpen, setOnlineStoreOpen] = useState(true)
 
   const isActive = (href: string) => {
     if (href === "/admin") return pathname === "/admin"
     return pathname.startsWith(href)
   }
-
-  const isOnlineStoreActive = onlineStoreNav.some(item => isActive(item.href))
 
   return (
     <Sidebar className="border-r border-border bg-gray-50">
@@ -79,101 +65,51 @@ export function AdminSidebar() {
       </SidebarHeader>
 
       <SidebarContent className="bg-gray-50 px-2 py-4">
-        {/* Core Navigation */}
+        {/* Core */}
         <SidebarGroup>
-          <SidebarMenu className="space-y-0.5">
-            {coreNav.map((item) => (
-              <SidebarMenuItem key={item.href}>
-                <SidebarMenuButton
-                  asChild
-                  className={cn(
-                    "py-2 px-3 rounded-lg transition-colors",
-                    isActive(item.href)
-                      ? "bg-gray-900 text-white font-medium"
-                      : "text-gray-800 hover:bg-gray-200 hover:text-gray-900"
-                  )}
-                >
-                  <Link href={item.href}>
-                    <item.icon className="w-4 h-4" />
-                    <span className="text-sm">{item.label}</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            ))}
-          </SidebarMenu>
-        </SidebarGroup>
-
-        {/* Sales Channels */}
-        <SidebarGroup className="mt-6">
           <SidebarGroupLabel className="text-gray-400 text-[11px] uppercase tracking-wider font-medium px-3 mb-2">
-            Sales Channels
+            Core
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu className="space-y-0.5">
-              {/* Online Store - Collapsible */}
-              <SidebarMenuItem>
-                <button
-                  onClick={() => setOnlineStoreOpen(!onlineStoreOpen)}
-                  className={cn(
-                    "flex items-center justify-between w-full py-2 px-3 rounded-lg transition-colors text-left",
-                    isOnlineStoreActive
-                      ? "bg-gray-200 text-gray-900"
-                      : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
-                  )}
-                >
-                  <div className="flex items-center gap-2">
-                    <Globe className="w-4 h-4" />
-                    <span className="text-sm font-medium">Online Store</span>
-                  </div>
-                  <ChevronDown className={cn(
-                    "w-4 h-4 transition-transform",
-                    onlineStoreOpen ? "rotate-180" : ""
-                  )} />
-                </button>
-              </SidebarMenuItem>
-
-              {/* Online Store Sub-items */}
-              {onlineStoreOpen && (
-                <div className="ml-4 pl-2 border-l border-border space-y-0.5">
-                  {onlineStoreNav.map((item) => (
-                    <SidebarMenuItem key={item.href}>
-                      <SidebarMenuButton
-                        asChild
-                        className={cn(
-                          "py-1.5 px-3 rounded-lg transition-colors",
-                          isActive(item.href)
-                            ? "bg-gray-200 text-gray-900 font-medium"
-                            : "text-gray-500 hover:bg-gray-100 hover:text-gray-900"
-                        )}
-                      >
-                        <Link href={item.href}>
-                          <span className="text-sm">{item.label}</span>
-                        </Link>
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
-                  ))}
-                </div>
-              )}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-
-        {/* Marketing */}
-        <SidebarGroup className="mt-6">
-          <SidebarGroupLabel className="text-gray-400 text-[11px] uppercase tracking-wider font-medium px-3 mb-2">
-            Marketing
-          </SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu className="space-y-0.5">
-              {marketingNav.map((item) => (
+              {coreNav.map((item) => (
                 <SidebarMenuItem key={item.href}>
                   <SidebarMenuButton
                     asChild
                     className={cn(
                       "py-2 px-3 rounded-lg transition-colors",
                       isActive(item.href)
-                        ? "bg-gray-200 text-gray-900 font-medium"
-                        : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+                        ? "bg-gray-900 text-white font-medium"
+                        : "text-gray-800 hover:bg-gray-200 hover:text-gray-900"
+                    )}
+                  >
+                    <Link href={item.href}>
+                      <item.icon className="w-4 h-4" />
+                      <span className="text-sm">{item.label}</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        {/* Store */}
+        <SidebarGroup className="mt-6">
+          <SidebarGroupLabel className="text-gray-400 text-[11px] uppercase tracking-wider font-medium px-3 mb-2">
+            Store
+          </SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu className="space-y-0.5">
+              {storeNav.map((item) => (
+                <SidebarMenuItem key={item.href}>
+                  <SidebarMenuButton
+                    asChild
+                    className={cn(
+                      "py-2 px-3 rounded-lg transition-colors",
+                      isActive(item.href)
+                        ? "bg-gray-900 text-white font-medium"
+                        : "text-gray-600 hover:bg-gray-200 hover:text-gray-900"
                     )}
                   >
                     <Link href={item.href}>
@@ -188,29 +124,9 @@ export function AdminSidebar() {
         </SidebarGroup>
       </SidebarContent>
 
-      {/* Settings at Bottom */}
-      <SidebarFooter className="border-t border-border p-2 bg-gray-50">
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton
-              asChild
-              className={cn(
-                "py-2 px-3 rounded-lg transition-colors",
-                isActive("/admin/settings")
-                  ? "bg-gray-200 text-gray-900 font-medium"
-                  : "text-gray-500 hover:bg-gray-100 hover:text-gray-900"
-              )}
-            >
-              <Link href="/admin/settings">
-                <Settings className="w-4 h-4" />
-                <span className="text-sm">Settings</span>
-              </Link>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarMenu>
+      <SidebarFooter className="border-t border-border p-3 bg-gray-50">
+        <p className="text-[10px] text-gray-400 text-center">SMPL Admin v1.0</p>
       </SidebarFooter>
     </Sidebar>
   )
 }
-
-

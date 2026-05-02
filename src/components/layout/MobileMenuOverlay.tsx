@@ -1,10 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { X, Instagram, Facebook, ArrowRight } from "lucide-react";
+import { X, Instagram, Facebook } from "lucide-react";
 import { MenuItem } from "@/lib/types";
 import { useLenis } from "lenis/react";
 import { usePathname } from "next/navigation";
+import { cn } from "@/lib/utils";
 
 interface MobileMenuOverlayProps {
     navLinks: MenuItem[];
@@ -16,38 +17,37 @@ export default function MobileMenuOverlay({ navLinks, onClose }: MobileMenuOverl
     const pathname = usePathname();
 
     return (
-        <div className="fixed inset-0 z-[1000] overflow-hidden">
+        <div className="fixed inset-0 z-[1000] overflow-hidden flex justify-start">
             {/* Backdrop */}
             <div
                 onClick={onClose}
-                className="absolute inset-0 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200"
+                className="absolute inset-0 bg-black/40 backdrop-blur-[2px] animate-in fade-in duration-300"
             />
 
             {/* Sidebar Content */}
             <div
-                className="absolute top-0 left-0 h-full w-[88%] max-w-[420px] bg-white text-[#ff0000] shadow-2xl flex flex-col animate-in slide-in-from-left duration-300 ease-out-expo"
+                className="relative h-full w-[88%] max-w-[400px] bg-white border-r border-[#1a1a1a] shadow-2xl flex flex-col animate-in slide-in-from-left duration-500 ease-out-expo"
             >
-                {/* Header */}
-                <div className="relative z-10 flex items-center justify-between px-5 py-4 border-b border-[#ff0000]/10">
-                    <span className="text-[10px] font-black uppercase tracking-[0.28em] text-[#ff0000]/70">Explore</span>
+                {/* Header Section */}
+                <div className="grid grid-cols-[1fr_auto] border-b border-[#1a1a1a] h-[64px] shrink-0">
+                    <div className="flex items-center px-6">
+                        <span className="text-[11px] font-black uppercase tracking-[0.2em] text-brand-ascent">Explore</span>
+                    </div>
                     <button
                         onClick={onClose}
-                        className="bg-[#ff0000] text-white w-8 h-8 flex items-center justify-center cursor-pointer transition-transform active:scale-95"
+                        className="w-[64px] h-full border-l border-[#1a1a1a] flex items-center justify-center hover:bg-neutral-50 transition-colors"
                         aria-label="Close menu"
                     >
-                        <X className="w-5 h-5 stroke-[3]" />
+                        <X className="w-5 h-5" />
                     </button>
                 </div>
 
-                {/* Navigation Links */}
-                <nav className="relative z-10 flex-1 overflow-y-auto px-5 py-10 flex flex-col gap-6">
-                    {navLinks.map((link, i) => (
-                        <div
-                            key={link.label}
-                            className="animate-in fade-in slide-in-from-left-4 duration-500"
-                            style={{ animationDelay: `${100 + i * 50}ms`, animationFillMode: 'both' }}
-                        >
+                {/* Navigation Links Grid */}
+                <nav className="flex-1 overflow-y-auto border-b border-[#1a1a1a]">
+                    <div className="grid grid-cols-1">
+                        {navLinks.map((link, i) => (
                             <Link
+                                key={link.label}
                                 href={link.url}
                                 onClick={(e) => {
                                     if (link.url.startsWith('/#') && pathname === '/') {
@@ -64,36 +64,48 @@ export default function MobileMenuOverlay({ navLinks, onClose }: MobileMenuOverl
                                         onClose();
                                     }
                                 }}
-                                className="group flex items-center justify-between py-3 border-b border-[#ff0000]/10"
+                                className="group flex items-center justify-between px-6 py-8 border-b border-[#1a1a1a] hover:bg-neutral-50 transition-all duration-300 animate-in fade-in slide-in-from-left-4"
+                                style={{ animationDelay: `${100 + i * 50}ms`, animationFillMode: 'both' }}
                             >
-                                <span className="text-4xl font-black uppercase tracking-tighter group-hover:pl-2 transition-all duration-300 text-black">
+                                <span className="text-3xl sm:text-4xl font-black uppercase tracking-tighter text-black group-hover:translate-x-2 transition-transform duration-500">
                                     {link.label}
                                 </span>
-                                <ArrowRight className="w-6 h-6 opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300" />
+                                <div className="w-8 h-8 rounded-full border border-[#1a1a1a] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
+                                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M1 11L11 1M11 1H1M11 1V11" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                    </svg>
+                                </div>
                             </Link>
-                        </div>
-                    ))}
+                        ))}
+                    </div>
                 </nav>
 
-                {/* Footer */}
-                <div className="relative z-10 p-6 border-t border-[#ffffff]/10 mt-auto">
-                    <div className="mb-8">
-                        <span className="text-4xl font-black tracking-tighter text-[#ffffff]">SMPL.</span>
+                {/* Footer Grid */}
+                <div className="bg-neutral-50 shrink-0">
+                    <div className="grid grid-cols-2 border-b border-[#1a1a1a]">
+                        <Link 
+                            href="https://www.instagram.com/smpl.pakistan/" 
+                            target="_blank" 
+                            className="flex items-center justify-center gap-2 py-6 border-r border-[#1a1a1a] hover:bg-white transition-colors text-[10px] font-black uppercase tracking-widest"
+                        >
+                            <Instagram className="w-4 h-4" />
+                            Instagram
+                        </Link>
+                        <Link 
+                            href="https://facebook.com" 
+                            target="_blank" 
+                            className="flex items-center justify-center gap-2 py-6 hover:bg-white transition-colors text-[10px] font-black uppercase tracking-widest"
+                        >
+                            <Facebook className="w-4 h-4" />
+                            Facebook
+                        </Link>
                     </div>
                     
-                    <div className="flex gap-6 mb-8">
-                        <Link href="https://www.instagram.com/smpl.pakistan/" target="_blank" rel="noopener noreferrer" className="hover:opacity-60 transition-opacity">
-                            <Instagram className="w-5 h-5 text-[#ff0000]" />
-                        </Link>
-                        <Link href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="hover:opacity-60 transition-opacity">
-                            <Facebook className="w-5 h-5 text-[#ff0000]" />
-                        </Link>
-                    </div>
-                    <div className="space-y-2">
-                        <p className="text-[10px] font-black uppercase tracking-[0.28em] text-black">
+                    <div className="p-6 space-y-3">
+                        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-black">
                             © 2026 SMPL STUDIOS
                         </p>
-                        <p className="text-[10px] font-bold leading-relaxed text-black max-w-[220px] uppercase">
+                        <p className="text-[10px] font-bold leading-tight text-black max-w-[240px] uppercase opacity-60">
                             DEFINING THE FUTURE OF MODERN MINIMALISM.
                         </p>
                     </div>

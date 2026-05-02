@@ -180,7 +180,7 @@ export function SearchModal() {
                             )}
                             <button 
                                 onClick={() => setOpen(false)} 
-                                className="ml-2 bg-[#ff0000] text-white w-8 h-8 flex items-center justify-center shrink-0 transition-transform active:scale-95"
+                                className="ml-2 bg-brand-ascent text-white w-8 h-8 flex items-center justify-center shrink-0 transition-transform active:scale-95"
                             >
                                 <X className="h-5 w-5 stroke-[3]" />
                             </button>

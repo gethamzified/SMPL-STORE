@@ -109,7 +109,7 @@ export default async function ShopPage({ searchParams }: {
                                 </BreadcrumbItem>
                                 <BreadcrumbSeparator />
                                 <BreadcrumbItem>
-                                    <BreadcrumbPage className="text-[10px] font-bold uppercase tracking-widest text-[#d95e32]">Shop All</BreadcrumbPage>
+                                    <BreadcrumbPage className="text-[10px] font-bold uppercase tracking-widest text-brand-ascent">Shop All</BreadcrumbPage>
                                 </BreadcrumbItem>
                             </BreadcrumbList>
                         </Breadcrumb>

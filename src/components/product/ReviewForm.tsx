@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Star } from "lucide-react";
+import { Star, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -29,15 +29,15 @@ export default function ReviewForm({ productId, onSuccess, onCancel }: ReviewFor
         e.preventDefault();
 
         if (rating === 0) {
-            toast.error("Please select a rating", {
-                description: "Click on the stars to rate this product",
+            toast.error("RATING REQUIRED", {
+                description: "PLEASE SELECT A STAR RATING.",
             });
             return;
         }
 
         if (!content.trim()) {
-            toast.error("Please write a review", {
-                description: "Share your experience with this product",
+            toast.error("REVIEW REQUIRED", {
+                description: "PLEASE SHARE YOUR EXPERIENCE.",
             });
             return;
         }
@@ -55,14 +55,14 @@ export default function ReviewForm({ productId, onSuccess, onCancel }: ReviewFor
             });
 
             if (result.error) {
-                toast.error("Error", {
+                toast.error("ERROR", {
                     description: result.error,
                 });
                 return;
             }
 
-            toast.success("Review Submitted!", {
-                description: result.message || "Thank you for your review! It will be visible after approval.",
+            toast.success("REVIEW SUBMITTED", {
+                description: "THANK YOU! YOUR FEEDBACK IS UNDER REVIEW.",
             });
 
             // Reset form
@@ -74,8 +74,8 @@ export default function ReviewForm({ productId, onSuccess, onCancel }: ReviewFor
 
             onSuccess?.();
         } catch (error) {
-            toast.error("Error", {
-                description: "Failed to submit review. Please try again.",
+            toast.error("ERROR", {
+                description: "FAILED TO SUBMIT REVIEW. PLEASE TRY AGAIN.",
             });
         } finally {
             setIsSubmitting(false);
@@ -83,10 +83,19 @@ export default function ReviewForm({ productId, onSuccess, onCancel }: ReviewFor
     };
 
     return (
-        <form onSubmit={handleSubmit} className="space-y-6 p-6 bg-neutral-50 rounded-xl">
-            <div className="space-y-2">
-                <Label className="text-sm font-medium">Your Rating *</Label>
-                <div className="flex gap-1">
+        <form onSubmit={handleSubmit} className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-500">
+            <div className="flex items-center justify-between border-b-2 border-black pb-4 mb-8">
+                <h3 className="text-xl font-black uppercase tracking-tighter text-black">Submit Feedback</h3>
+                {onCancel && (
+                    <button type="button" onClick={onCancel} className="p-2 hover:bg-neutral-100 transition-colors">
+                        <X className="w-5 h-5" />
+                    </button>
+                )}
+            </div>
+
+            <div className="space-y-4">
+                <Label className="text-[11px] font-black uppercase tracking-widest text-black">Overall Rating *</Label>
+                <div className="flex gap-2">
                     {[1, 2, 3, 4, 5].map((star) => (
                         <button
                             key={star}
@@ -94,98 +103,105 @@ export default function ReviewForm({ productId, onSuccess, onCancel }: ReviewFor
                             onClick={() => setRating(star)}
                             onMouseEnter={() => setHoverRating(star)}
                             onMouseLeave={() => setHoverRating(0)}
-                            className="p-1 transition-transform hover:scale-110"
+                            className="transition-transform active:scale-90"
                         >
-                            <Star
-                                className={cn(
-                                    "w-7 h-7 transition-colors",
-                                    (hoverRating || rating) >= star
-                                        ? "fill-yellow-400 text-yellow-400"
-                                        : "text-neutral-300"
-                                )}
-                            />
+                                <Star
+                                    className={cn(
+                                        "w-8 h-8 transition-all duration-200",
+                                        (hoverRating || rating) >= star
+                                            ? "fill-brand-ascent text-brand-ascent scale-110"
+                                            : "text-black fill-none"
+                                    )}
+                                />
                         </button>
                     ))}
+                    {rating > 0 && (
+                      <span className="ml-4 text-[10px] font-black uppercase tracking-widest text-brand-ascent flex items-center">
+                        {rating} / 5 STARS
+                      </span>
+                    )}
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                    <Label htmlFor="reviewer_name" className="text-sm font-medium">
-                        Your Name
+                    <Label htmlFor="reviewer_name" className="text-[11px] font-black uppercase tracking-widest text-black">
+                        Display Name
                     </Label>
                     <Input
                         id="reviewer_name"
                         value={reviewerName}
                         onChange={(e) => setReviewerName(e.target.value)}
-                        placeholder="John Doe"
-                        className="bg-white"
+                        placeholder="E.G. JOHN D."
+                        className="rounded-none border-2 border-black h-12 font-black uppercase text-xs tracking-widest placeholder:text-neutral-300 focus:border-brand-ascent focus:ring-0"
                     />
                 </div>
                 <div className="space-y-2">
-                    <Label htmlFor="reviewer_email" className="text-sm font-medium">
-                        Your Email
+                    <Label htmlFor="reviewer_email" className="text-[11px] font-black uppercase tracking-widest text-black">
+                        Email Address
                     </Label>
                     <Input
                         id="reviewer_email"
                         type="email"
                         value={reviewerEmail}
                         onChange={(e) => setReviewerEmail(e.target.value)}
-                        placeholder="john@example.com"
-                        className="bg-white"
+                        placeholder="EMAIL@EXAMPLE.COM"
+                        className="rounded-none border-2 border-black h-12 font-black uppercase text-xs tracking-widest placeholder:text-neutral-300 focus:border-brand-ascent focus:ring-0"
                     />
                 </div>
             </div>
 
             <div className="space-y-2">
-                <Label htmlFor="review_title" className="text-sm font-medium">
-                    Review Title
+                <Label htmlFor="review_title" className="text-[11px] font-black uppercase tracking-widest text-black">
+                    Review Headline
                 </Label>
                 <Input
                     id="review_title"
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
-                    placeholder="Sum up your experience"
-                    className="bg-white"
+                    placeholder="E.G. PERFECT FIT / HIGH QUALITY"
+                    className="rounded-none border-2 border-black h-12 font-black uppercase text-xs tracking-widest placeholder:text-neutral-300 focus:border-brand-ascent focus:ring-0"
                 />
             </div>
 
             <div className="space-y-2">
-                <Label htmlFor="review_content" className="text-sm font-medium">
-                    Your Review *
+                <Label htmlFor="review_content" className="text-[11px] font-black uppercase tracking-widest text-black">
+                    Your Experience *
                 </Label>
                 <Textarea
                     id="review_content"
                     value={content}
                     onChange={(e) => setContent(e.target.value)}
-                    placeholder="Share your experience with this product..."
-                    rows={4}
-                    className="bg-white resize-none"
+                    placeholder="SHARE YOUR DETAILED FEEDBACK..."
+                    rows={5}
+                    className="rounded-none border-2 border-black font-black uppercase text-xs tracking-widest placeholder:text-neutral-300 focus:border-brand-ascent focus:ring-0 resize-none"
                 />
             </div>
 
-            <div className="flex gap-3">
+            <div className="flex flex-col sm:flex-row gap-4 pt-4">
                 <Button
                     type="submit"
                     disabled={isSubmitting}
-                    className="flex-1 uppercase tracking-widest"
+                    variant="cta"
+                    size="xl"
+                    className="flex-1 bg-black text-white hover:bg-brand-ascent border-2 border-black rounded-none"
                 >
-                    {isSubmitting ? "Submitting..." : "Submit Review"}
+                    {isSubmitting ? "PROCESSING..." : "PUBLISH REVIEW"}
                 </Button>
                 {onCancel && (
                     <Button
                         type="button"
                         variant="outline"
                         onClick={onCancel}
-                        className="uppercase tracking-widest"
+                        className="rounded-none border-2 border-black font-black uppercase tracking-widest h-14"
                     >
-                        Cancel
+                        DISCARD
                     </Button>
                 )}
             </div>
 
-            <p className="text-xs text-neutral-500 text-center">
-                Your review will be published after it has been reviewed by our team.
+            <p className="text-[9px] font-black uppercase tracking-[0.2em] text-neutral-400 text-center border-t border-neutral-100 pt-6">
+                * FEEDBACK WILL BE VISIBLE AFTER MANUAL VERIFICATION
             </p>
         </form>
     );

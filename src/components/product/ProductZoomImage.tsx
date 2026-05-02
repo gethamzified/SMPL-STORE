@@ -63,7 +63,7 @@ export function ProductZoomImage({
     <div
       ref={containerRef}
       className={cn(
-        'relative overflow-hidden',
+        'relative overflow-hidden flex items-center justify-center',
         className,
       )}
       onClick={onClick}
@@ -73,7 +73,7 @@ export function ProductZoomImage({
         src={`${src}?gravity=auto`}
         alt={alt}
         fill
-        className="object-cover"
+        className="object-contain"
         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 55vw, 700px"
         quality={80}
         priority={priority}

@@ -10,7 +10,7 @@ export function BackgroundLayer({ imageUrl }: { imageUrl: string }) {
   if (!imageUrl || !isHome) return null;
 
   return (
-    <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
+    <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
       <div className="relative w-full h-full">
         <Image
           src={imageUrl}

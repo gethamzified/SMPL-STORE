@@ -1,6 +1,7 @@
 'use client';
 
 import Link from "next/link";
+import Image from "next/image";
 import { Instagram, Twitter, Facebook, Youtube, ChevronDown } from "lucide-react";
 import { FooterConfig, SocialConfig } from "@/lib/types";
 import { ScrollToTopButton } from "./ScrollToTopButton";
@@ -29,33 +30,18 @@ const FooterColumn = ({
   title: string;
   links: { label: string; url: string }[]
 }) => {
-  const [isOpen, setIsOpen] = useState(false);
-
   return (
-    <div className="flex flex-col border-b border-neutral-900 lg:border-none">
-      {/* Mobile Toggle Button */}
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center justify-between py-4 lg:py-0 lg:mb-6 w-full text-left"
-      >
-        <h4 className="text-black text-xs font-semibold uppercase tracking-widest">{title}</h4>
-        <ChevronDown
-          className={`w-4 h-4 text-neutral-500 transition-transform duration-300 lg:hidden ${isOpen ? 'rotate-180' : ''}`}
-        />
-      </button>
-
-      {/* Desktop always visible, Mobile toggleable */}
-      <div className={`${isOpen ? 'block' : 'hidden'} lg:block`}>
-        <ul className="flex flex-col gap-3 pb-6 lg:pb-0">
-          {links.map(link => (
-            <li key={`${link.label}-${link.url}`}>
-              <Link href={link.url} className="text-black/60 text-sm hover:text-black transition-colors duration-300">
-                {link.label}
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </div>
+    <div className="flex flex-col">
+      <h4 className="text-white/40 text-[10px] font-black uppercase tracking-[0.2em] mb-6">{title}</h4>
+      <ul className="flex flex-col gap-3">
+        {links.map(link => (
+          <li key={`${link.label}-${link.url}`}>
+            <Link href={link.url} className="text-white text-[11px] font-black uppercase tracking-widest hover:text-brand-ascent transition-colors duration-300">
+              {link.label}
+            </Link>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 };
@@ -127,53 +113,57 @@ const Footer = ({
   const displaySocialLinks = socialLinks.length > 0 ? socialLinks : defaultSocialLinks;
 
   return (
-    <footer className={cn(
-      "relative z-10 w-full overflow-hidden font-sans border-t transition-colors duration-300",
-      isHome 
-        ? "bg-black/10 backdrop-blur-sm text-black border-black/5" 
-        : "bg-white text-black border-black"
-    )}>
+    <footer className="relative z-10 w-full overflow-hidden bg-black text-white border-t border-white/10">
       <div className="max-w-[1920px] mx-auto px-6 py-12 lg:py-20">
         <div className="flex flex-col lg:flex-row justify-between gap-12 lg:gap-8">
 
-          {/* Left: Brand & Newsletter */}
-          <div className="w-full lg:w-5/12 flex flex-col gap-6">
+          {/* Left: Brand & Tagline */}
+          <div className="w-full lg:w-4/12 flex flex-col gap-4">
             <div>
-              <Link href="/" className="text-3xl font-black tracking-tighter text-black inline-block uppercase">
-                {brandName}.
+              <Link href="/" className="inline-block">
+                <Image
+                  src="/SMPL_LOGO.svg"
+                  alt={brandName}
+                  width={100}
+                  height={40}
+                  className="h-8 w-auto "
+                />
               </Link>
-              <p className="mt-3 text-black/60 text-sm max-w-sm leading-relaxed font-bold">
+              <p className="mt-4 text-white/40 text-[10px] max-w-xs leading-relaxed font-black uppercase tracking-[0.2em]">
                 {config.tagline || 'Minimalist design, premium quality, enduring style.'}
               </p>
             </div>
-
-            <div className="mt-2 text-black">
-              <h3 className="text-xs font-semibold tracking-widest uppercase mb-4">
-                Join our newsletter
-              </h3>
-              <div className="max-w-md">
-                <NewsletterForm placeholder="Email address" />
-              </div>
-            </div>
           </div>
 
-          {/* Right: Navigation Links */}
-          <div className="w-full lg:w-7/12 grid grid-cols-1 md:grid-cols-3 gap-0 lg:gap-10 border-t border-neutral-900 lg:border-none">
+          {/* Center: Simplified Navigation */}
+          <div className="w-full lg:w-4/12 grid grid-cols-2 gap-8">
+            <FooterColumn
+              title="Catalog"
+              links={[
+                { label: 'Shop All', url: '/shop' },
+                { label: 'Featured', url: '/shop?sort=featured' }
+              ]}
+            />
+            <FooterColumn
+              title="Social"
+              links={displaySocialLinks.map(s => ({ label: s.name, url: s.href }))}
+            />
+          </div>
 
-            {columnsToRender.map((col) => (
-              <FooterColumn
-                key={col.title}
-                title={col.title}
-                links={col.links}
-              />
-            ))}
-
+          {/* Right: Newsletter */}
+          <div className="w-full lg:w-4/12">
+            <h3 className="text-[10px] font-black tracking-widest uppercase mb-4 text-white/40">
+              Join our newsletter
+            </h3>
+            <div className="max-w-md">
+              <NewsletterForm placeholder="EMAIL@ADDRESS.COM" dark />
+            </div>
           </div>
         </div>
       </div>
 
       {/* Bottom Bar */}
-      <div className="border-t border-black/5">
+      <div className="border-t border-white/5">
         <div className="max-w-[1920px] mx-auto px-6 py-12 flex flex-col lg:flex-row justify-between items-center gap-10 relative">
 
           {/* Scroll To Top - Absolute Centered ABOVE text */}
@@ -182,30 +172,15 @@ const Footer = ({
           </div>
 
           {/* Copyright */}
-          <div className="text-[10px] text-black/40 uppercase tracking-widest flex-1 text-center lg:text-left font-bold">
+          <div className="text-[9px] text-white/20 uppercase tracking-[0.2em] flex-1 text-center lg:text-left font-black">
             <span>{copyrightText} All rights reserved.</span>
           </div>
 
-          {/* Placeholder/Empty Mid for balance on desktop */}
           <div className="hidden lg:block flex-1" />
 
-          {/* Social Links */}
-          <div className="flex items-center justify-center lg:justify-end gap-6 flex-1">
-            {displaySocialLinks.map((link, idx) => {
-              const Icon = link.Icon;
-              return (
-                <a
-                  key={idx}
-                  href={link.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-black/40 hover:text-black transition-colors duration-300"
-                  aria-label={`Follow us on ${link.name}`}
-                >
-                  <Icon className="w-4 h-4" />
-                </a>
-              );
-            })}
+          {/* Simplified Social Icons (removed redundant displaySocialLinks mapping as it's now in the column) */}
+          <div className="flex items-center justify-center lg:justify-end gap-8 flex-1">
+            <span className="text-[9px] text-white/20 uppercase tracking-[0.2em] font-black">Curated in Pakistan</span>
           </div>
 
         </div>

@@ -7,7 +7,7 @@ export default async function Home() {
   const data = await getHomeData();
 
   return (
-    <main>
+    <main className="overflow-x-hidden">
       <HomeLayout data={data} />
     </main>
   );

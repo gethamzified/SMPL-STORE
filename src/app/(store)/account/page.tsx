@@ -4,6 +4,7 @@ import { FadeInView } from '@/components/animations/FadeInView';
 import Link from 'next/link';
 import { Package, User, MapPin, ChevronRight } from 'lucide-react';
 import OrderList from '@/components/account/OrderList';
+import { outlinedPanel } from '@/lib/outline';
 
 export const dynamic = 'force-dynamic';
 
@@ -50,8 +51,8 @@ export default async function AccountPage() {
 
             {/* Quick Stats / Actions Grid */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
-                <Link href="/account/orders" className="group bg-neutral-50 rounded-2xl p-6 border border-neutral-100 hover:border-neutral-200 hover:shadow-lg transition-all">
-                    <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center mb-4 shadow-sm border border-neutral-100 group-hover:scale-110 transition-transform">
+                <Link href="/account/orders" className={`group p-6 transition-colors ${outlinedPanel} hover:bg-neutral-50`}>
+                    <div className="w-10 h-10 bg-white flex items-center justify-center mb-4 border border-[#1a1a1a] group-hover:scale-110 transition-transform">
                         <Package className="w-5 h-5 text-black" />
                     </div>
                     <h3 className="font-bold text-lg mb-1">{recentOrders?.length || 0} Orders</h3>
@@ -59,8 +60,8 @@ export default async function AccountPage() {
                     <span className="text-xs font-bold underline decoration-neutral-300 hover:decoration-black underline-offset-4 transition-all">View All Orders</span>
                 </Link>
 
-                <Link href="/account/profile" className="group bg-neutral-50 rounded-2xl p-6 border border-neutral-100 hover:border-neutral-200 hover:shadow-lg transition-all">
-                    <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center mb-4 shadow-sm border border-neutral-100 group-hover:scale-110 transition-transform">
+                <Link href="/account/profile" className={`group p-6 transition-colors ${outlinedPanel} hover:bg-neutral-50`}>
+                    <div className="w-10 h-10 bg-white flex items-center justify-center mb-4 border border-[#1a1a1a] group-hover:scale-110 transition-transform">
                         <User className="w-5 h-5 text-black" />
                     </div>
                     <h3 className="font-bold text-lg mb-1">Profile</h3>
@@ -68,8 +69,8 @@ export default async function AccountPage() {
                     <span className="text-xs font-bold underline decoration-neutral-300 hover:decoration-black underline-offset-4 transition-all">Update Info</span>
                 </Link>
 
-                <Link href="/account/profile" className="group bg-neutral-50 rounded-2xl p-6 border border-neutral-100 hover:border-neutral-200 hover:shadow-lg transition-all">
-                    <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center mb-4 shadow-sm border border-neutral-100 group-hover:scale-110 transition-transform">
+                <Link href="/account/profile" className={`group p-6 transition-colors ${outlinedPanel} hover:bg-neutral-50`}>
+                    <div className="w-10 h-10 bg-white flex items-center justify-center mb-4 border border-[#1a1a1a] group-hover:scale-110 transition-transform">
                         <MapPin className="w-5 h-5 text-black" />
                     </div>
                     <h3 className="font-bold text-lg mb-1">Addresses</h3>
@@ -80,7 +81,7 @@ export default async function AccountPage() {
 
             {/* Recent Orders Section */}
             <div>
-                <div className="flex items-end justify-between mb-8 border-b border-neutral-100 pb-6">
+                <div className="flex items-end justify-between mb-8 border-b border-[#1a1a1a] pb-6">
                     <div>
                         <h2 className="text-xl font-bold tracking-tight">Recent Orders</h2>
                     </div>

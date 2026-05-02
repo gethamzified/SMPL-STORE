@@ -12,7 +12,7 @@ export default async function SettingsPage() {
 
     return (
         <div className="flex-1 space-y-6 max-w-6xl mx-auto">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
                     <h1 className="text-xl font-semibold text-gray-900">Settings</h1>
                     <p className="text-sm text-gray-500 mt-1">Configure your store appearance and behavior</p>
@@ -20,7 +20,7 @@ export default async function SettingsPage() {
                 <Link
                     href="/"
                     target="_blank"
-                    className="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-white hover:bg-gray-50 border border-border text-gray-700 rounded-lg transition-colors"
+                    className="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-white hover:bg-gray-50 border border-border text-gray-700 rounded-lg transition-colors w-fit"
                 >
                     <ExternalLink className="w-4 h-4" />
                     Preview Changes

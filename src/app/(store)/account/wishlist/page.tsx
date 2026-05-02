@@ -7,6 +7,7 @@ import Image from "next/image";
 import { Heart, ShoppingBag, Trash2 } from "lucide-react";
 import { useFormatCurrency } from "@/context/StoreConfigContext";
 import { useCart } from "@/context/CartContext";
+import { outlinedPanel } from "@/lib/outline";
 
 export default function WishlistPage() {
     const { items, removeItem, isLoading } = useWishlist();
@@ -69,7 +70,7 @@ export default function WishlistPage() {
             </div>
 
             {items.length === 0 ? (
-                <div className="text-center py-20 bg-neutral-50 rounded-2xl">
+                <div className={`text-center py-20 ${outlinedPanel}`}>
                     <Heart className="w-16 h-16 mx-auto text-neutral-300 mb-6" />
                     <h2 className="text-xl font-bold mb-2">Your wishlist is empty</h2>
                     <p className="text-neutral-500 mb-8">
@@ -77,7 +78,7 @@ export default function WishlistPage() {
                     </p>
                     <Link
                         href="/shop"
-                        className="inline-flex items-center gap-2 px-8 py-3 bg-black text-white font-medium rounded-full hover:bg-neutral-800 transition-colors"
+                        className="inline-flex items-center gap-2 px-8 py-3 bg-black text-white font-medium rounded-none border border-[#1a1a1a] hover:bg-neutral-800 transition-colors"
                     >
                         <ShoppingBag className="w-4 h-4" />
                         Start Shopping
@@ -92,9 +93,9 @@ export default function WishlistPage() {
                         const isSale = !!(product.sale_price && product.sale_price < product.price);
 
                         return (
-                            <div key={item.id} className="group relative">
+                            <div key={item.id} className={`group relative p-4 ${outlinedPanel}`}>
                                 {/* Product Image */}
-                                <div className="relative aspect-[3/4] bg-neutral-100 rounded-lg overflow-hidden mb-4">
+                                <div className="relative aspect-[3/4] bg-neutral-100 overflow-hidden mb-4 border border-[#1a1a1a]">
                                     <Link href={`/product/${product.slug}`}>
                                         {product.cover_image ? (
                                             <Image
@@ -118,7 +119,7 @@ export default function WishlistPage() {
                                     {/* Remove Button */}
                                     <button
                                         onClick={() => handleRemove(product.id, product.title)}
-                                        className="absolute top-3 right-3 w-9 h-9 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center text-red-500 hover:bg-red-500 hover:text-white transition-all shadow-sm"
+                                        className="absolute top-3 right-3 w-9 h-9 bg-white/90 backdrop-blur-sm flex items-center justify-center text-red-500 hover:bg-red-500 hover:text-white transition-all border border-[#1a1a1a]"
                                         aria-label="Remove from wishlist"
                                     >
                                         <Trash2 className="w-4 h-4" />
@@ -127,7 +128,7 @@ export default function WishlistPage() {
                                     {/* Quick Add to Cart */}
                                     <button
                                         onClick={() => handleAddToCart(item)}
-                                        className="absolute bottom-4 left-1/2 -translate-x-1/2 px-6 py-2.5 bg-black text-white text-xs font-bold uppercase tracking-wider rounded-full opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 hover:bg-neutral-800"
+                                        className="absolute bottom-4 left-1/2 -translate-x-1/2 px-6 py-2.5 bg-black text-white text-xs font-bold uppercase tracking-wider rounded-none border border-[#1a1a1a] opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 hover:bg-neutral-800"
                                     >
                                         Add to Cart
                                     </button>

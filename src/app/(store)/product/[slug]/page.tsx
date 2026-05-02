@@ -4,6 +4,9 @@ import { ProductService } from "@/services/products";
 
 import ProductDetail from "@/components/product/ProductDetail";
 import RelatedProducts from "@/components/product/RelatedProducts";
+import { ProductReviews } from "@/components/product/ProductReviews";
+import { Suspense } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
 import { Product } from "@/lib/types";
 import { Metadata } from "next";
@@ -90,7 +93,7 @@ export default async function ProductPage({ params }: Props) {
   const safeRelated = (relatedProducts || []) as Product[];
 
   return (
-    <main className="relative z-10 min-h-screen bg-white text-foreground">
+    <main className="relative z-10 min-h-screen bg-white text-foreground overflow-x-hidden">
       {/* Product Schema */}
       <script
         type="application/ld+json"
@@ -147,18 +150,24 @@ export default async function ProductPage({ params }: Props) {
           })
         }}
       />
-      <div className="pt-32 md:pt-40 pb-16 md:pb-20 px-2 md:px-6">
+      <div className="pt-12 md:pt-16 pb-12 md:pb-16 px-0 md:px-4">
         <ProductDetail product={typedProduct} />
       </div>
 
+      <div className="max-w-[1600px] mx-auto border-t-2 border-[#1a1a1a]">
+        <Suspense fallback={<div className="p-8 h-64 bg-white animate-pulse" />}>
+          <ProductReviews productId={typedProduct.id} />
+        </Suspense>
+      </div>
 
-      <div className="max-w-[1920px] mx-auto border-t border-[#1a1a1a] bg-white">
-        <div className="flex items-center justify-between px-6 md:px-12 py-8 border-b border-[#1a1a1a]">
-          <h2 className="text-[14px] font-bold uppercase tracking-widest text-black">
+
+      <div className="max-w-[1600px] mx-auto border-t-2 border-[#1a1a1a] bg-white">
+        <div className="flex items-center justify-between px-4 md:px-6 py-5 border-b-2 border-[#1a1a1a]">
+          <h2 className="text-[11px] font-black uppercase tracking-widest text-black">
             Related Objects
           </h2>
-          <Link href="/shop" className="text-[10px] font-bold uppercase tracking-widest text-black hover:text-[#d95e32] transition-colors underline underline-offset-4">
-            View Collection
+          <Link href="/shop" className="text-[9px] font-black uppercase tracking-widest text-black hover:text-[#d95e32] transition-colors underline underline-offset-3">
+            View All
           </Link>
         </div>
         <div className="px-0">

@@ -106,6 +106,7 @@ export default async function RootLayout({
 
   // Map Brand colors to shadcn HSL variables
   const hslPrimary = hexToHslValues(primaryColor);
+  const hslAccent = hexToHslValues(config.theme.accentColor || '#ee6c4d');
   const hslBackground = hexToHslValues(config.theme.backgroundColor || '#ffffff');
   const hslForeground = hexToHslValues(config.theme.foregroundColor || '#000000');
 
@@ -113,6 +114,8 @@ export default async function RootLayout({
   const dynamicStyles = {
     colorScheme: theme,
     ['--brand-primary' as string]: primaryColor,
+    ['--brand-ascent' as string]: hslAccent,
+    ['--brand-accent-hex' as string]: config.theme.accentColor || '#ee6c4d',
     ['--brand-radius' as string]: borderRadius,
     ['--font-display' as string]: fontName === 'helvetica' ? 'var(--font-helvetica)' : `var(--font-${fontName})`,
     ['--font-body' as string]: fontName === 'helvetica' ? 'var(--font-helvetica)' : `var(--font-${fontName})`,

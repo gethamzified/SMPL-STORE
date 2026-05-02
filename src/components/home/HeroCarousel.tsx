@@ -82,13 +82,13 @@ export function HeroCarousel({ products, hero }: HeroCarouselProps) {
             {/* 4. Bottom Right: Price */}
             <div
                 key={`cta-${selectedIndex}`}
-                className="absolute bottom-24 right-6 md:right-12 text-right z-20 animate-in fade-in slide-in-from-right-8 duration-700"
+                className="absolute top-40 left-6 right-auto md:top-auto md:bottom-24 md:left-auto md:right-12 text-left md:text-right z-20 animate-in fade-in slide-in-from-left-8 md:slide-in-from-right-8 duration-700"
             >
                 <div className="mb-0">
-                    <span className="text-[10px] font-black uppercase tracking-[0.3em] text-black/40 block mb-1">
+                    <span className="text-[8px] md:text-[10px] font-black uppercase tracking-[0.3em] text-brand-ascent block mb-1">
                         Current Value
                     </span>
-                    <p className="text-3xl md:text-5xl font-black text-white mix-blend-mode-difference tracking-tighter">
+                    <p className="text-xl md:text-5xl font-black text-white mix-blend-mode-difference tracking-tighter">
                         {new Intl.NumberFormat('en-PK', { style: 'currency', currency: 'PKR', maximumFractionDigits: 0 }).format(activeProduct.price)}
                     </p>
                 </div>
@@ -109,18 +109,18 @@ export function HeroCarousel({ products, hero }: HeroCarouselProps) {
             {/* Minimal Nav Controls */}
             <button
                 onClick={scrollPrev}
-                className="absolute left-4 top-1/2 -translate-y-1/2 text-black/20 hover:text-black transition-all z-30 p-4 transform-gpu"
+                className="absolute left-4 top-1/2 -translate-y-1/2 text-brand-ascent hover:scale-110 active:scale-95 transition-all z-30 p-4 transform-gpu"
                 aria-label="Previous slide"
             >
-                <ChevronLeft className="w-8 h-8 md:w-12 md:h-12" />
+                <ChevronLeft className="w-8 h-8 md:w-12 md:h-12 stroke-[3]" />
             </button>
 
             <button
                 onClick={scrollNext}
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-black/20 hover:text-black transition-all z-30 p-4 transform-gpu"
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-brand-ascent hover:scale-110 active:scale-95 transition-all z-30 p-4 transform-gpu"
                 aria-label="Next slide"
             >
-                <ChevronRight className="w-8 h-8 md:w-12 md:h-12" />
+                <ChevronRight className="w-8 h-8 md:w-12 md:h-12 stroke-[3]" />
             </button>
 
             {/* Bottom Counter */}
@@ -129,7 +129,7 @@ export function HeroCarousel({ products, hero }: HeroCarouselProps) {
                     <span className="text-[10px] font-black text-black">0{selectedIndex + 1}</span>
                     <div className="w-20 h-[1px] bg-black/10 relative">
                         <div
-                            className="absolute inset-y-0 left-0 bg-[#ff0000] transition-all duration-500 will-change-[width]"
+                            className="absolute inset-y-0 left-0 bg-brand-ascent transition-all duration-500 will-change-[width]"
                             style={{ width: `${((selectedIndex + 1) / featuredProducts.length) * 100}%` }}
                         />
                     </div>

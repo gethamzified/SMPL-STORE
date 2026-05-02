@@ -52,7 +52,7 @@ const Navbar = ({ brandName = "SMPL", navItems }: { brandName?: string; navItems
     <>
       {/* Only mount CartSheet after user interacts with cart */}
       {isCartSheetLoaded && <CartSheet />}
-      
+
       <header className={cn(
         "z-40 w-full transition-all duration-300",
         !isHome ? "fixed top-0 left-0 bg-white border-b border-[#1a1a1a]" : "relative px-4 py-4 flex items-center justify-between bg-transparent"
@@ -70,8 +70,18 @@ const Navbar = ({ brandName = "SMPL", navItems }: { brandName?: string; navItems
             </button>
 
             {/* Brand/Logo Section */}
-            <Link href="/" className="flex items-center justify-center h-full border-r border-[#1a1a1a] hover:bg-neutral-50 transition-colors">
-              <span className="text-[13px] sm:text-[15px] font-black uppercase tracking-[0.3em]">{brandName}.STUDIO</span>
+            <Link href="/" className="flex items-center justify-center h-full border-r border-[#1a1a1a] hover:bg-neutral-50 transition-colors px-4">
+              <div className="flex items-center gap-1.5 translate-y-[1px]">
+                <Image
+                  src="/SMPL_LOGO.svg"
+                  alt="SMPL Logo"
+                  width={70}
+                  height={30}
+                  priority
+                  className="w-auto h-7 sm:h-8"
+                />
+
+              </div>
             </Link>
 
             {/* Cart Section */}
@@ -96,7 +106,7 @@ const Navbar = ({ brandName = "SMPL", navItems }: { brandName?: string; navItems
             <div className="flex-1 flex justify-start">
               <button
                 onClick={() => setIsMenuOpen(true)}
-                className="bg-[#ff0000] text-white h-10 w-10 flex items-center justify-center cursor-pointer transition-transform active:scale-95"
+                className="bg-brand-ascent text-white h-10 w-10 flex items-center justify-center cursor-pointer transition-transform active:scale-95"
               >
                 <Menu className="w-5 h-5 stroke-[2]" />
               </button>
@@ -118,7 +128,7 @@ const Navbar = ({ brandName = "SMPL", navItems }: { brandName?: string; navItems
 
             {/* Right Side: Search & Cart */}
             <div className="flex-1 flex justify-end gap-2">
-              <div className="bg-[#ff0000] text-white h-10 w-10 flex items-center justify-center cursor-pointer transition-transform active:scale-95">
+              <div className="bg-brand-ascent text-white h-10 w-10 flex items-center justify-center cursor-pointer transition-transform active:scale-95">
                 <SearchModal />
               </div>
               <button
@@ -126,7 +136,7 @@ const Navbar = ({ brandName = "SMPL", navItems }: { brandName?: string; navItems
                   if (!isCartSheetLoaded) setIsCartSheetLoaded(true);
                   setIsCartOpen(true);
                 }}
-                className="relative bg-[#ff0000] text-white h-10 w-10 flex items-center justify-center cursor-pointer transition-transform active:scale-95"
+                className="relative bg-brand-ascent text-white h-10 w-10 flex items-center justify-center cursor-pointer transition-transform active:scale-95"
               >
                 <ShoppingCart className="w-5 h-5 stroke-[2]" />
                 {isMounted && cartCount > 0 && (

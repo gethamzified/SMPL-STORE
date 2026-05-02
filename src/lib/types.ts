@@ -284,9 +284,7 @@ export type Review = {
 
   status: ReviewStatus
   is_verified_purchase: boolean
-
   helpful_count: number
-
   admin_response?: string | null
   admin_response_at?: string | null
 
@@ -502,6 +500,7 @@ export type ThemeConfig = {
   secondaryColor: string
   backgroundColor: string
   foregroundColor: string
+  accentColor: string
   font: string
   borderRadius: string
 }

@@ -22,6 +22,7 @@ import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { addressSchema } from "@/lib/validators";
+import { outlinedPanel } from "@/lib/outline";
 
 interface CheckoutWizardProps {
     user: AuthUser | null;
@@ -268,23 +269,23 @@ export default function CheckoutWizard({ user: initialUser, customer, savedAddre
                         <span className={step === 'payment' ? "text-black" : ""}>Payment</span>
                     </div>
 
-                    <h1 className="text-5xl font-display font-black tracking-tighter uppercase mb-8 text-red-600">CHECKOUT</h1>
+                    <h1 className="text-5xl font-display font-black tracking-tighter uppercase mb-8 text-brand-ascent">CHECKOUT</h1>
 
                     {/* 1. EMAIL */}
                     {step === 'email' && (
                         <div key="email" className="animate-in fade-in slide-in-from-right-8 duration-500">
-                            <div className="p-8 border-2 border-black bg-white shadow-[8px_8px_0px_0px_rgba(220,38,38,1)]">
-                                <h2 className="text-xl font-display font-black tracking-tighter uppercase mb-8 border-b-2 border-black pb-4 text-red-600">CONTACT</h2>
+                            <div className={`p-8 ${outlinedPanel}`}>
+                                <h2 className="text-xl font-display font-black tracking-tighter uppercase mb-8 border-b-2 border-[#1a1a1a] pb-4 text-brand-ascent">CONTACT</h2>
                                 <form onSubmit={handleSendOTP} className="space-y-6">
                                     <div className="space-y-2">
                                         <Label htmlFor="email" className="text-[10px] tracking-[0.1em] uppercase text-neutral-500">Email</Label>
                                         <Input
                                             id="email" type="email" required
                                             value={email} onChange={(e) => setEmail(e.target.value)}
-                                            className="rounded-none border-2 border-black focus:border-red-600 focus:ring-0 h-12 font-bold uppercase text-xs tracking-widest bg-white"
+                                            className="rounded-none border-2 border-black focus:border-brand-ascent focus:ring-0 h-12 font-bold uppercase text-xs tracking-widest bg-white"
                                         />
                                     </div>
-                                    <Button type="submit" variant="cta" size="xl" className="w-full bg-red-600 text-white hover:bg-black border-2 border-black rounded-none uppercase font-black tracking-widest text-sm transition-all" disabled={isProcessing}>
+                                    <Button type="submit" variant="cta" size="xl" className="w-full bg-brand-ascent text-white hover:bg-black border-2 border-black rounded-none uppercase font-black tracking-widest text-sm transition-all" disabled={isProcessing}>
                                         {isProcessing ? <Loader2 className="animate-spin w-4 h-4" /> : "CONTINUE"}
                                     </Button>
                                 </form>
@@ -295,16 +296,16 @@ export default function CheckoutWizard({ user: initialUser, customer, savedAddre
                     {/* 2. OTP */}
                     {step === 'otp' && (
                         <div key="otp" className="animate-in fade-in slide-in-from-right-8 duration-500">
-                            <div className="p-8 border-2 border-black bg-white shadow-[8px_8px_0px_0px_rgba(220,38,38,1)]">
-                                <h2 className="text-xl font-display font-black tracking-tighter uppercase mb-8 border-b-2 border-black pb-4 text-red-600">VERIFY</h2>
-                                <p className="text-xs font-bold text-black uppercase tracking-widest mb-8">CODE SENT TO <span className="text-red-600">{email}</span></p>
+                            <div className={`p-8 ${outlinedPanel}`}>
+                                <h2 className="text-xl font-display font-black tracking-tighter uppercase mb-8 border-b-2 border-[#1a1a1a] pb-4 text-brand-ascent">VERIFY</h2>
+                                <p className="text-xs font-bold text-black uppercase tracking-widest mb-8">CODE SENT TO <span className="text-brand-ascent">{email}</span></p>
                                 <form onSubmit={handleVerifyOTP} className="space-y-6">
                                     <Input
                                         value={otp} onChange={(e) => setOtp(e.target.value)}
-                                        className="text-center tracking-[0.8em] text-2xl font-black h-16 rounded-none border-2 border-black focus:border-red-600 focus:ring-0 bg-white"
+                                        className="text-center tracking-[0.8em] text-2xl font-black h-16 rounded-none border-2 border-black focus:border-brand-ascent focus:ring-0 bg-white"
                                         placeholder="••••••" maxLength={6}
                                     />
-                                    <Button type="submit" variant="cta" size="xl" className="w-full bg-red-600 text-white hover:bg-black border-2 border-black rounded-none uppercase font-black tracking-widest text-sm transition-all" disabled={isProcessing}>
+                                    <Button type="submit" variant="cta" size="xl" className="w-full bg-brand-ascent text-white hover:bg-black border-2 border-black rounded-none uppercase font-black tracking-widest text-sm transition-all" disabled={isProcessing}>
                                         {isProcessing ? <Loader2 className="animate-spin w-4 h-4" /> : "VERIFY"}
                                     </Button>
                                 </form>
@@ -314,51 +315,51 @@ export default function CheckoutWizard({ user: initialUser, customer, savedAddre
 
                     {/* 3. ADDRESS */}
                     {step === 'address' && (
-                        <div key="address" className="animate-in fade-in slide-in-from-right-8 duration-500 p-8 border-2 border-black bg-white shadow-[8px_8px_0px_0px_rgba(220,38,38,1)]">
-                            <h2 className="text-xl font-display font-black tracking-tighter uppercase mb-8 border-b-2 border-black pb-4 text-red-600">ADDRESS</h2>
+                        <div key="address" className={`animate-in fade-in slide-in-from-right-8 duration-500 p-8 ${outlinedPanel}`}>
+                            <h2 className="text-xl font-display font-black tracking-tighter uppercase mb-8 border-b-2 border-[#1a1a1a] pb-4 text-brand-ascent">ADDRESS</h2>
                             {activeUser && (
                                 <div className="flex items-center gap-3 text-[10px] font-bold tracking-widest uppercase text-black bg-white p-4 border-2 border-black mb-8">
-                                    <CheckCircle className="w-4 h-4 text-red-600" />
-                                    <span>LOGGED IN AS <span className="text-red-600">{activeUser.email}</span></span>
+                                    <CheckCircle className="w-4 h-4 text-brand-ascent" />
+                                    <span>LOGGED IN AS <span className="text-brand-ascent">{activeUser.email}</span></span>
                                 </div>
                             )}
                             <form onSubmit={form.handleSubmit(onAddressSubmit)} className="space-y-6">
                                 <div className="grid grid-cols-2 gap-6">
                                     <div className="col-span-2 md:col-span-1 space-y-2">
                                         <Label className="text-[10px] uppercase text-neutral-500">First Name</Label>
-                                        <Input {...form.register("first_name")} className="rounded-none border-2 border-black focus:border-red-600 focus:ring-0 h-12 font-bold uppercase text-xs tracking-widest bg-white" />
-                                        {form.formState.errors.first_name && <p className="text-[10px] font-bold uppercase tracking-widest text-red-600">{form.formState.errors.first_name.message}</p>}
+                                        <Input {...form.register("first_name")} className="rounded-none border-2 border-black focus:border-brand-ascent focus:ring-0 h-12 font-bold uppercase text-xs tracking-widest bg-white" />
+                                        {form.formState.errors.first_name && <p className="text-[10px] font-bold uppercase tracking-widest text-brand-ascent">{form.formState.errors.first_name.message}</p>}
                                     </div>
                                     <div className="col-span-2 md:col-span-1 space-y-2">
                                         <Label className="text-[10px] font-bold uppercase tracking-widest text-black">Last Name</Label>
-                                        <Input {...form.register("last_name")} className="rounded-none border-2 border-black focus:border-red-600 focus:ring-0 h-12 font-bold uppercase text-xs tracking-widest bg-white" />
-                                        {form.formState.errors.last_name && <p className="text-[10px] font-bold uppercase tracking-widest text-red-600">{form.formState.errors.last_name.message}</p>}
+                                        <Input {...form.register("last_name")} className="rounded-none border-2 border-black focus:border-brand-ascent focus:ring-0 h-12 font-bold uppercase text-xs tracking-widest bg-white" />
+                                        {form.formState.errors.last_name && <p className="text-[10px] font-bold uppercase tracking-widest text-brand-ascent">{form.formState.errors.last_name.message}</p>}
                                     </div>
                                 </div>
                                 <div className="space-y-2">
                                     <Label className="text-[10px] font-bold uppercase tracking-widest text-black">Address</Label>
-                                    <Input {...form.register("address1")} className="rounded-none border-2 border-black focus:border-red-600 focus:ring-0 h-12 font-bold uppercase text-xs tracking-widest bg-white" placeholder="STREET ADDRESS" />
-                                    {form.formState.errors.address1 && <p className="text-[10px] font-bold uppercase tracking-widest text-red-600">{form.formState.errors.address1.message}</p>}
+                                    <Input {...form.register("address1")} className="rounded-none border-2 border-black focus:border-brand-ascent focus:ring-0 h-12 font-bold uppercase text-xs tracking-widest bg-white" placeholder="STREET ADDRESS" />
+                                    {form.formState.errors.address1 && <p className="text-[10px] font-bold uppercase tracking-widest text-brand-ascent">{form.formState.errors.address1.message}</p>}
                                 </div>
                                 <div className="grid grid-cols-2 gap-6">
                                     <div className="space-y-2">
                                         <Label className="text-[10px] font-bold uppercase tracking-widest text-black">City</Label>
-                                        <Input {...form.register("city")} className="rounded-none border-2 border-black focus:border-red-600 focus:ring-0 h-12 font-bold uppercase text-xs tracking-widest bg-white" />
-                                        {form.formState.errors.city && <p className="text-[10px] font-bold uppercase tracking-widest text-red-600">{form.formState.errors.city.message}</p>}
+                                        <Input {...form.register("city")} className="rounded-none border-2 border-black focus:border-brand-ascent focus:ring-0 h-12 font-bold uppercase text-xs tracking-widest bg-white" />
+                                        {form.formState.errors.city && <p className="text-[10px] font-bold uppercase tracking-widest text-brand-ascent">{form.formState.errors.city.message}</p>}
                                     </div>
                                     <div className="space-y-2">
                                         <Label className="text-[10px] font-bold uppercase tracking-widest text-black">Postal Code</Label>
-                                        <Input {...form.register("zip")} className="rounded-none border-2 border-black focus:border-red-600 focus:ring-0 h-12 font-bold uppercase text-xs tracking-widest bg-white" />
-                                        {form.formState.errors.zip && <p className="text-[10px] font-bold uppercase tracking-widest text-red-600">{form.formState.errors.zip.message}</p>}
+                                        <Input {...form.register("zip")} className="rounded-none border-2 border-black focus:border-brand-ascent focus:ring-0 h-12 font-bold uppercase text-xs tracking-widest bg-white" />
+                                        {form.formState.errors.zip && <p className="text-[10px] font-bold uppercase tracking-widest text-brand-ascent">{form.formState.errors.zip.message}</p>}
                                     </div>
                                 </div>
                                 <div className="space-y-2">
                                     <Label className="text-[10px] font-bold uppercase tracking-widest text-black">Phone</Label>
-                                    <Input {...form.register("phone")} className="rounded-none border-2 border-black focus:border-red-600 focus:ring-0 h-12 font-bold uppercase text-xs tracking-widest bg-white" placeholder="+92..." />
+                                    <Input {...form.register("phone")} className="rounded-none border-2 border-black focus:border-brand-ascent focus:ring-0 h-12 font-bold uppercase text-xs tracking-widest bg-white" placeholder="+92..." />
                                     {form.formState.errors.phone && <p className="text-xs text-red-500">{form.formState.errors.phone.message}</p>}
                                 </div>
 
-                                <Button type="submit" variant="cta" size="xl" className="w-full bg-red-600 text-white hover:bg-black border-2 border-black rounded-none uppercase font-black tracking-widest text-sm transition-all mt-6">CONTINUE TO SHIPPING</Button>
+                                <Button type="submit" variant="cta" size="xl" className="w-full bg-brand-ascent text-white hover:bg-black border-2 border-black rounded-none uppercase font-black tracking-widest text-sm transition-all mt-6">CONTINUE TO SHIPPING</Button>
                             </form>
                         </div>
                     )}
@@ -367,10 +368,10 @@ export default function CheckoutWizard({ user: initialUser, customer, savedAddre
                     {step === 'shipping' && (
                         <div key="shipping" className="animate-in fade-in slide-in-from-right-8 duration-500">
                             <div className="space-y-8">
-                                <div className="border-2 border-black p-4 text-xs space-y-2 bg-white font-bold uppercase tracking-widest">
-                                    <div className="flex justify-between border-b-2 border-black pb-2">
+                                <div className={`p-4 text-xs space-y-2 bg-white font-bold uppercase tracking-widest ${outlinedPanel}`}>
+                                    <div className="flex justify-between border-b-2 border-[#1a1a1a] pb-2">
                                         <span className="text-black">CONTACT</span>
-                                        <span className="text-red-600">{email || shippingAddress?.email}</span>
+                                        <span className="text-brand-ascent">{email || shippingAddress?.email}</span>
                                     </div>
                                     <div className="flex justify-between border-b border-black/5 pb-2">
                                         <span className="text-neutral-500">Ship to</span>
@@ -392,7 +393,7 @@ export default function CheckoutWizard({ user: initialUser, customer, savedAddre
                                     <Button variant="outline" className="flex-1 rounded-none border-2 border-black font-bold uppercase tracking-widest hover:bg-black hover:text-white transition-all" onClick={() => setStep('address')}>
                                         <ArrowLeft className="w-4 h-4 mr-2" /> BACK
                                     </Button>
-                                    <Button variant="cta" className="flex-[2] bg-red-600 text-white hover:bg-black border-2 border-black rounded-none uppercase font-black tracking-widest text-sm transition-all" onClick={() => setStep('payment')}>
+                                    <Button variant="cta" className="flex-[2] bg-brand-ascent text-white hover:bg-black border-2 border-black rounded-none uppercase font-black tracking-widest text-sm transition-all" onClick={() => setStep('payment')}>
                                         CONTINUE TO PAYMENT
                                     </Button>
                                 </div>
@@ -420,7 +421,7 @@ export default function CheckoutWizard({ user: initialUser, customer, savedAddre
                                     <Button
                                         variant="cta"
                                         size="xl"
-                                        className="flex-[2] bg-red-600 text-white hover:bg-black border-2 border-black rounded-none uppercase font-black tracking-widest text-sm transition-all"
+                                        className="flex-[2] bg-brand-ascent text-white hover:bg-black border-2 border-black rounded-none uppercase font-black tracking-widest text-sm transition-all"
                                         onClick={handlePlaceOrder}
                                         disabled={isProcessing || (paymentMethod !== 'COD' && !proofFile)}
                                     >
@@ -433,20 +434,20 @@ export default function CheckoutWizard({ user: initialUser, customer, savedAddre
                 </div>
 
                 {/* RIGHT: SUMMARY */}
-                <div className="bg-white p-8 h-fit sticky top-32 border-2 border-black shadow-[8px_8px_0px_0px_rgba(220,38,38,1)] hidden lg:block">
-                    <h2 className="text-3xl font-display font-black uppercase tracking-tighter mb-6 border-b-2 border-black pb-4 text-red-600">ORDER SUMMARY</h2>
+                <div className={`bg-white p-8 h-fit sticky top-32 hidden lg:block ${outlinedPanel}`}>
+                    <h2 className="text-3xl font-display font-black uppercase tracking-tighter mb-6 border-b-2 border-[#1a1a1a] pb-4 text-brand-ascent">ORDER SUMMARY</h2>
                     <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
                         {items.map((item) => (
                             <div key={`${item.id}-${item.size}`} className="flex gap-4 items-center">
                                 <div className="relative w-16 h-20 bg-white border-2 border-black shrink-0">
-                                    {item.image && <Image src={item.image} alt={item.name} fill className="object-cover" quality={80} sizes="64px" />}
-                                    <span className="absolute -top-3 -right-3 bg-red-600 text-white text-[11px] font-black w-6 h-6 flex items-center justify-center rounded-none border-2 border-black">
+                                    {item.image && <Image src={item.image} alt={item.name} fill className="object-contain p-1" quality={80} sizes="64px" />}
+                                    <span className="absolute -top-2 -right-2 bg-brand-ascent text-white text-[11px] font-black w-6 h-6 flex items-center justify-center rounded-none border-2 border-black z-10">
                                         {item.quantity}
                                     </span>
                                 </div>
                                 <div className="flex-1">
                                     <h3 className="font-display font-black text-sm uppercase tracking-tighter leading-none">{item.name}</h3>
-                                    <p className="text-[10px] font-bold text-red-600 uppercase tracking-widest mt-1">SIZE: {item.size}</p>
+                                    <p className="text-[10px] font-bold text-brand-ascent uppercase tracking-widest mt-1">SIZE: {item.size}</p>
                                 </div>
                                 <p className="text-lg font-display font-black tracking-tighter">{formatCurrency(item.price * item.quantity)}</p>
                             </div>
@@ -456,11 +457,11 @@ export default function CheckoutWizard({ user: initialUser, customer, savedAddre
                     <div className="space-y-2 text-[10px] font-bold uppercase tracking-widest">
                         <div className="flex justify-between text-black">
                             <span>SUBTOTAL</span>
-                            <span className="text-red-600">{formatCurrency(cartTotal)}</span>
+                            <span className="text-brand-ascent">{formatCurrency(cartTotal)}</span>
                         </div>
                         <div className="flex justify-between text-black">
                             <span>SHIPPING</span>
-                            <span className={shippingCost === 0 ? "text-red-600 font-black" : "text-red-600"}>
+                            <span className={shippingCost === 0 ? "text-brand-ascent font-black" : "text-brand-ascent"}>
                                 {step === 'shipping' || step === 'payment'
                                     ? (shippingCost === 0 ? "FREE" : formatCurrency(shippingCost))
                                     : "CALCULATED NEXT STEP"}
@@ -470,7 +471,7 @@ export default function CheckoutWizard({ user: initialUser, customer, savedAddre
                     <Separator className="my-6 bg-black border-black border-b-2" />
                     <div className="flex justify-between items-center font-display font-black text-3xl tracking-tighter">
                         <span>TOTAL</span>
-                        <span className="text-red-600">{formatCurrency(step === 'shipping' || step === 'payment' ? finalTotal : cartTotal)}</span>
+                        <span className="text-brand-ascent">{formatCurrency(step === 'shipping' || step === 'payment' ? finalTotal : cartTotal)}</span>
                     </div>
                 </div>
 

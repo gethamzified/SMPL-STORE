@@ -13,6 +13,7 @@ export type StoreConfig = {
         backgroundColor?: string;
         foregroundColor?: string;
         secondaryColor?: string;
+        accentColor?: string;
         mode?: 'light' | 'dark';
     };
     navigation: { main: any[]; footer: any[] };
@@ -80,6 +81,7 @@ export const StoreConfigService = {
                 const defaultBrand = { name: 'SMPL', tagline: '', announcement: '', showAnnouncement: false };
                 const defaultTheme = {
                     primaryColor: '#000000',
+                    accentColor: '#ee6c4d',
                     font: 'helvetica',
                     borderRadius: '0.5rem',
                     backgroundColor: '#ffffff',

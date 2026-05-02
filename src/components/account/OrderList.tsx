@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Package, ChevronRight, Clock, CheckCircle, Truck, AlertCircle } from 'lucide-react';
 import { useFormatCurrency } from '@/context/StoreConfigContext';
+import { outlinedPanel } from '@/lib/outline';
 
 export default function OrderList({ initialOrders }: { initialOrders: Order[] }) {
     const formatCurrency = useFormatCurrency();
@@ -63,13 +64,13 @@ export default function OrderList({ initialOrders }: { initialOrders: Order[] })
 
     if (!orders || orders.length === 0) {
         return (
-            <div className="flex flex-col items-center justify-center py-32 text-center bg-neutral-50/30 border border-dashed border-neutral-200 rounded-3xl">
-                <div className="w-20 h-20 rounded-full bg-white flex items-center justify-center border border-neutral-100 mb-6 shadow-sm">
+            <div className={`flex flex-col items-center justify-center py-32 text-center ${outlinedPanel}`}>
+                <div className="w-20 h-20 bg-white flex items-center justify-center border border-[#1a1a1a] mb-6">
                     <Package className="w-8 h-8 text-neutral-300" />
                 </div>
                 <h3 className="text-2xl font-light text-neutral-800 tracking-tight">No orders yet</h3>
                 <p className="text-neutral-500 mt-2 mb-10 max-w-sm font-light">Your order history will appear here once you've made your first purchase.</p>
-                <Button asChild size="lg" className="rounded-full px-10 font-bold text-xs uppercase tracking-widest bg-black text-white">
+                <Button asChild size="lg" className="rounded-none border border-[#1a1a1a] px-10 font-bold text-xs uppercase tracking-widest bg-black text-white">
                     <Link href="/collection">Start Shopping</Link>
                 </Button>
             </div>
@@ -82,7 +83,7 @@ export default function OrderList({ initialOrders }: { initialOrders: Order[] })
                 {orders.map((order, idx) => (
                     <div
                         key={order.id}
-                        className="group relative bg-white border border-neutral-100 rounded-[2rem] overflow-hidden hover:border-neutral-200 hover:shadow-2xl hover:shadow-black/5 transition-all outline-none animate-in fade-in slide-in-from-bottom-8 fill-mode-both"
+                        className={`group relative overflow-hidden hover:bg-neutral-50/30 transition-colors outline-none animate-in fade-in slide-in-from-bottom-8 fill-mode-both ${outlinedPanel}`}
                         style={{ animationDelay: `${idx * 100}ms`, animationDuration: '600ms' }}
                     >
                         <div className="p-8 md:p-10">
@@ -90,8 +91,8 @@ export default function OrderList({ initialOrders }: { initialOrders: Order[] })
                                 <div className="space-y-3">
                                     <div className="flex flex-wrap items-center gap-3">
                                         <span className="text-xs font-bold uppercase tracking-[0.2em] text-neutral-400">Order ID</span>
-                                        <span className="text-lg font-mono text-black font-medium tracking-tighter">#{order.id.slice(0, 8).toUpperCase()}</span>
-                                        <span className={`px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest flex items-center gap-2 border ${getStatusStyles(order.status)}`}>
+                                        <span className="text-lg font-mono text-black font-medium tracking-tighter">#ORD-{order.id.slice(0, 6).toUpperCase()}</span>
+                                        <span className={`px-4 py-1.5 text-[10px] font-bold uppercase tracking-widest flex items-center gap-2 border ${getStatusStyles(order.status)}`}>
                                             {getStatusIcon(order.status)}
                                             {order.status}
                                         </span>
@@ -115,7 +116,7 @@ export default function OrderList({ initialOrders }: { initialOrders: Order[] })
                                         <span className={['shipped', 'delivered'].includes(order.status) ? 'text-black' : ''}>Shipped</span>
                                         <span className={order.status === 'delivered' ? 'text-emerald-600' : ''}>Delivered</span>
                                     </div>
-                                    <div className="relative h-1 bg-neutral-100 rounded-full overflow-hidden">
+                                    <div className="relative h-1 bg-neutral-100 overflow-hidden border border-[#1a1a1a]">
                                         <div
                                             className="absolute left-0 top-0 h-full bg-black group-hover/progress:bg-neutral-800 transition-all duration-1000 ease-out"
                                             style={{
@@ -130,8 +131,8 @@ export default function OrderList({ initialOrders }: { initialOrders: Order[] })
 
                             {/* Admin Notification */}
                             {order.admin_message && (
-                                <div className="bg-neutral-50 rounded-2xl p-6 mb-10 border border-neutral-100 flex gap-4">
-                                    <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center shrink-0 border border-neutral-100 shadow-sm">
+                                <div className="bg-neutral-50 p-6 mb-10 border border-[#1a1a1a] flex gap-4">
+                                    <div className="w-10 h-10 bg-white flex items-center justify-center shrink-0 border border-[#1a1a1a]">
                                         <AlertCircle className="w-4 h-4 text-black" />
                                     </div>
                                     <div>
@@ -169,12 +170,14 @@ export default function OrderList({ initialOrders }: { initialOrders: Order[] })
 
                                 <div className="flex items-center gap-4 w-full sm:w-auto">
                                     <div className="hidden md:block text-right mr-4">
-                                        <p className="text-[10px] font-bold text-neutral-300 uppercase tracking-widest">Payment</p>
-                                        <p className="text-xs font-medium text-black uppercase">{order.payment_status}</p>
+                                        <p className="text-[10px] font-bold text-neutral-300 uppercase tracking-widest">Payment Status</p>
+                                        <p className={`text-xs font-black uppercase ${order.payment_status === 'pending' ? 'text-amber-500' : 'text-emerald-600'}`}>
+                                            {order.payment_status}
+                                        </p>
                                     </div>
-                                    <Button variant="outline" className="flex-1 sm:flex-none h-14 px-8 rounded-full font-bold text-xs uppercase tracking-[0.2em] border-neutral-200 hover:border-black hover:bg-black hover:text-white transition-all duration-300" asChild>
+                                    <Button variant="outline" className="flex-1 sm:flex-none h-14 px-8 rounded-none font-bold text-xs uppercase tracking-[0.2em] border-[#1a1a1a] hover:border-black hover:bg-black hover:text-white transition-all duration-300" asChild>
                                         <Link href={`/account/orders/${order.id}`}>
-                                            Order Details <ChevronRight className="w-3 h-3 ml-2" />
+                                            {order.status === 'delivered' ? 'Review Items' : 'Order Details'} <ChevronRight className="w-3 h-3 ml-2" />
                                         </Link>
                                     </Button>
                                 </div>

@@ -21,7 +21,8 @@ const ProductCard = React.memo(({ priority = false, ...product }: ProductCardPro
   const isValidImage = (img: any): img is string => typeof img === 'string' && img.trim().length > 0;
 
   const imagePrimary = isValidImage(cover_image) ? cover_image : (images?.find(isValidImage) || "");
-  const imageSecondary = images?.filter(isValidImage).find(img => img !== imagePrimary) || imagePrimary;
+  const imageSecondary = images?.filter(isValidImage).find(img => img !== imagePrimary);
+  const hasSecondaryImage = !!imageSecondary;
   const href = `/product/${slug}`;
 
   // Resolve blur placeholder
@@ -38,7 +39,7 @@ const ProductCard = React.memo(({ priority = false, ...product }: ProductCardPro
       {/* Image Area */}
       <div className="relative aspect-square flex items-center justify-center p-8 sm:p-12 overflow-hidden bg-white">
         {isSoldOut && (
-          <div className="absolute top-0 right-0 bg-[#d95e32] text-white text-[10px] font-bold px-2 py-1 z-20 pointer-events-none uppercase tracking-wide">
+          <div className="absolute top-0 right-0 bg-brand-ascent text-white text-[10px] font-bold px-2 py-1 z-20 pointer-events-none uppercase tracking-wide">
             Sold Out
           </div>
         )}
@@ -55,14 +56,14 @@ const ProductCard = React.memo(({ priority = false, ...product }: ProductCardPro
                 quality={85}
                 onLoad={() => setImageLoaded(true)}
                 className={cn(
-                  "object-contain transition-transform duration-500 ease-in-out",
+                  "object-contain transition-all duration-500 ease-in-out",
                   imageLoaded ? "opacity-100" : "opacity-0",
-                  "group-hover:scale-105"
+                  hasSecondaryImage && "group-hover:opacity-0 group-hover:scale-105"
                 )}
               />
             )}
             {/* Secondary Image (Swap on Hover) */}
-            {isValidImage(imageSecondary) && (
+            {hasSecondaryImage && (
               <Image
                 src={imageSecondary}
                 alt={`${title} alternate view`}
@@ -70,7 +71,7 @@ const ProductCard = React.memo(({ priority = false, ...product }: ProductCardPro
                 loading="lazy"
                 sizes={sizes}
                 quality={85}
-                className="absolute inset-0 object-contain opacity-0 transition-opacity duration-300 ease-in-out group-hover:opacity-100 hidden md:block"
+                className="absolute inset-0 object-contain opacity-0 transition-all duration-500 ease-in-out group-hover:opacity-100 hidden md:block"
               />
             )}
           </div>
@@ -82,14 +83,14 @@ const ProductCard = React.memo(({ priority = false, ...product }: ProductCardPro
         <Link href={href} className="group/title truncate">
           <h3 className={cn(
             "text-[11px] sm:text-[12px] font-bold uppercase tracking-widest transition-colors truncate",
-            isSoldOut ? "line-through text-black/60 decoration-black/60" : "text-black group-hover/title:text-[#d95e32]"
+            isSoldOut ? "line-through text-black/60 decoration-black/60" : "text-black group-hover/title:text-brand-ascent"
           )}>
             {title}
           </h3>
         </Link>
         <div className={cn(
           "text-[10px] sm:text-[11px] font-bold uppercase tracking-wider",
-          isSoldOut ? "line-through text-black/60 decoration-black/60" : "text-black group-hover:text-[#d95e32] transition-colors"
+          isSoldOut ? "line-through text-black/60 decoration-black/60" : "text-black group-hover:text-brand-ascent transition-colors"
         )}>
           {isSoldOut ? "Sold Out" : `${formatCurrency(price || 0)} USD`}
         </div>

@@ -56,7 +56,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </div>
 
           {/* Main Content */}
-          <div className="p-4 md:p-6">
+          <div className="p-3 sm:p-4 md:p-6">
             {children}
           </div>
           <CommandPalette />

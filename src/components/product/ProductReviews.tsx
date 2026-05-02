@@ -12,17 +12,10 @@ export async function ProductReviews({ productId }: ProductReviewsProps) {
   // Fetch approved reviews for this product
   const { data: reviews } = await supabase
     .from('reviews')
-    .select(`
-      *,
-      customers:customer_id (
-        first_name,
-        last_name
-      )
-    `)
+    .select('*')
     .eq('product_id', productId)
     .eq('status', 'approved')
-    .order('created_at', { ascending: false })
-    .limit(10);
+    .order('created_at', { ascending: false });
 
   // Calculate review stats
   const totalReviews = reviews?.length || 0;
@@ -43,14 +36,12 @@ export async function ProductReviews({ productId }: ProductReviewsProps) {
   // Transform reviews for the component
   const formattedReviews = reviews?.map(review => ({
     id: review.id,
-    author: review.customers
-      ? `${review.customers.first_name} ${review.customers.last_name?.charAt(0) || ''}.`
-      : 'Anonymous',
+    author: review.reviewer_name || 'Anonymous',
     rating: review.rating,
     date: formatRelativeDate(new Date(review.created_at)),
     title: review.title || '',
-    content: review.content,
-    verified: review.verified_purchase,
+    content: review.content || '',
+    verified: review.is_verified_purchase,
     helpful_count: review.helpful_count || 0,
   })) || [];
 

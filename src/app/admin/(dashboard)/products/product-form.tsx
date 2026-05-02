@@ -82,6 +82,20 @@ export function ProductForm({ initialData }: ProductFormProps) {
     },
   });
 
+  // Auto-generate slug from title
+  const watchedTitle = form.watch("title");
+  useEffect(() => {
+    if (watchedTitle) {
+      const slug = watchedTitle
+        .toLowerCase()
+        .trim()
+        .replace(/[^\w\s-]/g, "") // Remove non-alphanumeric chars (except spaces and hyphens)
+        .replace(/[\s_-]+/g, "-") // Replace spaces and underscores with hyphens
+        .replace(/^-+|-+$/g, ""); // Remove leading/trailing hyphens
+      form.setValue("slug", slug, { shouldValidate: true });
+    }
+  }, [watchedTitle, form]);
+
   // ─── Cleanup orphaned uploads if user navigates away ──────────────────
   useEffect(() => {
     // Warn user if they have unsaved uploaded images
@@ -220,19 +234,6 @@ export function ProductForm({ initialData }: ProductFormProps) {
                 )}
               />
 
-              <FormField
-                control={form.control}
-                name="slug"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-gray-500 text-xs font-medium uppercase tracking-widest">URL Handle</FormLabel>
-                    <FormControl>
-                      <Input placeholder="premium-linen-shirt" {...field} className="bg-white border-border text-gray-900 rounded-xl h-12 font-mono" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
 
               <FormField
                 control={form.control}

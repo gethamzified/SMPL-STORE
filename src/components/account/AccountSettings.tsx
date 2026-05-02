@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { updateProfile } from '@/app/(store)/account/actions';
 import { useRouter } from 'next/navigation';
 import { User, MapPin, Check, Save } from 'lucide-react';
+import { outlinedPanel } from '@/lib/outline';
 
 type Props = {
     user: any;
@@ -33,9 +34,9 @@ export default function AccountSettings({ user, profile }: Props) {
             <form action={handleUpdate} className="grid grid-cols-1 xl:grid-cols-2 gap-8 items-start">
 
                 {/* Personal Profile Card */}
-                <section className="bg-white border border-neutral-100 rounded-[2rem] p-8 shadow-sm hover:shadow-md transition-shadow">
-                    <div className="flex items-center gap-4 mb-8 pb-6 border-b border-neutral-50">
-                        <div className="w-12 h-12 bg-neutral-50 rounded-full flex items-center justify-center border border-neutral-100">
+                <section className={`${outlinedPanel} p-8`}>
+                    <div className="flex items-center gap-4 mb-8 pb-6 border-b border-[#1a1a1a]">
+                        <div className="w-12 h-12 bg-white flex items-center justify-center border border-[#1a1a1a]">
                             <User className="w-5 h-5 text-black" />
                         </div>
                         <div>
@@ -52,7 +53,7 @@ export default function AccountSettings({ user, profile }: Props) {
                                     name="first_name"
                                     defaultValue={profile?.first_name || ''}
                                     placeholder="Enter your first name"
-                                    className="w-full bg-white border border-neutral-200 rounded-xl px-4 py-3.5 text-sm font-medium focus:border-black focus:ring-1 focus:ring-black outline-none transition-all placeholder:text-neutral-300"
+                                    className="w-full bg-white border border-[#1a1a1a] rounded-none px-4 py-3.5 text-sm font-medium focus:border-black focus:ring-1 focus:ring-black outline-none transition-all placeholder:text-neutral-300"
                                 />
                             </div>
                             <div>
@@ -61,7 +62,7 @@ export default function AccountSettings({ user, profile }: Props) {
                                     name="last_name"
                                     defaultValue={profile?.last_name || ''}
                                     placeholder="Enter your last name"
-                                    className="w-full bg-white border border-neutral-200 rounded-xl px-4 py-3.5 text-sm font-medium focus:border-black focus:ring-1 focus:ring-black outline-none transition-all placeholder:text-neutral-300"
+                                    className="w-full bg-white border border-[#1a1a1a] rounded-none px-4 py-3.5 text-sm font-medium focus:border-black focus:ring-1 focus:ring-black outline-none transition-all placeholder:text-neutral-300"
                                 />
                             </div>
                         </div>
@@ -71,7 +72,7 @@ export default function AccountSettings({ user, profile }: Props) {
                             <input
                                 disabled
                                 value={user.email}
-                                className="w-full bg-neutral-50 border border-neutral-100 rounded-xl px-4 py-3.5 text-sm text-neutral-500 font-medium cursor-not-allowed"
+                                className="w-full bg-neutral-50 border border-[#1a1a1a] rounded-none px-4 py-3.5 text-sm text-neutral-500 font-medium cursor-not-allowed"
                             />
                         </div>
 
@@ -81,16 +82,16 @@ export default function AccountSettings({ user, profile }: Props) {
                                 name="phone"
                                 defaultValue={profile?.phone || ''}
                                 placeholder="+1 (555) 000-0000"
-                                className="w-full bg-white border border-neutral-200 rounded-xl px-4 py-3.5 text-sm font-medium focus:border-black focus:ring-1 focus:ring-black outline-none transition-all placeholder:text-neutral-300"
+                                className="w-full bg-white border border-[#1a1a1a] rounded-none px-4 py-3.5 text-sm font-medium focus:border-black focus:ring-1 focus:ring-black outline-none transition-all placeholder:text-neutral-300"
                             />
                         </div>
                     </div>
                 </section>
 
                 {/* Shipping Address Card */}
-                <section className="bg-white border border-neutral-100 rounded-[2rem] p-8 shadow-sm hover:shadow-md transition-shadow">
-                    <div className="flex items-center gap-4 mb-8 pb-6 border-b border-neutral-50">
-                        <div className="w-12 h-12 bg-neutral-50 rounded-full flex items-center justify-center border border-neutral-100">
+                <section className={`${outlinedPanel} p-8`}>
+                    <div className="flex items-center gap-4 mb-8 pb-6 border-b border-[#1a1a1a]">
+                        <div className="w-12 h-12 bg-white flex items-center justify-center border border-[#1a1a1a]">
                             <MapPin className="w-5 h-5 text-black" />
                         </div>
                         <div>
@@ -106,7 +107,7 @@ export default function AccountSettings({ user, profile }: Props) {
                                 name="address1"
                                 defaultValue={profile?.address1 || ''}
                                 placeholder="Street address, P.O. box, etc."
-                                className="w-full bg-white border border-neutral-200 rounded-xl px-4 py-3.5 text-sm font-medium focus:border-black focus:ring-1 focus:ring-black outline-none transition-all placeholder:text-neutral-300"
+                                className="w-full bg-white border border-[#1a1a1a] rounded-none px-4 py-3.5 text-sm font-medium focus:border-black focus:ring-1 focus:ring-black outline-none transition-all placeholder:text-neutral-300"
                             />
                         </div>
                         <div>
@@ -115,7 +116,7 @@ export default function AccountSettings({ user, profile }: Props) {
                                 name="address2"
                                 defaultValue={profile?.address2 || ''}
                                 placeholder="Apartment, suite, unit, etc."
-                                className="w-full bg-white border border-neutral-200 rounded-xl px-4 py-3.5 text-sm font-medium focus:border-black focus:ring-1 focus:ring-black outline-none transition-all placeholder:text-neutral-300"
+                                className="w-full bg-white border border-[#1a1a1a] rounded-none px-4 py-3.5 text-sm font-medium focus:border-black focus:ring-1 focus:ring-black outline-none transition-all placeholder:text-neutral-300"
                             />
                         </div>
 
@@ -126,7 +127,7 @@ export default function AccountSettings({ user, profile }: Props) {
                                     name="city"
                                     defaultValue={profile?.city || ''}
                                     placeholder="City"
-                                    className="w-full bg-white border border-neutral-200 rounded-xl px-4 py-3.5 text-sm font-medium focus:border-black focus:ring-1 focus:ring-black outline-none transition-all placeholder:text-neutral-300"
+                                    className="w-full bg-white border border-[#1a1a1a] rounded-none px-4 py-3.5 text-sm font-medium focus:border-black focus:ring-1 focus:ring-black outline-none transition-all placeholder:text-neutral-300"
                                 />
                             </div>
                             <div>
@@ -135,7 +136,7 @@ export default function AccountSettings({ user, profile }: Props) {
                                     name="province"
                                     defaultValue={profile?.province || ''}
                                     placeholder="State"
-                                    className="w-full bg-white border border-neutral-200 rounded-xl px-4 py-3.5 text-sm font-medium focus:border-black focus:ring-1 focus:ring-black outline-none transition-all placeholder:text-neutral-300"
+                                    className="w-full bg-white border border-[#1a1a1a] rounded-none px-4 py-3.5 text-sm font-medium focus:border-black focus:ring-1 focus:ring-black outline-none transition-all placeholder:text-neutral-300"
                                 />
                             </div>
                         </div>
@@ -147,7 +148,7 @@ export default function AccountSettings({ user, profile }: Props) {
                                     name="zip"
                                     defaultValue={profile?.zip || ''}
                                     placeholder="ZIP Code"
-                                    className="w-full bg-white border border-neutral-200 rounded-xl px-4 py-3.5 text-sm font-medium focus:border-black focus:ring-1 focus:ring-black outline-none transition-all placeholder:text-neutral-300"
+                                    className="w-full bg-white border border-[#1a1a1a] rounded-none px-4 py-3.5 text-sm font-medium focus:border-black focus:ring-1 focus:ring-black outline-none transition-all placeholder:text-neutral-300"
                                 />
                             </div>
                             <div>
@@ -156,7 +157,7 @@ export default function AccountSettings({ user, profile }: Props) {
                                     name="country"
                                     defaultValue={profile?.country || 'US'}
                                     placeholder="Country"
-                                    className="w-full bg-white border border-neutral-200 rounded-xl px-4 py-3.5 text-sm font-medium focus:border-black focus:ring-1 focus:ring-black outline-none transition-all placeholder:text-neutral-300"
+                                    className="w-full bg-white border border-[#1a1a1a] rounded-none px-4 py-3.5 text-sm font-medium focus:border-black focus:ring-1 focus:ring-black outline-none transition-all placeholder:text-neutral-300"
                                 />
                             </div>
                         </div>
@@ -166,7 +167,7 @@ export default function AccountSettings({ user, profile }: Props) {
                 <div className="xl:col-span-2 flex justify-end pt-4">
                     <button
                         disabled={loading}
-                        className="bg-black text-white px-12 py-4 rounded-full text-xs font-bold uppercase tracking-[0.2em] hover:bg-neutral-800 transition-all disabled:opacity-50 flex items-center gap-3 shadow-xl hover:shadow-2xl hover:-translate-y-1 active:translate-y-0"
+                        className="bg-black text-white px-12 py-4 rounded-none text-xs font-bold uppercase tracking-[0.2em] hover:bg-neutral-800 transition-colors disabled:opacity-50 flex items-center gap-3 border border-[#1a1a1a]"
                     >
                         {loading ? (
                             'Saving...'
@@ -180,8 +181,8 @@ export default function AccountSettings({ user, profile }: Props) {
             </form>
 
             {message && (
-                <div className="fixed bottom-8 right-8 bg-black text-white px-6 py-4 rounded-xl shadow-2xl text-sm font-bold animate-fade-in z-50 flex items-center gap-3 border border-neutral-800">
-                    <div className="bg-green-500 rounded-full p-1">
+                <div className="fixed bottom-8 right-8 bg-black text-white px-6 py-4 shadow-2xl text-sm font-bold animate-fade-in z-50 flex items-center gap-3 border border-[#1a1a1a]">
+                    <div className="bg-green-500 p-1 border border-[#1a1a1a]">
                         <Check className="w-3 h-3 text-black" />
                     </div>
                     {message}

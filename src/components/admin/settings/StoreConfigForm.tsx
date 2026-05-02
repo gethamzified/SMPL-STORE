@@ -91,22 +91,25 @@ export function StoreConfigForm({ initialConfig }: StoreConfigFormProps) {
 
     return (
         <Tabs defaultValue="homepage" className="space-y-6">
-            <TabsList className="bg-gray-100 p-1 rounded-lg">
-                <TabsTrigger value="homepage" className="flex items-center gap-2 data-[state=active]:bg-white data-[state=active]:shadow-sm rounded-md px-4">
-                    <Globe className="w-4 h-4" />
-                    Homepage
+            <TabsList className="bg-gray-100 p-1 rounded-lg w-full flex overflow-x-auto no-scrollbar">
+                <TabsTrigger value="homepage" className="flex-1 min-w-0 flex items-center justify-center gap-1.5 data-[state=active]:bg-white data-[state=active]:shadow-sm rounded-md px-3 py-2 text-xs sm:text-sm">
+                    <Globe className="w-4 h-4 shrink-0" />
+                    <span className="hidden sm:inline">Homepage</span>
+                    <span className="sm:hidden">Home</span>
                 </TabsTrigger>
-                <TabsTrigger value="brand" className="flex items-center gap-2 data-[state=active]:bg-white data-[state=active]:shadow-sm rounded-md px-4">
-                    <Palette className="w-4 h-4" />
+                <TabsTrigger value="brand" className="flex-1 min-w-0 flex items-center justify-center gap-1.5 data-[state=active]:bg-white data-[state=active]:shadow-sm rounded-md px-3 py-2 text-xs sm:text-sm">
+                    <Palette className="w-4 h-4 shrink-0" />
                     Brand
                 </TabsTrigger>
-                <TabsTrigger value="delivery" className="flex items-center gap-2 data-[state=active]:bg-white data-[state=active]:shadow-sm rounded-md px-4">
-                    <Truck className="w-4 h-4" />
-                    Delivery
+                <TabsTrigger value="delivery" className="flex-1 min-w-0 flex items-center justify-center gap-1.5 data-[state=active]:bg-white data-[state=active]:shadow-sm rounded-md px-3 py-2 text-xs sm:text-sm">
+                    <Truck className="w-4 h-4 shrink-0" />
+                    <span className="hidden sm:inline">Delivery</span>
+                    <span className="sm:hidden">Ship</span>
                 </TabsTrigger>
-                <TabsTrigger value="currency" className="flex items-center gap-2 data-[state=active]:bg-white data-[state=active]:shadow-sm rounded-md px-4">
-                    <DollarSign className="w-4 h-4" />
-                    Currency
+                <TabsTrigger value="currency" className="flex-1 min-w-0 flex items-center justify-center gap-1.5 data-[state=active]:bg-white data-[state=active]:shadow-sm rounded-md px-3 py-2 text-xs sm:text-sm">
+                    <DollarSign className="w-4 h-4 shrink-0" />
+                    <span className="hidden sm:inline">Currency</span>
+                    <span className="sm:hidden">₨</span>
                 </TabsTrigger>
             </TabsList>
 
@@ -205,7 +208,7 @@ export function StoreConfigForm({ initialConfig }: StoreConfigFormProps) {
                         <CardDescription>Text and CTA button displayed over the product carousel.</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div className="space-y-2">
                                 <Label className="text-xs font-medium text-gray-500 uppercase tracking-wider">Heading</Label>
                                 <Input
@@ -223,7 +226,7 @@ export function StoreConfigForm({ initialConfig }: StoreConfigFormProps) {
                                 />
                             </div>
                         </div>
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div className="space-y-2">
                                 <Label className="text-xs font-medium text-gray-500 uppercase tracking-wider">CTA Text</Label>
                                 <Input
@@ -295,9 +298,9 @@ export function StoreConfigForm({ initialConfig }: StoreConfigFormProps) {
                 <Card>
                     <CardHeader>
                         <CardTitle className="text-base">Theme</CardTitle>
-                        <CardDescription>Primary accent color used across the store.</CardDescription>
+                        <CardDescription>Configure the primary and accent colors for your store.</CardDescription>
                     </CardHeader>
-                    <CardContent>
+                    <CardContent className="space-y-6">
                         <div className="flex items-center gap-4">
                             <input
                                 type="color"
@@ -306,15 +309,34 @@ export function StoreConfigForm({ initialConfig }: StoreConfigFormProps) {
                                 className="w-12 h-12 rounded-lg cursor-pointer border border-gray-200 p-1"
                             />
                             <div className="flex-1">
-                                <p className="text-sm font-medium text-gray-900">{config.theme?.primaryColor || '#000000'}</p>
-                                <p className="text-xs text-gray-500">Used for buttons, links, and accents</p>
+                                <Label className="text-sm font-semibold text-gray-900">Primary Color</Label>
+                                <p className="text-xs text-gray-500">Used for main buttons and headers</p>
+                                <p className="text-[10px] font-mono text-gray-400 mt-1 uppercase">{config.theme?.primaryColor || '#000000'}</p>
+                            </div>
+                        </div>
+
+                        <div className="flex items-center gap-4">
+                            <input
+                                type="color"
+                                value={config.theme?.accentColor || '#ee6c4d'}
+                                onChange={(e) => setConfig({ ...config, theme: { ...config.theme, accentColor: e.target.value } })}
+                                className="w-12 h-12 rounded-lg cursor-pointer border border-gray-200 p-1"
+                            />
+                            <div className="flex-1">
+                                <Label className="text-sm font-semibold text-gray-900">Brand Accent</Label>
+                                <p className="text-xs text-gray-500">Used for "Sold Out" indicators and highlights</p>
+                                <p className="text-[10px] font-mono text-gray-400 mt-1 uppercase">{config.theme?.accentColor || '#ee6c4d'}</p>
                             </div>
                         </div>
                     </CardContent>
                 </Card>
 
-                <Button onClick={() => handleSave('brand')} disabled={isSaving} className="w-full h-11">
-                    {isSaving ? 'Saving...' : 'Save Brand Settings'}
+                <Button onClick={() => handleSave('theme')} disabled={isSaving} className="w-full h-11">
+                    {isSaving ? 'Saving...' : 'Save Theme Colors'}
+                </Button>
+
+                <Button onClick={() => handleSave('brand')} disabled={isSaving} variant="outline" className="w-full h-11 border-2">
+                    {isSaving ? 'Saving...' : 'Save Brand Identity'}
                 </Button>
             </TabsContent>
 
@@ -331,7 +353,7 @@ export function StoreConfigForm({ initialConfig }: StoreConfigFormProps) {
                         {/* Standard */}
                         <div className="space-y-4 pb-6 border-b">
                             <h3 className="text-sm font-semibold uppercase tracking-wider text-gray-500">Standard Delivery</h3>
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div className="space-y-2">
                                     <Label className="text-xs font-medium text-gray-500 uppercase tracking-wider">Price (Rs.)</Label>
                                     <Input
@@ -456,7 +478,7 @@ export function StoreConfigForm({ initialConfig }: StoreConfigFormProps) {
                                 </SelectContent>
                             </Select>
                         </div>
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div className="space-y-2">
                                 <Label className="text-xs font-medium text-gray-500 uppercase tracking-wider">Code (ISO)</Label>
                                 <Input

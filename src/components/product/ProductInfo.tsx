@@ -298,46 +298,66 @@ export default function ProductInfo({ product }: ProductInfoProps) {
     };
 
     return (
-        <div className="space-y-8 animate-in fade-in slide-in-from-right-4 duration-700">
-            {/* Header */}
-            <div className="space-y-4">
-                <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-black leading-none uppercase">
+        <div className="space-y-4 animate-in fade-in slide-in-from-right-2 duration-500">
+            {/* Title & Price Section - Compact */}
+            <div className="space-y-3">
+                <h1 className="text-2xl md:text-3xl font-black tracking-tight text-black leading-tight uppercase">
                     {product.title}
                 </h1>
                 
-                <div className="flex items-center gap-4 border-t border-b border-[#1a1a1a] py-4">
+                <div className="flex items-center gap-3 pt-2 border-t-2 border-b-2 border-[#1a1a1a] py-2">
                     {hasSale ? (
                         <>
-                            <span className="text-xl font-bold text-[#d95e32] uppercase">
+                            <span className="text-lg font-black text-brand-ascent uppercase">
                                 RS. {formatCurrency(currentSalePrice).replace(/[^0-9.,]/g, '')}
                             </span>
-                            <span className="text-sm text-black line-through font-medium uppercase">
+                            <span className="text-xs text-black line-through font-bold uppercase">
                                 RS. {formatCurrency(currentPrice).replace(/[^0-9.,]/g, '')}
                             </span>
                         </>
                     ) : (
-                        <span className="text-xl font-bold text-black uppercase">
-                            RS. {formatCurrency(currentPrice).replace(/[^0-9.,]/g, '')}
+                        <span className="text-lg font-black text-black uppercase">
+                            RS{formatCurrency(currentPrice).replace(/[^0-9.,]/g, '')}
                         </span>
                     )}
                 </div>
             </div>
 
-            {/* Description Short */}
+            {/* Stock Status Badge - Inline */}
+            <div className="flex items-center gap-2 py-2 text-[9px] font-bold uppercase tracking-widest">
+                {isOutOfStock ? (
+                    <>
+                        <div className="w-1.5 h-1.5 bg-brand-ascent border border-[#1a1a1a]"></div>
+                        <span className="text-brand-ascent">Out of Stock</span>
+                    </>
+                ) : isLowStock ? (
+                    <>
+                        <div className="w-1.5 h-1.5 bg-brand-ascent border border-[#1a1a1a]"></div>
+                        <span className="text-brand-ascent">Limited ({currentStock})</span>
+                    </>
+                ) : (
+                    <>
+                        <div className="w-1.5 h-1.5 bg-brand-ascent border border-[#1a1a1a]"></div>
+                        <span className="text-black">In Stock</span>
+                    </>
+                )}
+            </div>
+
+            {/* Short Description */}
             {product.short_description && (
-                <div className="text-black text-sm font-medium leading-relaxed">
-                    <p>{product.short_description}</p>
-                </div>
+                <p className="text-black text-xs font-medium leading-snug py-2 border-b border-[#1a1a1a] pb-2">
+                    {product.short_description}
+                </p>
             )}
 
-            {/* Clothing Variant Options (Color/Size) */}
+            {/* Color Options - Compact Grid */}
             {product.enable_color_variants && product.available_colors && product.available_colors.length > 0 && (
-                <div className="space-y-4">
-                    <div className="text-[11px] uppercase tracking-widest font-bold text-black">
-                        Color: {selectedOptions['Color']}
-                    </div>
-                    <div className="flex flex-wrap gap-0 border border-[#1a1a1a] w-fit">
-                        {product.available_colors.map((color, index) => {
+                <div className="space-y-2 pt-2">
+                    <span className="text-[8px] uppercase tracking-widest font-black text-black block">
+                        Color: <span className="font-bold text-brand-ascent">{selectedOptions['Color']}</span>
+                    </span>
+                    <div className="flex flex-wrap gap-0 border-2 border-[#1a1a1a] w-fit">
+                        {product.available_colors.map((color) => {
                             const outOfStock = isOptionOutOfStock('Color', color);
                             const isSelected = selectedOptions['Color'] === color;
                             const colorValue = getColorValue(color);
@@ -349,15 +369,15 @@ export default function ProductInfo({ product }: ProductInfoProps) {
                                     disabled={outOfStock}
                                     title={color}
                                     className={cn(
-                                        "w-12 h-12 transition-all duration-0 relative border-r border-[#1a1a1a] last:border-r-0",
-                                        isSelected ? "bg-[#1a1a1a] p-1" : "hover:bg-neutral-100 p-2",
+                                        "w-10 h-10 transition-all duration-0 relative border-r-2 border-[#1a1a1a] last:border-r-0",
+                                        isSelected ? "bg-brand-ascent p-0.5" : "hover:bg-neutral-100 p-1",
                                         outOfStock && "opacity-40 cursor-not-allowed bg-neutral-200"
                                     )}
                                 >
                                     <div className="w-full h-full border border-[#1a1a1a]" style={{ backgroundColor: colorValue }} />
                                     {outOfStock && (
                                         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                                            <div className="w-full h-px bg-black -rotate-45" />
+                                            <div className="w-full h-px bg-brand-ascent -rotate-45" />
                                         </div>
                                     )}
                                     <span className="sr-only">{color}</span>
@@ -368,19 +388,20 @@ export default function ProductInfo({ product }: ProductInfoProps) {
                 </div>
             )}
 
+            {/* Size Options - Compact Grid */}
             {product.enable_size_variants && product.available_sizes && product.available_sizes.length > 0 && (
-                <div className="space-y-4">
-                    <div className="flex justify-between items-end">
-                        <span className="text-[11px] uppercase tracking-widest font-bold text-black">Size</span>
+                <div className="space-y-2 pt-2">
+                    <div className="flex justify-between items-center">
+                        <span className="text-[8px] uppercase tracking-widest font-black text-black">Size: <span className="font-bold text-brand-ascent">{selectedOptions['Size']}</span></span>
                         <button
                             onClick={() => setShowSizeGuide(true)}
-                            className="text-[10px] uppercase tracking-widest font-bold text-black hover:text-[#d95e32] transition-colors underline underline-offset-4"
+                            className="text-[8px] uppercase tracking-widest font-black text-black hover:text-brand-ascent transition-colors underline underline-offset-2"
                         >
-                            Size Guide
+                            Guide
                         </button>
                     </div>
 
-                    <div className="flex flex-wrap gap-0 border-t border-l border-[#1a1a1a]">
+                    <div className="flex flex-wrap gap-0 border-t-2 border-l-2 border-[#1a1a1a]">
                         {STANDARD_SIZES.map((size) => {
                             const isEnabled = product.available_sizes?.includes(size);
                             if (!isEnabled) return null;
@@ -393,19 +414,17 @@ export default function ProductInfo({ product }: ProductInfoProps) {
                                     onClick={() => !outOfStock && handleOptionSelect('Size', size)}
                                     disabled={outOfStock}
                                     className={cn(
-                                        "relative py-3 px-6 text-[11px] font-bold uppercase transition-colors border-b border-r border-[#1a1a1a] min-w-[3.5rem] flex items-center justify-center h-12",
+                                        "relative py-2 px-4 text-[9px] font-black uppercase transition-colors border-b-2 border-r-2 border-[#1a1a1a] min-w-[2.5rem] flex items-center justify-center h-10",
                                         isSelected
-                                            ? "bg-black text-white"
+                                            ? "bg-brand-ascent text-white"
                                             : "bg-white text-black hover:bg-neutral-100",
                                         outOfStock && "text-neutral-400 bg-neutral-100 cursor-not-allowed"
                                     )}
                                 >
                                     <span>{size}</span>
-
-                                    {/* Diagonal Slash for Out of Stock */}
                                     {outOfStock && (
                                         <div className="absolute inset-0 pointer-events-none overflow-hidden">
-                                            <svg className="w-full h-full text-[#1a1a1a]" preserveAspectRatio="none">
+                                            <svg className="w-full h-full text-brand-ascent" preserveAspectRatio="none">
                                                 <line x1="0" y1="100%" x2="100%" y2="0" stroke="currentColor" strokeWidth="1" />
                                             </svg>
                                         </div>
@@ -419,21 +438,21 @@ export default function ProductInfo({ product }: ProductInfoProps) {
 
             {/* Legacy Options */}
             {!(product.enable_color_variants || product.enable_size_variants) && product.options?.map((option) => (
-                <div key={option.id} className="space-y-4">
-                    <div className="text-[11px] uppercase tracking-widest font-bold text-black">
+                <div key={option.id} className="space-y-2 pt-2">
+                    <div className="text-[8px] uppercase tracking-widest font-black text-black">
                         {option.name}
                     </div>
-                    <div className="flex flex-wrap gap-0 border-t border-l border-[#1a1a1a]">
+                    <div className="flex flex-wrap gap-0 border-t-2 border-l-2 border-[#1a1a1a]">
                         {option.values.map((value) => (
                             <button
                                 key={value}
                                 onClick={() => handleOptionSelect(option.name, value)}
-                                className={cn(
-                                    "px-6 py-3 text-[11px] font-bold uppercase tracking-wider transition-colors border-b border-r border-[#1a1a1a] min-w-[4rem]",
-                                    selectedOptions[option.name] === value
-                                        ? "bg-black text-white"
-                                        : "bg-white text-black hover:bg-neutral-100"
-                                )}
+                                   className={cn(
+                                       "px-4 py-2 text-[9px] font-black uppercase tracking-wider transition-colors border-b-2 border-r-2 border-[#1a1a1a] min-w-[3rem]",
+                                       selectedOptions[option.name] === value
+                                           ? "bg-brand-ascent text-white"
+                                           : "bg-white text-black hover:bg-neutral-100"
+                                   )}
                             >
                                 {value}
                             </button>
@@ -442,46 +461,62 @@ export default function ProductInfo({ product }: ProductInfoProps) {
                 </div>
             ))}
 
-            {/* Actions */}
-            <div className="flex flex-col gap-4 pt-4">
-                <Button
+            {/* Quantity & CTA - Compact */}
+            <div className="flex gap-3 pt-2">
+                <div className="flex border-2 border-[#1a1a1a] h-10 flex-shrink-0">
+                    <button
+                        onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                        className="px-3 py-2 hover:bg-neutral-100 transition-colors"
+                    >
+                        <Minus className="w-3.5 h-3.5 text-black" />
+                    </button>
+                    <span className="px-4 py-2 text-center text-xs font-black border-l-2 border-r-2 border-[#1a1a1a] min-w-[3rem]">
+                        {quantity}
+                    </span>
+                    <button
+                        onClick={() => setQuantity(quantity + 1)}
+                        className="px-3 py-2 hover:bg-neutral-100 transition-colors"
+                    >
+                        <Plus className="w-3.5 h-3.5 text-black" />
+                    </button>
+                </div>
+
+                <button
                     onClick={() => handleAddToCart(true)}
                     disabled={isOutOfStock || isPending}
                     className={cn(
-                        "w-full h-14 rounded-none uppercase tracking-widest font-bold text-[12px] transition-colors border border-[#1a1a1a]",
+                        "flex-1 h-10 rounded-none uppercase tracking-widest font-black text-[9px] transition-colors border-2 border-[#1a1a1a]",
                         isOutOfStock
                             ? "bg-neutral-200 text-neutral-500 cursor-not-allowed"
-                            : "bg-black text-white hover:bg-white hover:text-black"
+                            : "bg-brand-ascent text-white hover:bg-white hover:text-brand-ascent hover:border-[#1a1a1a]"
                     )}
                 >
-                    {isPending ? "ADDING..." : isOutOfStock ? "SOLD OUT" : "ADD TO CART"}
-                </Button>
-
-                {/* Availability Status */}
-                <div className="flex items-center justify-center gap-2 pt-2 text-[10px] font-bold uppercase tracking-widest">
-                    {isOutOfStock ? (
-                        <>
-                            <div className="w-1.5 h-1.5 bg-[#d95e32]"></div>
-                            <span className="text-[#d95e32]">Out of Stock</span>
-                        </>
-                    ) : isLowStock ? (
-                        <>
-                            <div className="w-1.5 h-1.5 bg-amber-500"></div>
-                            <span className="text-amber-600">
-                                Limited Stock ({currentStock})
-                            </span>
-                        </>
-                    ) : (
-                        <>
-                            <div className="w-1.5 h-1.5 bg-black"></div>
-                            <span className="text-black">In Stock</span>
-                        </>
-                    )}
-                </div>
+                    {isPending ? "ADDING" : isOutOfStock ? "SOLD OUT" : "ADD TO CART"}
+                </button>
             </div>
 
-            {/* Spacer */}
-            <div className="h-4" />
+            {/* Additional Actions */}
+            <div className="flex gap-2 pt-1">
+                <button
+                    onClick={toggleFavorite}
+                    className="flex-1 py-2 px-3 h-10 rounded-none border-2 border-[#1a1a1a] hover:bg-neutral-100 transition-colors flex items-center justify-center gap-2"
+                >
+                    <Heart className={cn("w-3.5 h-3.5", isFavorite ? "fill-brand-ascent text-brand-ascent" : "text-black")} />
+                    <span className="text-[8px] font-black uppercase">Save</span>
+                </button>
+                <button
+                    className="flex-1 py-2 px-3 h-10 rounded-none border-2 border-[#1a1a1a] hover:bg-neutral-100 transition-colors flex items-center justify-center gap-2"
+                >
+                    <Share2 className="w-3.5 h-3.5 text-black" />
+                    <span className="text-[8px] font-black uppercase">Share</span>
+                </button>
+            </div>
+
+            {/* Size Guide Modal */}
+            <SizeGuideModal
+                isOpen={showSizeGuide}
+                onClose={() => setShowSizeGuide(false)}
+            />
 
             {/* Mobile Sticky Add to Cart */}
             <StickyAddToCart
@@ -491,12 +526,6 @@ export default function ProductInfo({ product }: ProductInfoProps) {
                 isOutOfStock={isOutOfStock === true}
                 onAddToCart={() => handleAddToCart(true)}
                 isPending={isPending}
-            />
-
-            {/* Size Guide Modal */}
-            <SizeGuideModal
-                isOpen={showSizeGuide}
-                onClose={() => setShowSizeGuide(false)}
             />
         </div>
     );

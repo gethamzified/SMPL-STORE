@@ -5,6 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Truck, Zap } from "lucide-react";
 import { cn, formatCurrency } from "@/lib/utils";
 import { useFormatCurrency } from "@/context/StoreConfigContext";
+import { outlinedPanel } from "@/lib/outline";
 
 interface ShippingMethodStepProps {
     selectedMethod: string;
@@ -25,7 +26,7 @@ export function ShippingMethodStep({ selectedMethod, onSelect, deliveryConfig, c
 
     return (
         <div className="space-y-6">
-            <h2 className="text-xl font-display font-black tracking-tighter uppercase mb-8 border-b-2 border-black pb-4 text-red-600">
+            <h2 className="text-xl font-display font-black tracking-tighter uppercase mb-8 border-b-2 border-[#1a1a1a] pb-4 text-brand-ascent">
                 SHIPPING METHOD
             </h2>
 
@@ -33,21 +34,20 @@ export function ShippingMethodStep({ selectedMethod, onSelect, deliveryConfig, c
 
                 {/* STANDARD SHIPPING */}
                 <div className={cn(
-                    "relative border-2 p-6 flex cursor-pointer transition-all hover:bg-neutral-100",
-                    selectedMethod === "standard"
-                        ? "border-red-600 bg-white shadow-[4px_4px_0px_0px_rgba(220,38,38,1)]"
-                        : "border-black bg-white"
+                    "relative p-6 flex cursor-pointer transition-all",
+                    outlinedPanel,
+                    selectedMethod === "standard" ? "bg-neutral-50" : "hover:bg-neutral-50/70"
                 )}>
                     <RadioGroupItem value="standard" id="shipping-standard" className="mt-1" />
                     <Label htmlFor="shipping-standard" className="flex-1 ml-4 cursor-pointer">
                         <div className="flex justify-between items-center mb-1">
                             <span className="font-black text-sm uppercase tracking-widest text-black">STANDARD DELIVERY</span>
-                            <span className={cn("font-black text-lg", isStandardFree ? "text-red-600" : "text-black")}>
+                            <span className={cn("font-black text-lg", isStandardFree ? "text-brand-ascent" : "text-black")}>
                                 {isStandardFree ? "FREE" : formatCurrency(standard.price)}
                             </span>
                         </div>
                         <div className="flex items-center gap-2 text-xs font-bold text-black mb-2 uppercase tracking-widest">
-                            <Truck className="w-4 h-4 text-red-600" />
+                            <Truck className="w-4 h-4 text-brand-ascent" />
                             <span>{standard.time}</span>
                         </div>
                         <p className="text-[10px] font-bold text-neutral-500 leading-relaxed uppercase tracking-widest">
@@ -58,10 +58,9 @@ export function ShippingMethodStep({ selectedMethod, onSelect, deliveryConfig, c
 
                 {/* EXPRESS SHIPPING */}
                 <div className={cn(
-                    "relative border-2 p-6 flex cursor-pointer transition-all hover:bg-neutral-100",
-                    selectedMethod === "express"
-                        ? "border-red-600 bg-white shadow-[4px_4px_0px_0px_rgba(220,38,38,1)]"
-                        : "border-black bg-white"
+                    "relative p-6 flex cursor-pointer transition-all",
+                    outlinedPanel,
+                    selectedMethod === "express" ? "bg-neutral-50" : "hover:bg-neutral-50/70"
                 )}>
                     <RadioGroupItem value="express" id="shipping-express" className="mt-1" />
                     <Label htmlFor="shipping-express" className="flex-1 ml-4 cursor-pointer">
@@ -69,7 +68,7 @@ export function ShippingMethodStep({ selectedMethod, onSelect, deliveryConfig, c
                             <span className="font-black text-sm uppercase tracking-widest text-black">EXPRESS DELIVERY</span>
                             <span className="font-black text-lg text-black">{formatCurrency(express.price)}</span>
                         </div>
-                        <div className="flex items-center gap-2 text-xs font-bold text-red-600 mb-2 uppercase tracking-widest">
+                        <div className="flex items-center gap-2 text-xs font-bold text-brand-ascent mb-2 uppercase tracking-widest">
                             <Zap className="w-4 h-4 fill-current" />
                             <span>{express.time}</span>
                         </div>

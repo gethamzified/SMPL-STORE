@@ -24,6 +24,7 @@ export default {
         'great-vibes': ['var(--font-great-vibes)', 'cursive'],
       },
       colors: {
+        'brand-ascent': "hsl(var(--brand-ascent))",
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",

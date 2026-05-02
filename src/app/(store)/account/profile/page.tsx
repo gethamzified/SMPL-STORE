@@ -2,6 +2,7 @@ import { requireAuth } from '@/lib/auth';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { FadeInView } from '@/components/animations/FadeInView';
 import AccountSettings from '@/components/account/AccountSettings';
+import { outlinedPanel } from '@/lib/outline';
 
 export const dynamic = 'force-dynamic';
 
@@ -13,7 +14,7 @@ export default async function ProfilePage() {
 
     return (
         <FadeInView>
-            <div className="mb-8 border-b border-neutral-100 pb-8">
+            <div className={`mb-8 pb-8 p-8 ${outlinedPanel}`}>
                 <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-500 mb-2">Settings</p>
                 <h1 className="text-3xl font-bold text-black tracking-tight">
                     Profile & Application
