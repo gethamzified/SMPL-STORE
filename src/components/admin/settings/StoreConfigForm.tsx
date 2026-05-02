@@ -458,7 +458,7 @@ export function StoreConfigForm({ initialConfig }: StoreConfigFormProps) {
                             <Label className="text-xs font-medium text-gray-500 uppercase tracking-wider">Preset</Label>
                             <Select onValueChange={(val) => {
                                 const presets: Record<string, { code: string, symbol: string }> = {
-                                    'PKR': { code: 'PKR', symbol: 'Rs.' },
+                                    'PKR': { code: 'PKR', symbol: 'RS.' },
                                     'USD': { code: 'USD', symbol: '$' },
                                     'GBP': { code: 'GBP', symbol: '£' },
                                     'EUR': { code: 'EUR', symbol: '€' },
@@ -470,7 +470,7 @@ export function StoreConfigForm({ initialConfig }: StoreConfigFormProps) {
                                     <SelectValue placeholder="Select a preset..." />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="PKR">PKR - Pakistani Rupee</SelectItem>
+                                    <SelectItem value="PKR">PKR - Pakistani Rupee (RS.)</SelectItem>
                                     <SelectItem value="USD">USD - US Dollar</SelectItem>
                                     <SelectItem value="GBP">GBP - British Pound</SelectItem>
                                     <SelectItem value="EUR">EUR - Euro</SelectItem>
@@ -483,7 +483,7 @@ export function StoreConfigForm({ initialConfig }: StoreConfigFormProps) {
                                 <Label className="text-xs font-medium text-gray-500 uppercase tracking-wider">Code (ISO)</Label>
                                 <Input
                                     value={config.currency?.code ?? ''}
-                                    onChange={(e) => setConfig({ ...config, currency: { ...(config.currency || { symbol: 'Rs.' }), code: e.target.value } })}
+                                    onChange={(e) => setConfig({ ...config, currency: { ...(config.currency || { symbol: 'RS.' }), code: e.target.value } })}
                                     placeholder="PKR"
                                 />
                             </div>
@@ -492,7 +492,7 @@ export function StoreConfigForm({ initialConfig }: StoreConfigFormProps) {
                                 <Input
                                     value={config.currency?.symbol ?? ''}
                                     onChange={(e) => setConfig({ ...config, currency: { ...(config.currency || { code: 'PKR' }), symbol: e.target.value } })}
-                                    placeholder="Rs."
+                                    placeholder="RS."
                                 />
                             </div>
                         </div>

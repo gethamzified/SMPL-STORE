@@ -144,6 +144,16 @@ function buildProductPayload(formData: FormData): { data?: ProductPayload; error
     payload.available_sizes = availableSizes;
   }
 
+  // Lookbook configuration
+  const lookbookConfig = formData.get('lookbook_config');
+  if (lookbookConfig && typeof lookbookConfig === 'string') {
+    try {
+      payload.lookbook_config = JSON.parse(lookbookConfig);
+    } catch (e) {
+      console.error('Error parsing lookbook_config', e);
+    }
+  }
+
   return { data: payload };
 }
 

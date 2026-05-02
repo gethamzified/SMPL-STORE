@@ -55,6 +55,17 @@ export type Product = {
   // Metadata
   metadata?: Record<string, unknown>
 
+  // Lookbook
+  lookbook_config?: {
+    enabled?: boolean
+    marquee_text?: string
+    images?: {
+      src: string
+      label?: string
+      span?: string
+    }[]
+  } | null
+
   // Timestamps
   created_at?: string
   updated_at?: string

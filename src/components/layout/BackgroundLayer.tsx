@@ -17,9 +17,11 @@ export function BackgroundLayer({ imageUrl }: { imageUrl: string }) {
           alt="Store Background"
           fill
           priority
+          loading="eager"
+          fetchPriority="high"
           className="object-cover object-top"
           sizes="100vw"
-          quality={85}
+          quality={70}
         />
       </div>
     </div>

@@ -61,7 +61,7 @@ export interface CurrencyConfig {
 
 export const DEFAULT_CURRENCY: CurrencyConfig = {
   code: "PKR",
-  symbol: "PKR Rs.",
+  symbol: "RS.",
   format: "symbol amount",
 };
 

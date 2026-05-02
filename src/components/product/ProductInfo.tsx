@@ -309,15 +309,15 @@ export default function ProductInfo({ product }: ProductInfoProps) {
                     {hasSale ? (
                         <>
                             <span className="text-lg font-black text-brand-ascent uppercase">
-                                RS. {formatCurrency(currentSalePrice).replace(/[^0-9.,]/g, '')}
+                                {formatCurrency(currentSalePrice)}
                             </span>
                             <span className="text-xs text-black line-through font-bold uppercase">
-                                RS. {formatCurrency(currentPrice).replace(/[^0-9.,]/g, '')}
+                                {formatCurrency(currentPrice)}
                             </span>
                         </>
                     ) : (
                         <span className="text-lg font-black text-black uppercase">
-                            RS{formatCurrency(currentPrice).replace(/[^0-9.,]/g, '')}
+                            {formatCurrency(currentPrice)}
                         </span>
                     )}
                 </div>

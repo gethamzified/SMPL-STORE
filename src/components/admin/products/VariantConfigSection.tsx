@@ -51,7 +51,7 @@ export function VariantConfigSection({
     variants,
     basePrice,
     baseSku,
-    currencySymbol = "Rs.",
+    currencySymbol = "RS.",
     onEnableColorChange,
     onEnableSizeChange,
     onColorsChange,

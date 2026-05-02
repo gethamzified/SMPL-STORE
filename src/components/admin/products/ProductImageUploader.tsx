@@ -15,7 +15,7 @@
 
 'use client';
 
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useRef, useState, useEffect } from 'react';
 import Image from 'next/image';
 import {
   Upload,
@@ -312,6 +312,11 @@ export function ProductImageUploader({
   const [zoomSrc, setZoomSrc] = useState<string | null>(null);
 
   const { images, addFiles, removeImage, reorderImages, replaceImage, totalCount } = upload;
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // ─── DnD Kit sensors ──────────────────────────────────────────────────
 
@@ -425,7 +430,7 @@ export function ProductImageUploader({
         )}
 
         {/* Image gallery (sortable) */}
-        {hasImages && (
+        {hasImages && mounted && (
           <DndContext
             sensors={sensors}
             collisionDetection={closestCenter}

@@ -278,11 +278,11 @@ export default function CheckoutWizard({ user: initialUser, customer, savedAddre
                                 <h2 className="text-xl font-display font-black tracking-tighter uppercase mb-8 border-b-2 border-[#1a1a1a] pb-4 text-brand-ascent">CONTACT</h2>
                                 <form onSubmit={handleSendOTP} className="space-y-6">
                                     <div className="space-y-2">
-                                        <Label htmlFor="email" className="text-[10px] tracking-[0.1em] uppercase text-neutral-500">Email</Label>
+                                        <Label htmlFor="email" className="text-[10px] tracking-[0.1em] text-neutral-500">Email</Label>
                                         <Input
                                             id="email" type="email" required
                                             value={email} onChange={(e) => setEmail(e.target.value)}
-                                            className="rounded-none border-2 border-black focus:border-brand-ascent focus:ring-0 h-12 font-bold uppercase text-xs tracking-widest bg-white"
+                                            className="rounded-none border-2 border-black focus:border-brand-ascent focus:ring-0 h-12 text-sm bg-white"
                                         />
                                     </div>
                                     <Button type="submit" variant="cta" size="xl" className="w-full bg-brand-ascent text-white hover:bg-black border-2 border-black rounded-none uppercase font-black tracking-widest text-sm transition-all" disabled={isProcessing}>
@@ -298,7 +298,7 @@ export default function CheckoutWizard({ user: initialUser, customer, savedAddre
                         <div key="otp" className="animate-in fade-in slide-in-from-right-8 duration-500">
                             <div className={`p-8 ${outlinedPanel}`}>
                                 <h2 className="text-xl font-display font-black tracking-tighter uppercase mb-8 border-b-2 border-[#1a1a1a] pb-4 text-brand-ascent">VERIFY</h2>
-                                <p className="text-xs font-bold text-black uppercase tracking-widest mb-8">CODE SENT TO <span className="text-brand-ascent">{email}</span></p>
+                                <p className="text-xs font-bold text-black tracking-widest mb-8">CODE SENT TO <span className="text-brand-ascent">{email}</span></p>
                                 <form onSubmit={handleVerifyOTP} className="space-y-6">
                                     <Input
                                         value={otp} onChange={(e) => setOtp(e.target.value)}
@@ -318,7 +318,7 @@ export default function CheckoutWizard({ user: initialUser, customer, savedAddre
                         <div key="address" className={`animate-in fade-in slide-in-from-right-8 duration-500 p-8 ${outlinedPanel}`}>
                             <h2 className="text-xl font-display font-black tracking-tighter uppercase mb-8 border-b-2 border-[#1a1a1a] pb-4 text-brand-ascent">ADDRESS</h2>
                             {activeUser && (
-                                <div className="flex items-center gap-3 text-[10px] font-bold tracking-widest uppercase text-black bg-white p-4 border-2 border-black mb-8">
+                                <div className="flex items-center gap-3 text-[10px] font-bold tracking-widest text-black bg-white p-4 border-2 border-black mb-8">
                                     <CheckCircle className="w-4 h-4 text-brand-ascent" />
                                     <span>LOGGED IN AS <span className="text-brand-ascent">{activeUser.email}</span></span>
                                 </div>
@@ -326,36 +326,36 @@ export default function CheckoutWizard({ user: initialUser, customer, savedAddre
                             <form onSubmit={form.handleSubmit(onAddressSubmit)} className="space-y-6">
                                 <div className="grid grid-cols-2 gap-6">
                                     <div className="col-span-2 md:col-span-1 space-y-2">
-                                        <Label className="text-[10px] uppercase text-neutral-500">First Name</Label>
-                                        <Input {...form.register("first_name")} className="rounded-none border-2 border-black focus:border-brand-ascent focus:ring-0 h-12 font-bold uppercase text-xs tracking-widest bg-white" />
-                                        {form.formState.errors.first_name && <p className="text-[10px] font-bold uppercase tracking-widest text-brand-ascent">{form.formState.errors.first_name.message}</p>}
+                                        <Label className="text-[10px] text-neutral-500">First Name</Label>
+                                        <Input {...form.register("first_name")} className="rounded-none border-2 border-black focus:border-brand-ascent focus:ring-0 h-12 text-sm bg-white" />
+                                        {form.formState.errors.first_name && <p className="text-[10px] font-bold tracking-widest text-brand-ascent">{form.formState.errors.first_name.message}</p>}
                                     </div>
                                     <div className="col-span-2 md:col-span-1 space-y-2">
-                                        <Label className="text-[10px] font-bold uppercase tracking-widest text-black">Last Name</Label>
-                                        <Input {...form.register("last_name")} className="rounded-none border-2 border-black focus:border-brand-ascent focus:ring-0 h-12 font-bold uppercase text-xs tracking-widest bg-white" />
-                                        {form.formState.errors.last_name && <p className="text-[10px] font-bold uppercase tracking-widest text-brand-ascent">{form.formState.errors.last_name.message}</p>}
+                                        <Label className="text-[10px] font-bold text-black">Last Name</Label>
+                                        <Input {...form.register("last_name")} className="rounded-none border-2 border-black focus:border-brand-ascent focus:ring-0 h-12 text-sm bg-white" />
+                                        {form.formState.errors.last_name && <p className="text-[10px] font-bold tracking-widest text-brand-ascent">{form.formState.errors.last_name.message}</p>}
                                     </div>
                                 </div>
                                 <div className="space-y-2">
-                                    <Label className="text-[10px] font-bold uppercase tracking-widest text-black">Address</Label>
-                                    <Input {...form.register("address1")} className="rounded-none border-2 border-black focus:border-brand-ascent focus:ring-0 h-12 font-bold uppercase text-xs tracking-widest bg-white" placeholder="STREET ADDRESS" />
-                                    {form.formState.errors.address1 && <p className="text-[10px] font-bold uppercase tracking-widest text-brand-ascent">{form.formState.errors.address1.message}</p>}
+                                    <Label className="text-[10px] font-bold text-black">Address</Label>
+                                    <Input {...form.register("address1")} className="rounded-none border-2 border-black focus:border-brand-ascent focus:ring-0 h-12 text-sm bg-white" placeholder="STREET ADDRESS" />
+                                    {form.formState.errors.address1 && <p className="text-[10px] font-bold tracking-widest text-brand-ascent">{form.formState.errors.address1.message}</p>}
                                 </div>
                                 <div className="grid grid-cols-2 gap-6">
                                     <div className="space-y-2">
-                                        <Label className="text-[10px] font-bold uppercase tracking-widest text-black">City</Label>
-                                        <Input {...form.register("city")} className="rounded-none border-2 border-black focus:border-brand-ascent focus:ring-0 h-12 font-bold uppercase text-xs tracking-widest bg-white" />
-                                        {form.formState.errors.city && <p className="text-[10px] font-bold uppercase tracking-widest text-brand-ascent">{form.formState.errors.city.message}</p>}
+                                        <Label className="text-[10px] font-bold text-black">City</Label>
+                                        <Input {...form.register("city")} className="rounded-none border-2 border-black focus:border-brand-ascent focus:ring-0 h-12 text-sm bg-white" />
+                                        {form.formState.errors.city && <p className="text-[10px] font-bold tracking-widest text-brand-ascent">{form.formState.errors.city.message}</p>}
                                     </div>
                                     <div className="space-y-2">
-                                        <Label className="text-[10px] font-bold uppercase tracking-widest text-black">Postal Code</Label>
-                                        <Input {...form.register("zip")} className="rounded-none border-2 border-black focus:border-brand-ascent focus:ring-0 h-12 font-bold uppercase text-xs tracking-widest bg-white" />
-                                        {form.formState.errors.zip && <p className="text-[10px] font-bold uppercase tracking-widest text-brand-ascent">{form.formState.errors.zip.message}</p>}
+                                        <Label className="text-[10px] font-bold text-black">Postal Code</Label>
+                                        <Input {...form.register("zip")} className="rounded-none border-2 border-black focus:border-brand-ascent focus:ring-0 h-12 text-sm bg-white" />
+                                        {form.formState.errors.zip && <p className="text-[10px] font-bold tracking-widest text-brand-ascent">{form.formState.errors.zip.message}</p>}
                                     </div>
                                 </div>
                                 <div className="space-y-2">
-                                    <Label className="text-[10px] font-bold uppercase tracking-widest text-black">Phone</Label>
-                                    <Input {...form.register("phone")} className="rounded-none border-2 border-black focus:border-brand-ascent focus:ring-0 h-12 font-bold uppercase text-xs tracking-widest bg-white" placeholder="+92..." />
+                                    <Label className="text-[10px] font-bold text-black">Phone</Label>
+                                    <Input {...form.register("phone")} className="rounded-none border-2 border-black focus:border-brand-ascent focus:ring-0 h-12 text-sm bg-white" placeholder="+92..." />
                                     {form.formState.errors.phone && <p className="text-xs text-red-500">{form.formState.errors.phone.message}</p>}
                                 </div>
 

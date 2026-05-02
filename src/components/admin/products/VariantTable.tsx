@@ -36,7 +36,7 @@ export function VariantTable({
     onVariantsChange,
     enableColor,
     enableSize,
-    currencySymbol = "Rs.",
+    currencySymbol = "RS.",
     baseSku = "PROD",
 }: VariantTableProps) {
     const [expandedColors, setExpandedColors] = useState<Set<string>>(new Set());

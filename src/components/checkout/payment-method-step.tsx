@@ -72,7 +72,7 @@ export function PaymentMethodStep({
                     <h4 className="text-sm font-black uppercase tracking-tighter text-black mb-2">{details.title}</h4>
                     {details.fields.map((field, i) => (
                         <div key={i} className="flex flex-col sm:flex-row sm:justify-between text-sm gap-1">
-                            <span className="text-black font-bold uppercase tracking-widest text-[10px]">{field.label}:</span>
+                            <span className="text-black font-bold tracking-widest text-[10px]">{field.label}:</span>
                             <span className="font-mono font-black select-all text-brand-ascent text-xs">{field.value}</span>
                         </div>
                     ))}
@@ -80,17 +80,17 @@ export function PaymentMethodStep({
 
                 <div className="space-y-6">
                     <div className="space-y-2">
-                        <Label className="text-[10px] font-bold uppercase tracking-widest text-black">Transaction ID / Reference No.</Label>
+                        <Label className="text-[10px] font-bold tracking-widest text-black">Transaction ID / Reference No.</Label>
                         <Input
                             value={transactionId}
                             onChange={(e) => setTransactionId(e.target.value)}
                             placeholder="e.g. 8234XXXXXXX"
-                            className="rounded-none border-2 border-black focus:border-red-600 focus:ring-0 h-12 uppercase text-xs tracking-widest font-mono bg-white"
+                            className="rounded-none border-2 border-black focus:border-red-600 focus:ring-0 h-12 text-sm tracking-widest font-mono bg-white"
                         />
                     </div>
 
                     <div className="space-y-2">
-                        <Label className="text-[10px] font-bold uppercase tracking-widest text-black">
+                        <Label className="text-[10px] font-bold tracking-widest text-black">
                             Upload Payment Screenshot <span className="text-brand-ascent">*</span>
                         </Label>
                         <PaymentProofDropzone

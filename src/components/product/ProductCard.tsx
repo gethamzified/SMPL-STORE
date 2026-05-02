@@ -92,7 +92,7 @@ const ProductCard = React.memo(({ priority = false, ...product }: ProductCardPro
           "text-[10px] sm:text-[11px] font-bold uppercase tracking-wider",
           isSoldOut ? "line-through text-black/60 decoration-black/60" : "text-black group-hover:text-brand-ascent transition-colors"
         )}>
-          {isSoldOut ? "Sold Out" : `${formatCurrency(price || 0)} USD`}
+          {isSoldOut ? "Sold Out" : formatCurrency(price || 0)}
         </div>
       </div>
     </div>

@@ -2,11 +2,9 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { Instagram, Twitter, Facebook, Youtube, ChevronDown } from "lucide-react";
+import { Instagram, Twitter, Facebook, Youtube } from "lucide-react";
 import { FooterConfig, SocialConfig } from "@/lib/types";
 import { ScrollToTopButton } from "./ScrollToTopButton";
-import { NewsletterForm } from "./NewsletterForm";
-import { useState } from "react";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 
@@ -33,7 +31,7 @@ const FooterColumn = ({
   return (
     <div className="flex flex-col">
       <h4 className="text-white/40 text-[10px] font-black uppercase tracking-[0.2em] mb-6">{title}</h4>
-      <ul className="flex flex-col gap-3">
+      <ul className="flex flex-col gap-2">
         {links.map(link => (
           <li key={`${link.label}-${link.url}`}>
             <Link href={link.url} className="text-white text-[11px] font-black uppercase tracking-widest hover:text-brand-ascent transition-colors duration-300">
@@ -114,11 +112,11 @@ const Footer = ({
 
   return (
     <footer className="relative z-10 w-full overflow-hidden bg-black text-white border-t border-white/10">
-      <div className="max-w-[1920px] mx-auto px-6 py-12 lg:py-20">
-        <div className="flex flex-col lg:flex-row justify-between gap-12 lg:gap-8">
+      <div className="max-w-[1920px] mx-auto px-6 py-6 lg:py-10">
+        <div className="flex flex-col lg:flex-row justify-between gap-6 lg:gap-8">
 
           {/* Left: Brand & Tagline */}
-          <div className="w-full lg:w-4/12 flex flex-col gap-4">
+          <div className="w-full lg:w-5/12 flex flex-col gap-3">
             <div>
               <Link href="/" className="inline-block">
                 <Image
@@ -126,17 +124,17 @@ const Footer = ({
                   alt={brandName}
                   width={100}
                   height={40}
-                  className="h-8 w-auto "
+                  className="h-6 w-auto"
                 />
               </Link>
-              <p className="mt-4 text-white/40 text-[10px] max-w-xs leading-relaxed font-black uppercase tracking-[0.2em]">
+              <p className="mt-2 text-white/40 text-[9px] max-w-xs leading-relaxed font-black uppercase tracking-[0.2em]">
                 {config.tagline || 'Minimalist design, premium quality, enduring style.'}
               </p>
             </div>
           </div>
 
-          {/* Center: Simplified Navigation */}
-          <div className="w-full lg:w-4/12 grid grid-cols-2 gap-8">
+          {/* Right: Simplified Navigation */}
+          <div className="w-full lg:w-6/12 grid grid-cols-2 gap-4">
             <FooterColumn
               title="Catalog"
               links={[
@@ -149,38 +147,28 @@ const Footer = ({
               links={displaySocialLinks.map(s => ({ label: s.name, url: s.href }))}
             />
           </div>
-
-          {/* Right: Newsletter */}
-          <div className="w-full lg:w-4/12">
-            <h3 className="text-[10px] font-black tracking-widest uppercase mb-4 text-white/40">
-              Join our newsletter
-            </h3>
-            <div className="max-w-md">
-              <NewsletterForm placeholder="EMAIL@ADDRESS.COM" dark />
-            </div>
-          </div>
         </div>
       </div>
 
       {/* Bottom Bar */}
       <div className="border-t border-white/5">
-        <div className="max-w-[1920px] mx-auto px-6 py-12 flex flex-col lg:flex-row justify-between items-center gap-10 relative">
+        <div className="max-w-[1920px] mx-auto px-6 py-4 lg:py-6 flex flex-col lg:flex-row justify-between items-center gap-4 relative">
 
           {/* Scroll To Top - Absolute Centered ABOVE text */}
-          <div className="absolute top-8 left-1/2 -translate-x-1/2 -translate-y-1/2 transform">
+          <div className="absolute top-4 left-1/2 -translate-x-1/2 -translate-y-1/2 transform">
             <ScrollToTopButton />
           </div>
 
           {/* Copyright */}
-          <div className="text-[9px] text-white/20 uppercase tracking-[0.2em] flex-1 text-center lg:text-left font-black">
+          <div className="text-[8px] text-white/20 uppercase tracking-[0.2em] flex-1 text-center lg:text-left font-black">
             <span>{copyrightText} All rights reserved.</span>
           </div>
 
           <div className="hidden lg:block flex-1" />
 
-          {/* Simplified Social Icons (removed redundant displaySocialLinks mapping as it's now in the column) */}
-          <div className="flex items-center justify-center lg:justify-end gap-8 flex-1">
-            <span className="text-[9px] text-white/20 uppercase tracking-[0.2em] font-black">Curated in Pakistan</span>
+          {/* Simplified Social Icons */}
+          <div className="flex items-center justify-center lg:justify-end gap-6 flex-1">
+            <span className="text-[8px] text-white/20 uppercase tracking-[0.2em] font-black">Curated in Pakistan</span>
           </div>
 
         </div>

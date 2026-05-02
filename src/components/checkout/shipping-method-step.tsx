@@ -46,11 +46,11 @@ export function ShippingMethodStep({ selectedMethod, onSelect, deliveryConfig, c
                                 {isStandardFree ? "FREE" : formatCurrency(standard.price)}
                             </span>
                         </div>
-                        <div className="flex items-center gap-2 text-xs font-bold text-black mb-2 uppercase tracking-widest">
+                        <div className="flex items-center gap-2 text-xs font-bold text-black mb-2 tracking-widest">
                             <Truck className="w-4 h-4 text-brand-ascent" />
                             <span>{standard.time}</span>
                         </div>
-                        <p className="text-[10px] font-bold text-neutral-500 leading-relaxed uppercase tracking-widest">
+                        <p className="text-[10px] font-bold text-neutral-500 leading-relaxed tracking-widest">
                             {standard.description}
                         </p>
                     </Label>
@@ -68,11 +68,11 @@ export function ShippingMethodStep({ selectedMethod, onSelect, deliveryConfig, c
                             <span className="font-black text-sm uppercase tracking-widest text-black">EXPRESS DELIVERY</span>
                             <span className="font-black text-lg text-black">{formatCurrency(express.price)}</span>
                         </div>
-                        <div className="flex items-center gap-2 text-xs font-bold text-brand-ascent mb-2 uppercase tracking-widest">
+                        <div className="flex items-center gap-2 text-xs font-bold text-brand-ascent mb-2 tracking-widest">
                             <Zap className="w-4 h-4 fill-current" />
                             <span>{express.time}</span>
                         </div>
-                        <p className="text-[10px] font-bold text-neutral-500 leading-relaxed uppercase tracking-widest">
+                        <p className="text-[10px] font-bold text-neutral-500 leading-relaxed tracking-widest">
                             {express.description}
                         </p>
                     </Label>

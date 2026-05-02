@@ -61,6 +61,7 @@ function normalizeProductPayload(data: ProductInput) {
         seo_title: data.seo_title ?? null,
         seo_description: data.seo_description ?? null,
         metadata: data.metadata ?? {},
+        lookbook_config: data.lookbook_config ?? {},
         updated_at: now,
         published_at: (data.status === 'active') ? (data.published_at ?? now) : null,
         // Variant configuration

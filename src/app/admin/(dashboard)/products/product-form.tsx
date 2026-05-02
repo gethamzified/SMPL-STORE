@@ -21,6 +21,7 @@ import { ProductImageUploader } from "@/components/admin/products/ProductImageUp
 import { useImageUpload } from "@/hooks/use-image-upload";
 import type { ProductVariant } from "@/lib/types";
 import { useState } from "react";
+import { ProductLookbookForm } from "@/components/admin/products/ProductLookbookForm";
 
 type ProductFormProps = {
   initialData?: Partial<Product>
@@ -62,6 +63,13 @@ export function ProductForm({ initialData }: ProductFormProps) {
   const [availableColors, setAvailableColors] = useState<string[]>(initialData?.available_colors ?? []);
   const [availableSizes, setAvailableSizes] = useState<string[]>(initialData?.available_sizes ?? []);
   const [variants, setVariants] = useState<ProductVariant[]>(initialData?.variants ?? []);
+  
+  // Lookbook configuration state
+  const [lookbookConfig, setLookbookConfig] = useState(initialData?.lookbook_config || {
+    enabled: false,
+    marquee_text: "",
+    images: []
+  });
 
   const form = useForm<ProductFormValues>({
     resolver: zodResolver(productSchema),
@@ -177,6 +185,7 @@ export function ProductForm({ initialData }: ProductFormProps) {
     formData.set('available_colors', JSON.stringify(availableColors));
     formData.set('available_sizes', JSON.stringify(availableSizes));
     formData.set('variants', JSON.stringify(variants));
+    formData.set('lookbook_config', JSON.stringify(lookbookConfig));
 
     startTransition(async () => {
       const toastId = toast.loading('Saving product...');
@@ -369,6 +378,15 @@ export function ProductForm({ initialData }: ProductFormProps) {
               onSizesChange={setAvailableSizes}
               onVariantsChange={setVariants}
             />
+
+            {/* Lookbook Section */}
+            <div className="bg-white border border-border rounded-xl p-6 md:p-8 space-y-6 shadow-sm">
+              <h3 className="text-lg font-light tracking-tight text-gray-900 mb-4 border-b border-gray-100 pb-4">Product Lookbook (Storefront)</h3>
+              <ProductLookbookForm 
+                config={lookbookConfig} 
+                onChange={setLookbookConfig}
+              />
+            </div>
           </div>
 
           {/* Right Column */}

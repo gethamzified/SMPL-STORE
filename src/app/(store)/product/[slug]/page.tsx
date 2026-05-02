@@ -5,6 +5,7 @@ import { ProductService } from "@/services/products";
 import ProductDetail from "@/components/product/ProductDetail";
 import RelatedProducts from "@/components/product/RelatedProducts";
 import { ProductReviews } from "@/components/product/ProductReviews";
+import { ProductLookbook } from "@/components/product/ProductLookbook";
 import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
@@ -152,6 +153,10 @@ export default async function ProductPage({ params }: Props) {
       />
       <div className="pt-12 md:pt-16 pb-12 md:pb-16 px-0 md:px-4">
         <ProductDetail product={typedProduct} />
+      </div>
+
+      <div className="max-w-[1600px] mx-auto">
+        <ProductLookbook product={typedProduct} />
       </div>
 
       <div className="max-w-[1600px] mx-auto border-t-2 border-[#1a1a1a]">
