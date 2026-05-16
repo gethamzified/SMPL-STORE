@@ -1,12 +1,17 @@
 import { getBrandConfig } from "@/lib/theme";
+import { Metadata } from "next";
 
 
 export const revalidate = 86400; // SSG-like: 24 hours — static legal page
 
-export const metadata = {
+export const metadata: Metadata = {
     title: "Terms of Service",
-    description: "Review our terms and conditions for using our services.",
-}
+    description: "Review the SMPL terms and conditions for using our services and purchasing products.",
+    robots: {
+        index: false,
+        follow: true,
+    },
+};
 
 export default async function TermsPage() {
     const brand = await getBrandConfig();

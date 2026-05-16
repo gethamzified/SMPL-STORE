@@ -11,6 +11,15 @@ import { Skeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
 import { Product } from "@/lib/types";
 import { Metadata } from "next";
+import {
+  generateProductJsonLd,
+  generateBreadcrumbJsonLd,
+  truncateDescription,
+  SITE_URL,
+  SITE_NAME,
+  DEFAULT_OG_IMAGE,
+  TWITTER_HANDLE,
+} from "@/lib/seo";
 
 export const revalidate = 3600; // Revalidate every hour
 
@@ -48,26 +57,42 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     };
   }
 
-  const title = `${product.title} | SMPL`;
-  const description = product.description
-    ? product.description.slice(0, 160)
-    : `Discover ${product.title} at SMPL.`;
-
-  const images = product.cover_image ? [product.cover_image] : [];
+  const title = product.title;
+  const description = truncateDescription(
+    product.seo_description || product.description,
+    160
+  );
+  const canonicalUrl = `${SITE_URL}/product/${slug}`;
+  const images = product.cover_image
+    ? [
+        {
+          url: product.cover_image,
+          width: 1200,
+          height: 630,
+          alt: `${product.title} — ${SITE_NAME}`,
+        },
+      ]
+    : [{ url: DEFAULT_OG_IMAGE, width: 1200, height: 630, alt: SITE_NAME }];
 
   return {
-    title,
+    title: product.seo_title || title,
     description,
+    alternates: {
+      canonical: canonicalUrl,
+    },
     openGraph: {
-      title,
+      title: `${product.seo_title || title} | ${SITE_NAME}`,
       description,
+      url: canonicalUrl,
+      type: "website",
       images,
     },
     twitter: {
       card: "summary_large_image",
-      title,
+      title: `${product.seo_title || title} | ${SITE_NAME}`,
       description,
-      images,
+      images: images.map((img) => img.url),
+      creator: TWITTER_HANDLE,
     },
   };
 }
@@ -99,56 +124,23 @@ export default async function ProductPage({ params }: Props) {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            "@context": "https://schema.org/",
-            "@type": "Product",
-            "name": typedProduct.title,
-            "image": [typedProduct.cover_image, ...(typedProduct.images || [])],
-            "description": typedProduct.description,
-            "sku": typedProduct.id,
-            "brand": {
-              "@type": "Brand",
-              "name": "SMPL"
-            },
-            "offers": {
-              "@type": "Offer",
-              "url": `https://smpl.studio/product/${typedProduct.slug}`,
-              "priceCurrency": "USD",
-              "price": typedProduct.sale_price || typedProduct.price,
-              "availability": "https://schema.org/InStock",
-              "itemCondition": "https://schema.org/NewCondition"
-            }
-          })
+          __html: JSON.stringify(generateProductJsonLd(typedProduct)),
         }}
       />
       {/* Breadcrumb Schema */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "BreadcrumbList",
-            "itemListElement": [
+          __html: JSON.stringify(
+            generateBreadcrumbJsonLd([
+              { name: 'Home', url: SITE_URL },
+              { name: 'Shop', url: `${SITE_URL}/shop` },
               {
-                "@type": "ListItem",
-                "position": 1,
-                "name": "Home",
-                "item": "https://smpl.studio"
+                name: typedProduct.title,
+                url: `${SITE_URL}/product/${typedProduct.slug}`,
               },
-              {
-                "@type": "ListItem",
-                "position": 2,
-                "name": "Shop",
-                "item": "https://smpl.studio/shop"
-              },
-              {
-                "@type": "ListItem",
-                "position": 3,
-                "name": typedProduct.title,
-                "item": `https://smpl.studio/product/${typedProduct.slug}`
-              }
-            ]
-          })
+            ])
+          ),
         }}
       />
       <div className="pt-12 md:pt-16 pb-12 md:pb-16 px-0 md:px-4">

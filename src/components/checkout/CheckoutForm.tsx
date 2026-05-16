@@ -41,33 +41,7 @@ export default function CheckoutForm({ user }: CheckoutFormProps) {
             price: item.price
         }));
 
-        // Pre-validate Stock
-        try {
-            const validationItems = orderItems.map(item => ({
-                id: item.product_id, // Use product ID or unique item ref
-                variantId: item.variant_id,
-                quantity: item.quantity
-            }));
 
-            // Check all items at once
-            const { isValid, errors } = await import("@/actions/stock").then(mod => mod.validateCart(validationItems));
-
-            if (!isValid) {
-                const firstError = errors[0];
-                toast.error("Stock Issue", {
-                    description: `Item ${firstError.itemId} issue: ${firstError.message}. Available: ${firstError.available}`
-                });
-                setIsProcessing(false);
-                return;
-            }
-        } catch (e) {
-            console.error("Stock pre-validation failed", e);
-            toast.error("System Error", {
-                description: "Failed to validate stock. Please try again."
-            });
-            setIsProcessing(false);
-            return;
-        }
 
         try {
             const payload = {

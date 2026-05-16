@@ -30,11 +30,11 @@ const FooterColumn = ({
 }) => {
   return (
     <div className="flex flex-col">
-      <h4 className="text-white/40 text-[10px] font-black uppercase tracking-[0.2em] mb-6">{title}</h4>
+      <h4 className="text-black/40 text-[10px] font-black uppercase tracking-[0.2em] mb-6">{title}</h4>
       <ul className="flex flex-col gap-2">
         {links.map(link => (
           <li key={`${link.label}-${link.url}`}>
-            <Link href={link.url} className="text-white text-[11px] font-black uppercase tracking-widest hover:text-brand-ascent transition-colors duration-300">
+            <Link href={link.url} className="text-black text-[11px] font-black uppercase tracking-widest hover:text-brand-ascent transition-colors duration-300">
               {link.label}
             </Link>
           </li>
@@ -111,7 +111,7 @@ const Footer = ({
   const displaySocialLinks = socialLinks.length > 0 ? socialLinks : defaultSocialLinks;
 
   return (
-    <footer className="relative z-10 w-full overflow-hidden bg-black text-white border-t border-white/10">
+    <footer className="relative z-10 w-full overflow-hidden bg-white text-black border-t border-[#1a1a1a]">
       <div className="max-w-[1920px] mx-auto px-6 py-6 lg:py-10">
         <div className="flex flex-col lg:flex-row justify-between gap-6 lg:gap-8">
 
@@ -124,10 +124,10 @@ const Footer = ({
                   alt={brandName}
                   width={100}
                   height={40}
-                  className="h-6 w-auto"
+                  className="h-6 w-auto "
                 />
               </Link>
-              <p className="mt-2 text-white/40 text-[9px] max-w-xs leading-relaxed font-black uppercase tracking-[0.2em]">
+              <p className="mt-2 text-black/40 text-[9px] max-w-xs leading-relaxed font-black uppercase tracking-[0.2em]">
                 {config.tagline || 'Minimalist design, premium quality, enduring style.'}
               </p>
             </div>
@@ -151,7 +151,7 @@ const Footer = ({
       </div>
 
       {/* Bottom Bar */}
-      <div className="border-t border-white/5">
+      <div className="border-t border-[#1a1a1a]">
         <div className="max-w-[1920px] mx-auto px-6 py-4 lg:py-6 flex flex-col lg:flex-row justify-between items-center gap-4 relative">
 
           {/* Scroll To Top - Absolute Centered ABOVE text */}
@@ -160,7 +160,7 @@ const Footer = ({
           </div>
 
           {/* Copyright */}
-          <div className="text-[8px] text-white/20 uppercase tracking-[0.2em] flex-1 text-center lg:text-left font-black">
+          <div className="text-[8px] text-black/40 uppercase tracking-[0.2em] flex-1 text-center lg:text-left font-black">
             <span>{copyrightText} All rights reserved.</span>
           </div>
 
@@ -168,7 +168,7 @@ const Footer = ({
 
           {/* Simplified Social Icons */}
           <div className="flex items-center justify-center lg:justify-end gap-6 flex-1">
-            <span className="text-[8px] text-white/20 uppercase tracking-[0.2em] font-black">Curated in Pakistan</span>
+            <span className="text-[8px] text-black/40 uppercase tracking-[0.2em] font-black">Curated in Pakistan</span>
           </div>
 
         </div>

@@ -1,11 +1,26 @@
 import { Mail, Phone, MapPin } from "lucide-react";
+import { Metadata } from "next";
 
 export const revalidate = 86400; // SSG-like: 24 hours — static marketing page
 
-export const metadata = {
+export const metadata: Metadata = {
     title: "Contact Us",
-    description: "Get in touch with us for any inquiries or support.",
-}
+    description: "Get in touch with the SMPL team for inquiries, orders, or support. We'd love to hear from you.",
+    alternates: {
+        canonical: "https://smpl.studio/contact",
+    },
+    openGraph: {
+        title: "Contact Us | SMPL",
+        description: "Get in touch with the SMPL team for inquiries, orders, or support.",
+        url: "https://smpl.studio/contact",
+        type: "website",
+    },
+    twitter: {
+        card: "summary",
+        title: "Contact Us | SMPL",
+        description: "Get in touch with the SMPL team for inquiries, orders, or support.",
+    },
+};
 
 export default async function ContactPage() {
     return (

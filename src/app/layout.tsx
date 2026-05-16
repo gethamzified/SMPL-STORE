@@ -4,12 +4,12 @@ import "./globals.css";
 import { Providers } from "@/components/layout/Providers";
 import { hexToHslValues } from "@/lib/utils";
 import { StoreConfigService } from "@/services/config";
+import { generateOrganizationJsonLd, generateWebSiteJsonLd, SITE_URL, SITE_NAME } from "@/lib/seo";
 
 // ============================================
 // STATIC METADATA - No DB call, instant
 // ============================================
-const baseUrl = "https://smpl.studio";
-const SITE_NAME = 'SMPL';
+const baseUrl = SITE_URL;
 const TAGLINE = 'Premium Streetwear & Minimalist Clothing';
 
 export const metadata: Metadata = {
@@ -21,7 +21,7 @@ export const metadata: Metadata = {
   description: `Shop ${SITE_NAME} for premium streetwear and minimalist clothing. Discover high-quality apparel designed for modern wardrobes. Experience Timeless Power.`,
   keywords: ["Premium Streetwear", "SMPL", "Minimalist Clothing", "Apparel", "Fashion", "Streetwear Brand"],
   alternates: {
-    canonical: "./",
+    canonical: baseUrl,
   },
   openGraph: {
     title: `${SITE_NAME} | ${TAGLINE}`,
@@ -145,24 +145,12 @@ export default async function RootLayout({
         {/* Organization Schema */}
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "Organization",
-              "name": "SMPL",
-              "url": "https://smpl.studio",
-              "logo": "https://smpl.studio/logo.png",
-              "sameAs": [
-                "https://instagram.com/smplstudio",
-                "https://twitter.com/smplstudio"
-              ],
-              "contactPoint": {
-                "@type": "ContactPoint",
-                "email": "hello@smpl.studio",
-                "contactType": "Customer Service"
-              }
-            })
-          }}
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(generateOrganizationJsonLd()) }}
+        />
+        {/* WebSite Schema (enables sitelinks search box) */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(generateWebSiteJsonLd()) }}
         />
       </head>
       <body className={font.className}>

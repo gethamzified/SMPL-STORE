@@ -49,8 +49,8 @@ export function HeroCarousel({ products, hero }: HeroCarouselProps) {
 
     return (
         <div className="relative h-screen w-full overflow-hidden bg-transparent pt-24 md:pt-28">
-            {/* 1. Static Background Layer */}
-            <div className="absolute inset-0 z-0 pointer-events-none" />
+            {/* 1. Static Background Layer with Dark Gradient for Contrast */}
+            <div className="absolute inset-0 z-0 pointer-events-none bg-gradient-to-b from-black/10 to-black/20" />
 
             {/* 2. Sliding Images (Carousel) */}
             <div className="relative h-full w-full z-10 pointer-events-none" ref={emblaRef}>
@@ -69,7 +69,7 @@ export function HeroCarousel({ products, hero }: HeroCarouselProps) {
                                     alt={product.title}
                                     fill
                                     priority={index < 2}
-                                    className="object-contain drop-shadow-[0_50px_60px_rgba(0,0,0,0.)] transition-transform duration-700 group-hover/img:scale-105 will-change-transform"
+                                    className="object-contain drop-shadow-[0_30px_40px_rgba(0,0,0,0.7)] drop-shadow-[0_0_15px_rgba(255,255,255,0.1)] -rotate-[2deg] transition-all duration-700 group-hover/img:scale-105 group-hover/img:-rotate-1 will-change-transform"
                                     sizes="(max-width: 640px) 100vw, (max-width: 1024px) 90vw, 1200px"
                                 />
                             </Link>
@@ -82,7 +82,7 @@ export function HeroCarousel({ products, hero }: HeroCarouselProps) {
             {/* 4. Bottom Right: Price */}
             <div
                 key={`cta-${selectedIndex}`}
-                className="absolute top-40 left-6 right-auto md:top-auto md:bottom-24 md:left-auto md:right-12 text-left md:text-right z-20 animate-in fade-in slide-in-from-left-8 md:slide-in-from-right-8 duration-700"
+                className="absolute top-40 left-6 right-auto md:top-auto md:bottom-40 md:left-auto md:right-[20%] text-left md:text-right z-20 animate-in fade-in slide-in-from-left-8 md:slide-in-from-bottom-8 duration-700"
             >
                 <div className="mb-0">
                     <span className="text-[8px] md:text-[10px] font-black uppercase tracking-[0.3em] text-brand-ascent block mb-1">

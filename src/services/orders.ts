@@ -147,14 +147,16 @@ export const OrderService = {
         // 4. Send Confirmation Email (Async / Fire-and-Forget)
         const orderId = (createdOrder as any).id;
 
-        try {
-            // Fetch full order again just to be safe, or use returned object if complete
-            const fullOrder = await OrderService.getOrder(orderId);
-            await EmailService.sendOrderConfirmation(input.email, fullOrder);
-        } catch (err) {
-            console.error('Email Sending Failed:', err);
-            // Do not fail the order creation, just log it
-        }
+        // Run asynchronously without blocking the checkout response
+        Promise.resolve().then(async () => {
+            try {
+                const fullOrder = await OrderService.getOrder(orderId);
+                await EmailService.sendOrderConfirmation(input.email, fullOrder);
+            } catch (err) {
+                console.error('Background Email Sending Failed:', err);
+                // Do not fail the order creation, just log it
+            }
+        });
 
         revalidatePath('/admin/orders');
         revalidatePath(`/admin/orders/${orderId}`);
@@ -194,8 +196,14 @@ export const OrderService = {
 
         // Send Email Notification
         if (updates.status || updates.admin_message) {
-            const fullOrder = await OrderService.getOrder(orderId);
-            await EmailService.sendOrderStatusUpdate(fullOrder.email, fullOrder, updates.admin_message);
+            Promise.resolve().then(async () => {
+                try {
+                    const fullOrder = await OrderService.getOrder(orderId);
+                    await EmailService.sendOrderStatusUpdate(fullOrder.email, fullOrder, updates.admin_message);
+                } catch (err) {
+                    console.error('Background Email Sending Failed:', err);
+                }
+            });
         }
 
         revalidatePath('/admin/orders');

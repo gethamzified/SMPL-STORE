@@ -12,15 +12,20 @@ import {
 } from "@/components/ui/breadcrumb";
 import ProductGrid from "@/components/product/ProductGrid";
 import { Product } from "@/lib/types";
+import { Metadata } from "next";
+import { generateBreadcrumbJsonLd, SITE_URL } from "@/lib/seo";
 
 export const revalidate = 3600; // ISR: 1 hour — cached shop listing
 
-export const metadata = {
+export const metadata: Metadata = {
     title: "Shop All | SMPL",
-    description: "Browse our complete collection of premium fashion items.",
+    description: "Browse our complete collection of premium streetwear and minimalist fashion items. Discover high-quality apparel at SMPL.",
+    alternates: {
+        canonical: "https://smpl.studio/shop",
+    },
     openGraph: {
         title: "Shop All | SMPL",
-        description: "Browse our complete collection of premium fashion items.",
+        description: "Browse our complete collection of premium streetwear and minimalist fashion items.",
         type: "website",
         url: "https://smpl.studio/shop",
         images: [
@@ -35,7 +40,7 @@ export const metadata = {
     twitter: {
         card: "summary_large_image",
         title: "Shop All | SMPL",
-        description: "Browse our complete collection of premium fashion items.",
+        description: "Browse our complete collection of premium streetwear and minimalist fashion items.",
         images: ["https://smpl.studio/pexels-koolshooters-6982602.webp"],
     }
 };
@@ -75,24 +80,12 @@ export default async function ShopPage({ searchParams }: {
             <script
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{
-                    __html: JSON.stringify({
-                        "@context": "https://schema.org",
-                        "@type": "BreadcrumbList",
-                        "itemListElement": [
-                            {
-                                "@type": "ListItem",
-                                "position": 1,
-                                "name": "Home",
-                                "item": "https://smpl.studio"
-                            },
-                            {
-                                "@type": "ListItem",
-                                "position": 2,
-                                "name": "Shop",
-                                "item": "https://smpl.studio/shop"
-                            }
-                        ]
-                    })
+                    __html: JSON.stringify(
+                        generateBreadcrumbJsonLd([
+                            { name: 'Home', url: SITE_URL },
+                            { name: 'Shop', url: `${SITE_URL}/shop` },
+                        ])
+                    ),
                 }}
             />
             {/* Visually Hidden Semantic H1 */}

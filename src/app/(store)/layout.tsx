@@ -6,7 +6,6 @@ import { AnnouncementBar } from '@/components/layout/AnnouncementBar';
 import { StoreConfigService } from '@/services/config';
 import { FooterSkeleton } from '@/components/skeletons/FooterSkeleton';
 import { StoreProviders } from '@/components/layout/StoreProviders';
-import { SmoothScroll } from '@/components/layout/SmoothScroll';
 
 import { BackgroundLayer } from '@/components/layout/BackgroundLayer';
 
@@ -26,30 +25,28 @@ export default async function StoreLayout({
 
     return (
         <StoreProviders>
-            <SmoothScroll>
-                <div className="flex flex-col min-h-screen text-foreground relative">
-                    {/* Background Layer (Only on Home Page) */}
-                    <BackgroundLayer imageUrl={backgroundImage} />
+            <div className="flex flex-col min-h-screen text-foreground relative">
+                {/* Background Layer (Only on Home Page) */}
+                <BackgroundLayer imageUrl={backgroundImage} />
 
-                    {/* Navbar layer — absolute so hero content can go under it */}
-                    <div className="absolute top-0 left-0 w-full z-50">
-                        {brand.showAnnouncement && brand.announcement && (
-                            <AnnouncementBar text={brand.announcement} />
-                        )}
-                        <Navbar brandName={brand.name} navItems={navItems} />
-                    </div>
-
-                    {/* Page Content */}
-                    <div className="flex-grow relative">
-                        {children}
-                    </div>
-
-                    {/* Footer */}
-                    <Suspense fallback={<FooterSkeleton />}>
-                        <Footer config={footerConfig} brandName={brand.name} social={socialConfig} />
-                    </Suspense>
+                {/* Navbar layer — absolute so hero content can go under it */}
+                <div className="absolute top-0 left-0 w-full z-50">
+                    {brand.showAnnouncement && brand.announcement && (
+                        <AnnouncementBar text={brand.announcement} />
+                    )}
+                    <Navbar brandName={brand.name} navItems={navItems} />
                 </div>
-            </SmoothScroll>
+
+                {/* Page Content */}
+                <div className="flex-grow relative">
+                    {children}
+                </div>
+
+                {/* Footer */}
+                <Suspense fallback={<FooterSkeleton />}>
+                    <Footer config={footerConfig} brandName={brand.name} social={socialConfig} />
+                </Suspense>
+            </div>
         </StoreProviders>
     );
 }

@@ -28,8 +28,9 @@ export const EmailService = {
   async sendOrderConfirmation(email: string, order: Order) {
     try {
       if (!process.env.SMTP_USER) return;
-
-      const config = await StoreConfigService.getStoreConfig();
+      
+      // Use Raw config to avoid Next.js cache Invariant errors in background workers
+      const config = await StoreConfigService.getRawStoreConfig();
       const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
 
       await transporter.sendMail({
@@ -40,6 +41,7 @@ export const EmailService = {
       });
     } catch (error) {
       console.error('Failed to send order confirmation:', error);
+      throw error; // Throw so BullMQ can catch and retry
     }
   },
 
@@ -47,7 +49,7 @@ export const EmailService = {
     try {
       if (!process.env.SMTP_USER) return;
 
-      const config = await StoreConfigService.getStoreConfig();
+      const config = await StoreConfigService.getRawStoreConfig();
       const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
 
       await transporter.sendMail({
@@ -58,6 +60,7 @@ export const EmailService = {
       });
     } catch (error) {
       console.error('Failed to send status update email:', error);
+      throw error; // Throw so BullMQ can catch and retry
     }
   }
 };

@@ -1,8 +1,17 @@
 import { notFound } from "next/navigation";
 import Image from "next/image";
-import { getLatestPosts } from "@/lib/theme";
 import { createStaticClient } from "@/lib/supabase/static";
 import { BlogPost } from "@/lib/types";
+import { Metadata } from "next";
+import {
+  generateArticleJsonLd,
+  generateBreadcrumbJsonLd,
+  truncateDescription,
+  SITE_URL,
+  SITE_NAME,
+  DEFAULT_OG_IMAGE,
+  TWITTER_HANDLE,
+} from "@/lib/seo";
 
 export const revalidate = 300; // ISR: 5 minutes — blog content changes infrequently
 
@@ -18,39 +27,107 @@ export async function generateStaticParams() {
 
 export const dynamicParams = true;
 
-// Mock function to get a single post - in real app would verify slug
-// Since we don't have a direct "getPostBySlug" in theme yet, we simulate or reuse getLatestPosts
-async function getPost(slug: string): Promise<BlogPost | undefined> {
-    const posts = await getLatestPosts(10);
-    const existingPost = posts.find((p: any) => p.slug === slug);
+// ─── Helpers ──────────────────────────────────────────────────────────────────
 
-    if (existingPost) return existingPost as BlogPost;
+async function getPostBySlug(slug: string): Promise<BlogPost | null> {
+    const supabase = createStaticClient();
+    const { data, error } = await supabase
+        .from('blog_posts')
+        .select('*')
+        .eq('slug', slug)
+        .eq('status', 'published')
+        .maybeSingle();
 
-    // Return mock if not found for now to prevent 404s during demo
-    // Ensure we match BlogPost interface
-    return {
-        id: "mock-id-" + slug,
-        title: "Sample News Article",
-        slug: slug,
-        content: "This is a placeholder for the news article content. In a real application, this would claim data from the database.",
-        excerpt: "This is a placeholder excerpt.",
-        published_at: new Date().toISOString(),
-        author_name: "Calder Team",
-        featured_image: "https://framerusercontent.com/images/V5a1RpyqOHHGnONdw8R7GjDBIg.jpg",
-        tags: ["News"],
-        status: "published",
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-    } as BlogPost;
+    if (error || !data) return null;
+    return data as BlogPost;
 }
 
-export default async function NewsDetailPage({ params }: { params: { slug: string } }) {
-    const post = await getPost(params.slug);
+// ─── SEO Metadata ─────────────────────────────────────────────────────────────
+
+type Props = {
+    params: Promise<{ slug: string }>;
+};
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+    const { slug } = await params;
+    const post = await getPostBySlug(slug);
+
+    if (!post) {
+        return { title: "Article Not Found" };
+    }
+
+    const title = post.seo_title || post.title;
+    const description = truncateDescription(
+        post.seo_description || post.excerpt || post.content,
+        160
+    );
+    const canonicalUrl = `${SITE_URL}/news/${slug}`;
+    const image = post.featured_image || DEFAULT_OG_IMAGE;
+
+    return {
+        title,
+        description,
+        alternates: {
+            canonical: canonicalUrl,
+        },
+        openGraph: {
+            title: `${title} | ${SITE_NAME}`,
+            description,
+            url: canonicalUrl,
+            type: "article",
+            publishedTime: post.published_at || post.created_at,
+            modifiedTime: post.updated_at,
+            authors: [post.author_name || SITE_NAME],
+            images: [
+                {
+                    url: image,
+                    width: 1200,
+                    height: 630,
+                    alt: post.title,
+                },
+            ],
+        },
+        twitter: {
+            card: "summary_large_image",
+            title: `${title} | ${SITE_NAME}`,
+            description,
+            images: [image],
+            creator: TWITTER_HANDLE,
+        },
+    };
+}
+
+// ─── Page Component ───────────────────────────────────────────────────────────
+
+export default async function NewsDetailPage({ params }: Props) {
+    const { slug } = await params;
+    const post = await getPostBySlug(slug);
 
     if (!post) return notFound();
 
     return (
         <article className="min-h-screen bg-white pt-32 pb-20 px-6 md:px-12">
+            {/* Article Schema */}
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{
+                    __html: JSON.stringify(generateArticleJsonLd(post)),
+                }}
+            />
+            {/* Breadcrumb Schema */}
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{
+                    __html: JSON.stringify(
+                        generateBreadcrumbJsonLd([
+                            { name: "Home", url: SITE_URL },
+                            { name: "News", url: `${SITE_URL}/news` },
+                            { name: post.title, url: `${SITE_URL}/news/${post.slug}` },
+                        ])
+                    ),
+                }}
+            />
+
             <div className="max-w-4xl mx-auto">
                 <div className="mb-12 text-center">
                     <h1 className="font-display text-4xl md:text-6xl mb-6">{post.title}</h1>

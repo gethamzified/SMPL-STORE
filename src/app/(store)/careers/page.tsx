@@ -1,12 +1,27 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
+import { Metadata } from "next";
 
 export const revalidate = 86400; // SSG-like: 24 hours — static marketing page
 
-export const metadata = {
+export const metadata: Metadata = {
     title: "Careers",
-    description: "Join our team and help us build the future of streetwear.",
-}
+    description: "Join the SMPL team and help us build the future of streetwear. Explore open positions in design, marketing, and more.",
+    alternates: {
+        canonical: "https://smpl.studio/careers",
+    },
+    openGraph: {
+        title: "Careers at SMPL",
+        description: "Join the SMPL team and help us build the future of streetwear.",
+        url: "https://smpl.studio/careers",
+        type: "website",
+    },
+    twitter: {
+        card: "summary",
+        title: "Careers at SMPL",
+        description: "Join the SMPL team and help us build the future of streetwear.",
+    },
+};
 
 export default function CareersPage() {
     return (

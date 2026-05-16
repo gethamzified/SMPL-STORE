@@ -1,8 +1,37 @@
 import Link from "next/link";
 import Image from "next/image";
 import { createStaticClient } from "@/lib/supabase/static";
+import { Metadata } from "next";
 
 export const revalidate = 300; // 5 minutes - aggressive cache
+
+export const metadata: Metadata = {
+    title: "Inside SMPL — Stories & News",
+    description: "Stories of craftsmanship, style perspectives, and the latest from the SMPL studio. Explore our editorial content.",
+    alternates: {
+        canonical: "https://smpl.studio/news",
+    },
+    openGraph: {
+        title: "Inside SMPL — Stories & News",
+        description: "Stories of craftsmanship, style perspectives, and the latest from the SMPL studio.",
+        url: "https://smpl.studio/news",
+        type: "website",
+        images: [
+            {
+                url: "https://smpl.studio/pexels-koolshooters-6982602.webp",
+                width: 1200,
+                height: 630,
+                alt: "SMPL News",
+            },
+        ],
+    },
+    twitter: {
+        card: "summary_large_image",
+        title: "Inside SMPL — Stories & News",
+        description: "Stories of craftsmanship, style perspectives, and the latest from the SMPL studio.",
+        images: ["https://smpl.studio/pexels-koolshooters-6982602.webp"],
+    },
+};
 
 // Fallback articles if no blog posts in DB
 const fallbackArticles = [

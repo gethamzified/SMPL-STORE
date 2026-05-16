@@ -557,6 +557,7 @@ export const ProductService = {
 
                 if (invError) {
                     console.error('Error updating inventory levels:', invError);
+                    throw new AppError(invError.message, 'DB_ERROR');
                 }
             }
         }
@@ -583,18 +584,19 @@ export const ProductService = {
 
         if (error || !products) return { isValid: false, items: [], errors: ['Failed to validate items'] };
 
-        // Fetch inventory levels for all variants
+        // Fetch inventory levels for all variants AND products (for simple products)
         let inventoryMap: Record<string, number> = {};
-        if (variantIds.length > 0) {
-            const { data: inventory } = await supabase
-                .from('inventory_levels')
-                .select('variant_id, available')
-                .in('variant_id', variantIds);
+        const { data: inventory } = await supabase
+            .from('inventory_levels')
+            .select('variant_id, product_id, available')
+            .or(`variant_id.in.(${variantIds.length > 0 ? variantIds.join(',') : '00000000-0000-0000-0000-000000000000'}),product_id.in.(${productIds.join(',')})`);
 
-            if (inventory) {
-                // Sum available stock across all locations for each variant
-                for (const inv of inventory) {
-                    inventoryMap[inv.variant_id] = (inventoryMap[inv.variant_id] || 0) + (inv.available || 0);
+        if (inventory) {
+            // Sum available stock across all locations
+            for (const inv of inventory) {
+                const key = inv.variant_id || inv.product_id;
+                if (key) {
+                    inventoryMap[key] = (inventoryMap[key] || 0) + (inv.available || 0);
                 }
             }
         }
@@ -619,7 +621,8 @@ export const ProductService = {
             }
 
             // Stock validation from inventory_levels
-            const availableStock = item.variantId ? (inventoryMap[item.variantId] || 0) : 0;
+            const inventoryKey = item.variantId || productId;
+            const availableStock = inventoryMap[inventoryKey] || 0;
             if (availableStock < item.quantity) {
                 errors.push(`Insufficient stock for "${product.title}". Available: ${availableStock}`);
                 allValid = false;

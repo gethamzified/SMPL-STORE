@@ -34,44 +34,63 @@ interface CartContextType {
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
 // ... imports
+import { syncCartAction, getSavedCartAction } from "@/actions/cart";
 import { validateCart } from "@/actions/stock";
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false);
 
   // Initial load and deferred validation
   useEffect(() => {
     setIsMounted(true);
-    const savedCart = localStorage.getItem("cart");
-    if (savedCart) {
+    
+    async function loadCart() {
+      // First try to get from local storage
+      let initialItems: CartItem[] = [];
+      const savedCart = localStorage.getItem("cart");
+      if (savedCart) {
+        try {
+          initialItems = JSON.parse(savedCart);
+        } catch (e) {}
+      }
+
+      // Then try to fetch from DB and merge/override
       try {
-        const parsedItems: CartItem[] = JSON.parse(savedCart);
-        setItems(parsedItems);
+        const dbCartResult = await getSavedCartAction();
+        if (dbCartResult.success && dbCartResult.items && dbCartResult.items.length > 0) {
+          // Simplistic merge: prefer DB
+          initialItems = dbCartResult.items;
+        }
+      } catch (e) {
+        console.error("Failed to fetch DB cart:", e);
+      }
 
-        // Defer non-critical validation to after LCP (3 seconds)
-        // Checks strictly against server stock
-        if (parsedItems.length > 0) {
-          const timeoutId = setTimeout(async () => {
-            // Validate against stock
-            const validationParams = parsedItems.map(i => ({
-              id: i.id,
-              variantId: i.variantId, // Ensure mapped correctly
-              quantity: i.quantity
-            }));
+      setItems(initialItems);
+      setIsLoaded(true);
 
-            const { isValid, errors } = await validateCart(validationParams);
+      // Defer non-critical validation
+      if (initialItems.length > 0) {
+        setTimeout(async () => {
+          const validationParams = initialItems.map(i => ({
+            id: i.id,
+            variantId: i.variantId,
+            quantity: i.quantity
+          }));
 
-            if (!isValid) {
-              // Adjust quantities or remove items
-              let toastMessage = "";
-              const updatedItems = parsedItems.map(item => {
+          const { isValid, errors } = await validateCart(validationParams);
+
+          if (!isValid) {
+            let toastMessage = "";
+            setItems(prev => {
+              const updatedItems = prev.map(item => {
                 const error = errors.find(e => e.itemId === item.id);
                 if (error) {
                   if (error.available === 0) {
                     toastMessage += `${item.name} is now out of stock. `;
-                    return null; // Remove
+                    return null;
                   } else {
                     toastMessage += `${item.name} quantity adjusted to ${error.available}. `;
                     return { ...item, quantity: error.available };
@@ -79,29 +98,26 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
                 }
                 return item;
               }).filter(Boolean) as CartItem[];
-
-              setItems(updatedItems);
-              if (toastMessage) {
-                toast.error("Cart Adjusted", { description: toastMessage });
-              }
+              return updatedItems;
+            });
+            if (toastMessage) {
+              toast.error("Cart Adjusted", { description: toastMessage });
             }
-
-            // Also re-validate prices if needed via separate API, but stock is priority here.
-          }, 3000);
-
-          return () => clearTimeout(timeoutId);
-        }
-      } catch (e) {
-        console.error("Failed to parse cart from local storage");
+          }
+        }, 3000);
       }
     }
+
+    loadCart();
   }, []);
 
   useEffect(() => {
-    if (isMounted) {
+    if (isMounted && isLoaded) {
       localStorage.setItem("cart", JSON.stringify(items));
+      // Sync to DB (debounced/fire-and-forget)
+      syncCartAction(items).catch(console.error);
     }
-  }, [items, isMounted]);
+  }, [items, isMounted, isLoaded]);
 
   const addItem = useCallback(async (newItem: Omit<CartItem, "quantity">, openCart: boolean = true) => {
     const currentItem = items.find(

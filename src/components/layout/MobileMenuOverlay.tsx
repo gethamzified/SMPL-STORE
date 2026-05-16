@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { X, Instagram, Facebook } from "lucide-react";
 import { MenuItem } from "@/lib/types";
-import { useLenis } from "lenis/react";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 
@@ -13,7 +12,6 @@ interface MobileMenuOverlayProps {
 }
 
 export default function MobileMenuOverlay({ navLinks, onClose }: MobileMenuOverlayProps) {
-    const lenis = useLenis();
     const pathname = usePathname();
 
     return (
@@ -55,9 +53,9 @@ export default function MobileMenuOverlay({ navLinks, onClose }: MobileMenuOverl
                                         onClose();
                                         const targetId = link.url.replace('/#', '');
                                         const element = document.getElementById(targetId);
-                                        if (element && lenis) {
+                                        if (element) {
                                             setTimeout(() => {
-                                                lenis.scrollTo(element, { offset: -40, duration: 1.5 });
+                                                element.scrollIntoView({ behavior: 'smooth', block: 'start' });
                                             }, 100);
                                         }
                                     } else {

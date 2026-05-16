@@ -1,10 +1,39 @@
 import { getHeroConfig, getHomepageLayout } from "@/lib/theme";
 import { HomepageSection } from "@/lib/types";
+import { Metadata } from "next";
 
 import Image from "next/image";
 import style2 from "@/assets/style-2.jpg";
 
 export const revalidate = 86400; // SSG: 24 hours — static marketing page
+
+export const metadata: Metadata = {
+    title: "About Us",
+    description: "SMPL is a Pakistani brand for premium and diverse apparel, tailored selectively to match your interest. Blending traditional craftsmanship with contemporary aesthetics.",
+    alternates: {
+        canonical: "https://smpl.studio/about",
+    },
+    openGraph: {
+        title: "About SMPL | Premium Streetwear",
+        description: "SMPL is a Pakistani brand for premium and diverse apparel, tailored selectively to match your interest.",
+        url: "https://smpl.studio/about",
+        type: "website",
+        images: [
+            {
+                url: "https://smpl.studio/pexels-koolshooters-6982602.webp",
+                width: 1200,
+                height: 630,
+                alt: "About SMPL",
+            },
+        ],
+    },
+    twitter: {
+        card: "summary_large_image",
+        title: "About SMPL | Premium Streetwear",
+        description: "SMPL is a Pakistani brand for premium and diverse apparel, tailored selectively to match your interest.",
+        images: ["https://smpl.studio/pexels-koolshooters-6982602.webp"],
+    },
+};
 
 export default async function AboutPage() {
   const [heroConfig, layout] = await Promise.all([

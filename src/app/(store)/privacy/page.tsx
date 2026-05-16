@@ -1,12 +1,17 @@
 import { getBrandConfig } from "@/lib/theme";
+import { Metadata } from "next";
 
 
 export const revalidate = 86400; // SSG-like: 24 hours — static legal page
 
-export const metadata = {
+export const metadata: Metadata = {
     title: "Privacy Policy",
-    description: "Read our privacy policy to understand how we handle your data.",
-}
+    description: "Learn how SMPL handles your data. Read our privacy policy for details on collection, usage, and protection of your personal information.",
+    robots: {
+        index: false,
+        follow: true,
+    },
+};
 
 export default async function PrivacyPage() {
     const brand = await getBrandConfig();

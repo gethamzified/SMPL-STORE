@@ -1,10 +1,16 @@
 
+import { Metadata } from "next";
+
 export const revalidate = 86400; // SSG-like: 24 hours — static legal page
 
-export const metadata = {
+export const metadata: Metadata = {
     title: "Cookie Policy",
-    description: "Learn about how we use cookies on our website.",
-}
+    description: "Learn about how SMPL uses cookies on our website to improve your browsing experience.",
+    robots: {
+        index: false,
+        follow: true,
+    },
+};
 
 export default async function CookiesPage() {
     return (
